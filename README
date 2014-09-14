@@ -1,0 +1,40 @@
+Onkyo ISCP library for Qt.
+
+
+Possible to use from QtQuick, example:
+
+import org.tal.qiscp 1.0
+
+...
+    QISCP {
+        id: iscp
+
+        onDevicesDiscovered: {
+            var devices=iscp.getDevices();
+            hostsModel.clear();
+            for (var i=0;i<devices.length;i++) {                
+                hostsModel.append(devices[i]);
+            }
+
+            if (devices.length==1) {
+                connectToDevice(devices[0]);
+            }
+
+            inputsModel.clear();
+            var inputs=iscp.getInputs();
+            for (var i=0;i<inputs.length;i++) {                
+                inputsModel.append(inputs[i]);
+            }
+        }        
+
+        onPresetsList: {            
+            presetsModel.clear();
+            var p=iscp.getPresets();
+
+            for (var i=0;i<p.length;i++) {
+                presetsModel.append(p[i]);
+            }
+        }
+
+    }
+...
