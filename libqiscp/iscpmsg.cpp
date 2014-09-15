@@ -167,8 +167,8 @@ QByteArray& ISCPMsg::bytes(void) {
     QByteArray rawcmd;
     rawcmd.append("!");
     rawcmd.append(m_destination);
-    rawcmd.append(m_cmd.toAscii());
-    rawcmd.append(m_param.toAscii());
+    rawcmd.append(m_cmd.toLatin1());
+    rawcmd.append(m_param.toLatin1());
 
     qint32 dsize=rawcmd.size()+1;
 
