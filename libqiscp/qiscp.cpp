@@ -168,6 +168,9 @@ void qiscp::discoverHosts() {
     qDebug() << "Sending discovery packget:";
     qDebug() << "Contents: " << packet.toHex();
 
+    m_discovering=true;
+    emit discoveringChanged();
+
     m_timer.stop();
     m_devices.clear();
     m_timer.start();
@@ -193,6 +196,9 @@ void qiscp::discoveryTimeout() {
     qDebug("Device discovery done");
     qDebug() << m_devices;
     emit devicesDiscovered();
+
+    m_discovering=false;
+    emit discoveringChanged();
 }
 
 QVariantList qiscp::getDevices() const {

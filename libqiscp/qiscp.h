@@ -40,6 +40,8 @@ public:
     Q_PROPERTY (int currentTrack READ currentTrack NOTIFY currentTrackChanged)
     Q_PROPERTY (int currentTracks READ currentTracks NOTIFY currentTracksChanged)
 
+    Q_PROPERTY (bool discovering READ discovering NOTIFY discoveringChanged)
+
     Q_INVOKABLE void discoverHosts();
     Q_INVOKABLE QVariantList getDevices() const;
     Q_INVOKABLE QVariantList getInputs() const;
@@ -79,6 +81,7 @@ public:
     Q_INVOKABLE void presetDown();
 
     bool connected() const { return m_connected; }
+    bool discovering() const { return m_discovering; }
     int port() const { return m_port; }
     QString host() const { return m_host; }    
 
@@ -144,6 +147,7 @@ public:
 signals:
     void portChanged();
     void hostChanged();
+    void discoveringChanged();
     void devicesDiscovered();
 
     void connectedToHost();
@@ -305,6 +309,7 @@ private:
     QString m_host;
     quint16 m_port;
     int m_discover_timeout;
+    bool m_discovering;
     bool m_connected;
 
     bool m_power;        
