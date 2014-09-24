@@ -21,14 +21,27 @@ class qiscp : public QObject
 public:
     explicit qiscp(QObject *parent = 0);
 
-    Q_PROPERTY (bool power READ power WRITE setPower NOTIFY powerChanged)
     Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
+
+    Q_PROPERTY (bool power READ power WRITE setPower NOTIFY powerChanged)    
     Q_PROPERTY (int masterVolume READ masterVolume NOTIFY masterVolumeChanged)
     Q_PROPERTY (int maxDirectVolume READ maxDirectVolume WRITE setMaxDirectVolume NOTIFY maxDirectVolumeChanged)
     Q_PROPERTY (bool masterMuted READ masterMuted WRITE setMasterMuted NOTIFY masterMutedChanged)
 
     Q_PROPERTY (int masterInput READ masterInput NOTIFY masterInputChanged)
     Q_PROPERTY (int masterTunerFreq READ masterTunerFreq NOTIFY masterTunerFreqChanged)
+
+    Q_PROPERTY (bool zone2power READ zone2Power WRITE setZone2Power NOTIFY zone2PowerChanged)
+    Q_PROPERTY (int zone2Volume READ zone2Volume NOTIFY zone2VolumeChanged)
+    Q_PROPERTY (int zone2Input READ zone2Input NOTIFY zone2InputChanged)
+
+    Q_PROPERTY (bool zone3power READ zone3Power WRITE setZone3Power NOTIFY zone3PowerChanged)
+    Q_PROPERTY (int zone3Volume READ zone3Volume NOTIFY zone3VolumeChanged)
+    Q_PROPERTY (int zone3Input READ zone3Input NOTIFY zone3InputChanged)
+
+    Q_PROPERTY (bool zone4power READ zone4Power WRITE setZone4Power NOTIFY zone4PowerChanged)
+    Q_PROPERTY (int zone4Volume READ zone4Volume NOTIFY zone4VolumeChanged)
+    Q_PROPERTY (int zone4Input READ zone4Input NOTIFY zone4InputChanged)
 
     Q_PROPERTY (QString currentArtist READ currentArtist NOTIFY currentArtistChanged)
     Q_PROPERTY (QString currentAlbum READ currentAlbum NOTIFY currentAlbumChanged)
@@ -50,6 +63,8 @@ public:
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
 
     Q_INVOKABLE void connectToHost();
+    Q_INVOKABLE void setHost(QString host) { m_host=host; emit hostChanged(); }
+    Q_INVOKABLE void setPort(int port) { m_port=port; emit portChanged(); }
     Q_INVOKABLE bool close();
 
     Q_INVOKABLE bool writeCommand(QString cmd, QString param);
@@ -64,12 +79,12 @@ public:
     Q_INVOKABLE void setMasterInput(int t);
 
     Q_INVOKABLE void setPower(bool p);
+    Q_INVOKABLE void setZone2Power(bool p);
+    Q_INVOKABLE void setZone3Power(bool p);
+    Q_INVOKABLE void setZone4Power(bool p);
 
     Q_INVOKABLE void bluetoothPairing();
     Q_INVOKABLE void bluetoothClearPairing();
-
-    Q_INVOKABLE void setHost(QString host) { m_host=host; emit hostChanged(); }
-    Q_INVOKABLE void setPort(int port) { m_port=port; emit portChanged(); }
 
     Q_INVOKABLE void tune(int t);
     Q_INVOKABLE void tunePreset(int t);
@@ -80,6 +95,15 @@ public:
     Q_INVOKABLE void presetUp();
     Q_INVOKABLE void presetDown();
 
+    Q_INVOKABLE void bassLevelUp();
+    Q_INVOKABLE void bassLevelDown();
+    Q_INVOKABLE void trebleLevelUp();
+    Q_INVOKABLE void trebleLevelDown();
+    Q_INVOKABLE void subwooferLevelDown();
+    Q_INVOKABLE void subwooferLevelUp();
+    Q_INVOKABLE void centerLevelDown();
+    Q_INVOKABLE void centerLevelUp();
+
     bool connected() const { return m_connected; }
     bool discovering() const { return m_discovering; }
     int port() const { return m_port; }
@@ -87,14 +111,33 @@ public:
 
     bool power() const { return m_power; }
 
+    int maxDirectVolume() const { return m_maxvolume; }
+    void setMaxDirectVolume(quint8 maxvol);
+
+
     bool masterMuted() const { return m_masterMuted; }
     int masterVolume() const { return m_masterVolume; }
     void setMasterVolume(quint8 maxvol);
     int masterInput() const { return m_masterInput; }
     int masterTunerFreq() const { return m_masterTunerFreq; }
 
-    int maxDirectVolume() const { return m_maxvolume; }
-    void setMaxDirectVolume(quint8 maxvol);
+    bool zone2Power() const { return m_z2Power; }
+    bool zone2Muted() const { return m_z2Muted; }
+    int zone2Volume() const { return m_z2Volume; }
+    void setZone2Volume(quint8 maxvol);
+    int zone2Input() const { return m_z2Input; }
+
+    bool zone3Power() const { return m_z3Power; }
+    bool zone3Muted() const { return m_z3Muted; }
+    int zone3Volume() const { return m_z3Volume; }
+    void setZone3Volume(quint8 maxvol);
+    int zone3Input() const { return m_z3Input; }
+
+    bool zone4Power() const { return m_z4Power; }
+    bool zone4Muted() const { return m_z4Muted; }
+    int zone4Volume() const { return m_z4Volume; }
+    void setZone4Volume(quint8 maxvol);
+    int zone4Input() const { return m_z4Input; }
 
     QString currentArtist() const { return m_artist; }
     QString currentAlbum() const { return m_album; }
@@ -170,6 +213,22 @@ signals:
 
     void maxDirectVolumeChanged();
 
+    void zone2PowerChanged();
+    void zone3PowerChanged();
+    void zone4PowerChanged();
+
+    void zone2VolumeChanged();
+    void zone3VolumeChanged();
+    void zone4VolumeChanged();
+
+    void zone2MutedChanged();
+    void zone3MutedChanged();
+    void zone4MutedChanged();
+
+    void zone2InputChanged();
+    void zone3InputChanged();
+    void zone4InputChanged();
+
     void currentArtistChanged();
     void currentAlbumChanged();
     void currentTitleChanged();
@@ -200,6 +259,8 @@ private:
             MasterMute,
             MasterInput,
             MasterTuner,
+            MasterTone,
+            MasterBalance,
             SleepTimer,
             // Info commands
             InfoAudio,
@@ -207,8 +268,22 @@ private:
             // Zone 2
             Zone2Power,
             Zone2Input,
+            Zone2Mute,
+            Zone2Volume,
+            Zone2Tone,
+            Zone2Balance,            
             // Zone 3
+            Zone3Power,
+            Zone3Input,
+            Zone3Mute,
+            Zone3Volume,
+            Zone3Tone,
+            Zone3Balance,            
             // Zone 4
+            Zone4Power,
+            Zone4Input,
+            Zone4Mute,
+            Zone4Volume,            
             // USB/Network
             CurrentArtist,
             CurrentAlbum,
@@ -312,13 +387,40 @@ private:
     bool m_discovering;
     bool m_connected;
 
-    bool m_power;        
+    bool m_power;
     bool m_masterMuted;
     quint8 m_masterVolume;
     quint8 m_masterInput;
     int m_masterTunerFreq;
 
+    qint8 m_masterTreble;
+    qint8 m_masterBass;
+
     quint8 m_maxvolume;
+
+    // Zone 2
+    bool m_z2Power;
+    quint8 m_z2Input;
+    bool m_z2Muted;
+    quint8 m_z2Volume;
+    qint8 m_z2Treble;
+    qint8 m_z2Bass;
+    qint8 m_z2Balance;
+
+    // Zone 3
+    bool m_z3Power;
+    quint8 m_z3Input;
+    bool m_z3Muted;
+    quint8 m_z3Volume;
+    qint8 m_z3Treble;
+    qint8 m_z3Bass;
+    qint8 m_z3Balance;
+
+    // Zone 4
+    bool m_z4Power;
+    quint8 m_z4Input;
+    bool m_z4Muted;
+    quint8 m_z4Volume;
 
     // Album/Artist/Title (if known)
     QString m_artist;
@@ -342,6 +444,9 @@ private:
 
     void requestInitialState();
     void requestNetworkPlayState();
+    void requestZone2State();
+    void requestZone3State();
+    void requestZone4State();
 
     bool writeCommand(ISCPMsg *message);
     void parseMessage(ISCPMsg *message);

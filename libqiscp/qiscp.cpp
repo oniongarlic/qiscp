@@ -62,6 +62,25 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("ATM", ISCPCommands::ElapsedTime);
     m_commands.insert("AST", ISCPCommands::PlayStatus);
 
+    // Zone 2
+    m_commands.insert("ZPW", ISCPCommands::Zone2Power);
+    m_commands.insert("ZVL", ISCPCommands::Zone2Volume);
+    m_commands.insert("ZMT", ISCPCommands::Zone2Mute);
+    m_commands.insert("SLZ", ISCPCommands::Zone2Input);
+    m_commands.insert("ZTN", ISCPCommands::Zone2Tone);
+
+    // Zone 3
+    m_commands.insert("PW3", ISCPCommands::Zone3Power);
+    m_commands.insert("VL3", ISCPCommands::Zone3Volume);
+    m_commands.insert("MT3", ISCPCommands::Zone3Mute);
+    m_commands.insert("SL3", ISCPCommands::Zone3Input);
+
+    // Zone 4
+    m_commands.insert("PW4", ISCPCommands::Zone4Power);
+    m_commands.insert("VL4", ISCPCommands::Zone4Volume);
+    m_commands.insert("MT4", ISCPCommands::Zone4Mute);
+    m_commands.insert("SL4", ISCPCommands::Zone4Input);
+
     // Input ID to Input name mapping
     // Video
     m_inputs.insert(Inputs::Video1, "Video 1");
@@ -221,6 +240,7 @@ void qiscp::readISCP() {
     ds.setByteOrder(QDataStream::BigEndian);
     ba=m_socket->bytesAvailable();
 
+    // Hmm, this is a bit messy, as we check in here AND in the message parser for the signature
     // Read the first 4 bytes and check for signature (XXX: Read 4 bytes and compare that instead?)
     if (m_buffer.size()==0 && ba>4) {
         quint8 s;
@@ -258,7 +278,8 @@ void qiscp::readISCP() {
         ISCPMsg msg;
         if (msg.fromData(&m_buffer)) {            
             parseMessage(&msg);
-            m_buffer.clear();
+            qDebug() << "*** DATA LEFT: " << m_buffer.size();
+            // m_buffer.clear();
         } else {
              //m_buffer.clear();
             return;
@@ -291,7 +312,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
     case ISCPCommands::MasterVolume:
         m_masterVolume=message->getIntValue();
         emit masterVolumeChanged();
-        break;
+        break;        
     case ISCPCommands::MasterInput:
         m_masterInput=message->getIntValue();
         emit masterInputChanged();
@@ -313,6 +334,42 @@ void qiscp::parseMessage(ISCPMsg *message) {
         m_masterTunerFreq=message->getTunerValue();
         emit masterTunerFreqChanged();
         break;
+// Zone 2
+    case ISCPCommands::Zone2Power:
+        val=message->getIntValue();
+        m_z2Power=val==1 ? true : false;
+        emit powerChanged();
+        if (m_z2Power==true) {
+            requestZone2State();
+        }
+        break;
+    case ISCPCommands::Zone2Mute:
+        val=message->getIntValue();
+        m_z2Muted=val==1 ? true : false;
+        emit zone2MutedChanged();
+        break;
+    case ISCPCommands::Zone2Volume:
+        m_z2Volume=message->getIntValue();
+        emit zone2VolumeChanged();
+        break;
+    case ISCPCommands::Zone2Input:
+        m_z2Input=message->getIntValue();
+        emit zone2InputChanged();
+        switch (m_z2Input) {
+        case Inputs::FM:
+        case Inputs::AM:
+        case Inputs::Tuner:
+            writeCommand("TUZ", "QSTN");
+            break;
+        case Inputs::InternetRadio:
+        case Inputs::MusicServer:
+        case Inputs::USBBack:
+        case Inputs::USBFront:
+            requestZone2State();
+            break;
+        }
+        break;
+// Network information
     case ISCPCommands::CurrentArtist:
         m_artist=message->getParamter();
         emit currentArtistChanged();
@@ -389,6 +446,34 @@ void qiscp::requestInitialState() {
     queueCommand("SLP", "QSTN");
     queueCommand("SLI", "QSTN");
     queueCommand("NRI", "QSTN");
+}
+
+void qiscp::requestZone2State() {
+    queueCommand("ZPW", "QSTN");
+    queueCommand("ZVL", "QSTN");
+    queueCommand("ZMT", "QSTN");
+    queueCommand("ZTN", "QSTN");
+    queueCommand("ZBL", "QSTN");
+    queueCommand("SLZ", "QSTN");
+}
+
+void qiscp::requestZone3State() {
+    // XXX: Funny, my device (master+z2 only) answers to PW3 with 00 but to PW4 with N/A so not reliable to probe it
+    queueCommand("PW3", "QSTN");
+    queueCommand("VL3", "QSTN");
+    queueCommand("MT3", "QSTN");
+    queueCommand("TN3", "QSTN");
+    queueCommand("BL3", "QSTN");
+    queueCommand("SL3", "QSTN");
+}
+
+void qiscp::requestZone4State() {
+    queueCommand("PW4", "QSTN");
+    queueCommand("VL4", "QSTN");
+    queueCommand("MT4", "QSTN");
+    queueCommand("TN4", "QSTN");
+    queueCommand("BL4", "QSTN");
+    queueCommand("SL4", "QSTN");
 }
 
 void qiscp::requestNetworkPlayState() {
@@ -474,6 +559,19 @@ QVariantList qiscp::getInputs() const {
 void qiscp::setPower(bool p) {
     writeCommand("PWR", p==true ? "01" : "00");
 }
+
+void qiscp::setZone2Power(bool p) {
+    writeCommand("ZPW", p==true ? "01" : "00");
+}
+
+void qiscp::setZone3Power(bool p) {
+    writeCommand("PW3", p==true ? "01" : "00");
+}
+
+void qiscp::setZone4Power(bool p) {
+    writeCommand("PW4", p==true ? "01" : "00");
+}
+
 
 void qiscp::setMasterMuted(bool m) {
     writeCommand("AMT", m==true ? "01" : "00");
@@ -569,6 +667,38 @@ void qiscp::presetUp() {
 
 void qiscp::presetDown() {
     writeCommand("PRS", "DOWN");
+}
+
+void qiscp::bassLevelUp() {
+    writeCommand("TFR", "BUP");
+}
+
+void qiscp::bassLevelDown() {
+    writeCommand("TFR", "BDOWN");
+}
+
+void qiscp::trebleLevelUp() {
+    writeCommand("TFR", "TUP");
+}
+
+void qiscp::trebleLevelDown() {
+    writeCommand("TFR", "TDOWN");
+}
+
+void qiscp::subwooferLevelDown() {
+    writeCommand("SWL", "DOWN");
+}
+
+void qiscp::subwooferLevelUp() {
+    writeCommand("SWL", "UP");
+}
+
+void qiscp::centerLevelDown() {
+    writeCommand("CTL", "DOWN");
+}
+
+void qiscp::centerLevelUp() {
+    writeCommand("CTL", "UP");
 }
 
 void qiscp::bluetoothPairing() {
