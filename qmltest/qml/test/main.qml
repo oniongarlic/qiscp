@@ -2,7 +2,7 @@ import QtQuick 1.1
 import org.tal.qiscp 1.0
 
 Rectangle {
-    width: 640
+    width: 800
     height: 480
 
     Row {
@@ -193,6 +193,37 @@ Rectangle {
                 iscp.setMasterMuted(!iscp.masterMuted);
             }
         }
+
+        Button {
+            title: "Bass+"
+            enabled: iscp.connected
+            onClicked: {
+                iscp.bassLevelUp();
+            }
+        }
+        Button {
+            title: "Bass-"
+            enabled: iscp.connected
+            onClicked: {
+                iscp.bassLevelDown();
+            }
+        }
+
+        Button {
+            title: "Treble+"
+            enabled: iscp.connected
+            onClicked: {
+                iscp.trebleLevelUp();
+            }
+        }
+        Button {
+            title: "Treble-"
+            enabled: iscp.connected
+            onClicked: {
+                iscp.trebleLevelDown();
+            }
+        }
+
 
         Button {
             title: "Tune+"
