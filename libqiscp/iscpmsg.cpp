@@ -54,8 +54,6 @@ bool ISCPMsg::fromData(QByteArray *data) {
         return false;
     }
 
-    qDebug() << "Parsing ISCP message from data: " << data->toHex();
-
     QDataStream ds(data, QIODevice::ReadOnly);
     ds.setByteOrder(QDataStream::BigEndian);
     ds.device()->seek(4);
@@ -124,6 +122,9 @@ bool ISCPMsg::fromData(QByteArray *data) {
     qDebug("-------------------------------------------------------");
     qDebug() << "Full ISCP Message is: " << msg;
     qDebug("-------------------------------------------------------");
+
+    // Remove the data we used.
+    data->remove(0, ISCP_HEADER_SIZE+dsize);
 
     return true;
 }
