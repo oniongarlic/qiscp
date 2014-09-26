@@ -2,13 +2,14 @@ import QtQuick 1.1
 import org.tal.qiscp 1.0
 
 Rectangle {
+    id: root
     width: 800
     height: 480
 
     Row {
         width: parent.width
         anchors.top: parent.top
-        anchors.bottom: infoRow.top
+        anchors.bottom: controls.top
 
         Column {
             width: parent.width/2
@@ -94,169 +95,128 @@ Rectangle {
         id: inputsModel
     }
 
-    Row {
-        anchors.bottom: infoRow.top
+    Column {
+        id: controls
         width: parent.width
+        anchors.bottom: parent.bottom
 
-        TextEdit {
-            id: cmdText
-            focus: true
-            textFormat: TextEdit.PlainText
-            width: parent.width/6
-        }
+        Row {
 
-        TextEdit {
-            id: paramText
-            focus: true;
-            textFormat: TextEdit.PlainText
-            width: parent.width/6
-        }                
+            width: parent.width
 
-        Button {
-            id: sendBtn
-            enabled: cmdText.text!=='' && paramText!==''
-            title: "Send CMD"
-            onClicked: {
-                console.debug("Sending CMD: "+cmdText.text)
-                iscp.writeCommand(cmdText.text, paramText.text);
+            TextEdit {
+                id: cmdText
+                focus: true
+                textFormat: TextEdit.PlainText
+                width: parent.width/6
             }
-            width: parent.width/3
-        }
-    }
 
-    Row {
-        id: infoRow
-        width: parent.width
-        anchors.bottom: cmdRow.top
-        Text {
-            text: "VOL:" + iscp.masterVolume
+            TextEdit {
+                id: paramText
+                focus: true;
+                textFormat: TextEdit.PlainText
+                width: parent.width/6
+            }
+
+            Button {
+                id: sendBtn
+                enabled: cmdText.text!=='' && paramText!==''
+                title: "Send CMD"
+                onClicked: {
+                    console.debug("Sending CMD: "+cmdText.text)
+                    iscp.writeCommand(cmdText.text, paramText.text);
+                }
+                width: parent.width/3
+            }
         }
 
-        Text {
-            visible: iscp.masterInput===0x24 || iscp.masterInput===0x25;
-            text: "Freq:" + formatFreq(iscp.masterTunerFreq);
-            function formatFreq(freq) {
-                // AM 535-1605 kHz
-                if (freq>=535 && freq<=1605) {
-                    return freq+"kHz"
-                } else {
-                    // FM 88 to 108
-                    return freq+" MHz"
+        Row {
+            id: infoRow
+            width: parent.width
+
+            Text {
+                text: "VOL:" + iscp.masterVolume
+            }
+
+            Text {
+                visible: iscp.masterInput===0x24 || iscp.masterInput===0x25;
+                text: "Freq:" + formatFreq(iscp.masterTunerFreq);
+                function formatFreq(freq) {
+                    // AM 535-1605 kHz
+                    if (freq>=535 && freq<=1605) {
+                        return freq+"kHz"
+                    } else {
+                        // FM 88 to 108
+                        return freq+" MHz"
+                    }
                 }
             }
         }
-    }
 
-    Row {
-        id: cmdRow
-        width: parent.width
-        anchors.bottom: parent.bottom
-        Button {
-            title: "Discover"
-            onClicked: {
-                iscp.discoverHosts();
-            }
-        }
-        Button {
-            enabled: iscp.connected
-            title: "DisCon"
-            onClicked: {
-                iscp.close();
-            }
-        }
-        Button {
-            enabled: iscp.connected
-            title: iscp.power ? "Turn Off" : "Turn On"
-            onClicked: {
-                iscp.setPower(!iscp.power)
-            }
+        GenericControls {
+            iscp: iscp
         }
 
-        Button {
-            title: "VOL+"
-            enabled: iscp.connected
-            onClicked: {
-                iscp.volumeUp();
-            }
-        }
-        Button {
-            title: "VOL-"
-            enabled: iscp.connected
-            onClicked: {
-                iscp.volumeDown();
-            }
-        }
-        Button {
-            title: iscp.masterMuted ? "Unmute" : "Mute"
-            enabled: iscp.connected
-            onClicked: {
-                iscp.setMasterMuted(!iscp.masterMuted);
-            }
-        }
+        Row {
+            id: cmdRow
+            width: parent.width
 
-        Button {
-            title: "Bass+"
-            enabled: iscp.connected
-            onClicked: {
-                iscp.bassLevelUp();
+            Button {
+                title: "Discover"
+                onClicked: {
+                    iscp.discoverHosts();
+                }
             }
-        }
-        Button {
-            title: "Bass-"
-            enabled: iscp.connected
-            onClicked: {
-                iscp.bassLevelDown();
+            Button {
+                enabled: iscp.connected
+                title: "DisCon"
+                onClicked: {
+                    iscp.close();
+                }
             }
-        }
+            Button {
+                enabled: iscp.connected
+                title: iscp.power ? "Turn Off" : "Turn On"
+                onClicked: {
+                    iscp.setPower(!iscp.power)
+                }
+            }
 
-        Button {
-            title: "Treble+"
-            enabled: iscp.connected
-            onClicked: {
-                iscp.trebleLevelUp();
+            Button {
+                title: "Tune+"
+                enabled: iscp.connected
+                onClicked: {
+                    iscp.tuneUp();
+                }
             }
-        }
-        Button {
-            title: "Treble-"
-            enabled: iscp.connected
-            onClicked: {
-                iscp.trebleLevelDown();
+            Button {
+                title: "Tune-"
+                enabled: iscp.connected
+                onClicked: {
+                    iscp.tuneDown();
+                }
             }
-        }
 
 
-        Button {
-            title: "Tune+"
-            enabled: iscp.connected
-            onClicked: {
-                iscp.tuneUp();
+            Button {
+                title: "Preset+"
+                enabled: iscp.connected
+                onClicked: {
+                    iscp.presetUp();
+                }
             }
-        }
-        Button {
-            title: "Tune-"
-            enabled: iscp.connected
-            onClicked: {
-                iscp.tuneDown();
+            Button {
+                title: "Preset-"
+                enabled: iscp.connected
+                onClicked: {
+                    iscp.presetDown();
+                }
             }
-        }
 
-
-        Button {
-            title: "Preset+"
-            enabled: iscp.connected
-            onClicked: {
-                iscp.presetUp();
-            }
-        }
-        Button {
-            title: "Preset-"
-            enabled: iscp.connected
-            onClicked: {
-                iscp.presetDown();
-            }
         }
 
     }
+
     QISCP {
         id: iscp
 
@@ -264,7 +224,7 @@ Rectangle {
             console.debug("Devices found")
             var devices=iscp.getDevices();
             hostsModel.clear();
-            for (var i=0;i<devices.length;i++) {                
+            for (var i=0;i<devices.length;i++) {
                 hostsModel.append(devices[i]);
             }
 
@@ -275,12 +235,12 @@ Rectangle {
 
             inputsModel.clear();
             var inputs=iscp.getInputs();
-            for (var i=0;i<inputs.length;i++) {                
+            for (var i=0;i<inputs.length;i++) {
                 inputsModel.append(inputs[i]);
             }
-        }        
+        }
 
-        onPresetsList: {            
+        onPresetsList: {
             presetsModel.clear();
             var p=iscp.getPresets();
 
