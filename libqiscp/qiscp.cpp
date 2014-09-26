@@ -47,6 +47,9 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("SLP", ISCPCommands::SleepTimer);
     m_commands.insert("TUN", ISCPCommands::MasterTuner);
 
+    m_commands.insert("CTL", ISCPCommands::CenterLevel);
+    m_commands.insert("SWL", ISCPCommands::SubwooferLevel);
+
     m_commands.insert("NAL", ISCPCommands::CurrentAlbum);
     m_commands.insert("NAT", ISCPCommands::CurrentArtist);
     m_commands.insert("NTI", ISCPCommands::CurrentTitle);
@@ -97,13 +100,13 @@ qiscp::qiscp(QObject *parent) :
     m_inputs.insert(Inputs::Extra3, "Extra 3");
 
     // DVD
-    m_inputs.insert(Inputs::DVD, "DVD");
+    m_inputs.insert(Inputs::DVD, "BD/DVD");
 
     // Tape
     m_inputs.insert(Inputs::Tape1, "Tape 1");
     m_inputs.insert(Inputs::Tape2, "Tape 2");
 
-    m_inputs.insert(Inputs::CD, "CD");
+    m_inputs.insert(Inputs::CD, "TV/CD");
     m_inputs.insert(Inputs::Phono, "Phono");
 
     // Radio
@@ -312,7 +315,17 @@ void qiscp::parseMessage(ISCPMsg *message) {
     case ISCPCommands::MasterVolume:
         m_masterVolume=message->getIntValue();
         emit masterVolumeChanged();
-        break;        
+        break;
+    case ISCPCommands::CenterLevel:
+        m_centerLevel=message->getIntValue();
+        qDebug() << "CenterLevel: " << m_centerLevel;
+        emit centerLevelChanged();
+        break;
+    case ISCPCommands::SubwooferLevel:
+        m_subwooferLevel=message->getIntValue();
+        qDebug() << "SubwooferLevel: " << m_subwooferLevel;
+        emit subwooferLevelChanged();
+        break;
     case ISCPCommands::MasterInput:
         m_masterInput=message->getIntValue();
         emit masterInputChanged();
@@ -699,6 +712,14 @@ void qiscp::centerLevelDown() {
 
 void qiscp::centerLevelUp() {
     writeCommand("CTL", "UP");
+}
+
+void qiscp::setCenterLevel(qint8 level) {
+
+}
+
+void qiscp::setSubwooferLevel(qint8 level) {
+
 }
 
 void qiscp::bluetoothPairing() {

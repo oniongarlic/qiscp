@@ -28,8 +28,11 @@ public:
     Q_PROPERTY (int maxDirectVolume READ maxDirectVolume WRITE setMaxDirectVolume NOTIFY maxDirectVolumeChanged)
     Q_PROPERTY (bool masterMuted READ masterMuted WRITE setMasterMuted NOTIFY masterMutedChanged)
 
-    Q_PROPERTY (int masterInput READ masterInput NOTIFY masterInputChanged)
+    Q_PROPERTY (int masterInput READ masterInput WRITE setMasterInput NOTIFY masterInputChanged)
     Q_PROPERTY (int masterTunerFreq READ masterTunerFreq NOTIFY masterTunerFreqChanged)
+
+    Q_PROPERTY (int centerLevel READ centerLevel WRITE setCenterLevel NOTIFY centerLevelChanged)
+    Q_PROPERTY (int subwooferLevel READ subwooferLevel WRITE setSubwooferLevel NOTIFY subwooferLevelChanged)
 
     Q_PROPERTY (bool zone2power READ zone2Power WRITE setZone2Power NOTIFY zone2PowerChanged)
     Q_PROPERTY (int zone2Volume READ zone2Volume NOTIFY zone2VolumeChanged)
@@ -114,12 +117,17 @@ public:
     int maxDirectVolume() const { return m_maxvolume; }
     void setMaxDirectVolume(quint8 maxvol);
 
-
     bool masterMuted() const { return m_masterMuted; }
     int masterVolume() const { return m_masterVolume; }
     void setMasterVolume(quint8 maxvol);
     int masterInput() const { return m_masterInput; }
     int masterTunerFreq() const { return m_masterTunerFreq; }
+
+    int centerLevel() const { return m_centerLevel; }
+    int subwooferLevel() const { return m_subwooferLevel; }
+
+    void setCenterLevel(qint8 level);
+    void setSubwooferLevel(qint8 level);
 
     bool zone2Power() const { return m_z2Power; }
     bool zone2Muted() const { return m_z2Muted; }
@@ -149,35 +157,41 @@ public:
     int currentTracks() const { return m_tracks; }
 
     enum Commands {
-            Play=1,
-            Stop,
-            Pause,
-            TrackUp,
-            TrackDown,
-            FastForward,
-            FastReverse,
-            ToggleRepeat,
-            ToggleRandom,
-            Display,
-            Right,
-            Left,
-            Up,
-            Down,
-            Select,
-            Key0,
-            Key1,
-            Key2,
-            Key3,
-            Key4,
-            Key5,
-            Key6,
-            Key7,
-            Key8,
-            Key9,
-            Delete,
-            Caps,
-            Menu,
-            Top
+        Play=1,
+        Stop,
+        Pause,
+        TrackUp,
+        TrackDown,
+        FastForward,
+        FastReverse,
+        ToggleRepeat,
+        ToggleRandom,
+        Display,
+        Clear,
+        Right,
+        Left,
+        Up,
+        Down,
+        Select,
+        Key0,
+        Key1,
+        Key2,
+        Key3,
+        Key4,
+        Key5,
+        Key6,
+        Key7,
+        Key8,
+        Key9,
+        KeyA,
+        KeyB,
+        KeyC,
+        KeyD,
+        Delete,
+        Caps,
+        Menu,
+        Top,
+        Setup
     };
 
     Q_INVOKABLE void networkCommand(Commands cmd);
@@ -210,6 +224,9 @@ signals:
     void masterMutedChanged();
     void masterInputChanged();
     void masterTunerFreqChanged();
+
+    void centerLevelChanged();
+    void subwooferLevelChanged();
 
     void maxDirectVolumeChanged();
 
@@ -261,6 +278,8 @@ private:
             MasterTuner,
             MasterTone,
             MasterBalance,
+            CenterLevel,
+            SubwooferLevel,
             SleepTimer,
             // Info commands
             InfoAudio,
@@ -397,6 +416,9 @@ private:
     qint8 m_masterBass;
 
     quint8 m_maxvolume;
+
+    qint8 m_centerLevel;
+    qint8 m_subwooferLevel;
 
     // Zone 2
     bool m_z2Power;
