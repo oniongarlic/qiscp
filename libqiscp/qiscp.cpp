@@ -1,6 +1,7 @@
 #include "qiscp.h"
 #include "iscpmsg.h"
 
+#include <QtGlobal>
 #include <QNetworkAddressEntry>
 #include <QStringList>
 
@@ -11,6 +12,11 @@ static QString getPaddedInt(int n, int padding=5) {
 
 static QString getHex(int n, int padding=2) {
     QString s=QString("%1").arg(n, padding, 16, QChar('0')).toUpper();
+    return s;
+}
+
+static QString getHexWithPrefix(int n) {
+    QString s=QString("%1").arg(n, 2, 16, n<0 ? QChar('-') : QChar('+')).toUpper();
     return s;
 }
 
@@ -46,6 +52,8 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("SLI", ISCPCommands::MasterInput);
     m_commands.insert("SLP", ISCPCommands::SleepTimer);
     m_commands.insert("TUN", ISCPCommands::MasterTuner);
+
+    m_commands.insert("TFR", ISCPCommands::MasterTone);
 
     m_commands.insert("CTL", ISCPCommands::CenterLevel);
     m_commands.insert("SWL", ISCPCommands::SubwooferLevel);
@@ -316,6 +324,15 @@ void qiscp::parseMessage(ISCPMsg *message) {
         m_masterVolume=message->getIntValue();
         emit masterVolumeChanged();
         break;
+    case ISCPCommands::MasterTone: {
+        QString p=message->getParamter();
+        m_bassLevel=p.mid(1,2).toInt(NULL, 16);
+        m_trebleLevel=p.mid(4,2).toInt(NULL, 16);
+
+        emit bassLevelChanged();
+        emit trebleLevelChanged();
+    }
+        break;
     case ISCPCommands::CenterLevel:
         m_centerLevel=message->getIntValue();
         qDebug() << "CenterLevel: " << m_centerLevel;
@@ -459,6 +476,9 @@ void qiscp::requestInitialState() {
     queueCommand("SLP", "QSTN");
     queueCommand("SLI", "QSTN");
     queueCommand("NRI", "QSTN");
+    queueCommand("TFR", "QSTN");
+    queueCommand("CTL", "QSTN");
+    queueCommand("SWL", "QSTN");
 }
 
 void qiscp::requestZone2State() {
@@ -714,12 +734,24 @@ void qiscp::centerLevelUp() {
     writeCommand("CTL", "UP");
 }
 
-void qiscp::setCenterLevel(qint8 level) {
+void qiscp::setBassLevel(qint8 level) {
+    int l=qBound(-0xA, (int)level, 0xA);
+    writeCommand("TFR", getHex(l));
+}
 
+void qiscp::setTrebleLevel(qint8 level) {
+    int l=qBound(-0xA, (int)level, 0xA);
+    writeCommand("TFR", getHex(l));
+}
+
+void qiscp::setCenterLevel(qint8 level) {
+    int l=qBound(-0xC, (int)level, 0xC);
+    writeCommand("CTL", getHex(l));
 }
 
 void qiscp::setSubwooferLevel(qint8 level) {
-
+    int l=qBound(-0xF, (int)level, 0xC);
+    writeCommand("SWL", getHex(l));
 }
 
 void qiscp::bluetoothPairing() {

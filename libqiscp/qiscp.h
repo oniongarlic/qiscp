@@ -31,6 +31,9 @@ public:
     Q_PROPERTY (int masterInput READ masterInput WRITE setMasterInput NOTIFY masterInputChanged)
     Q_PROPERTY (int masterTunerFreq READ masterTunerFreq NOTIFY masterTunerFreqChanged)
 
+    Q_PROPERTY (int bassLevel READ bassLevel WRITE setBassLevel NOTIFY bassLevelChanged)
+    Q_PROPERTY (int trebleLevel READ trebleLevel WRITE setTrebleLevel NOTIFY trebleLevelChanged)
+
     Q_PROPERTY (int centerLevel READ centerLevel WRITE setCenterLevel NOTIFY centerLevelChanged)
     Q_PROPERTY (int subwooferLevel READ subwooferLevel WRITE setSubwooferLevel NOTIFY subwooferLevelChanged)
 
@@ -129,6 +132,12 @@ public:
     void setCenterLevel(qint8 level);
     void setSubwooferLevel(qint8 level);
 
+    int bassLevel() const { return m_bassLevel; }
+    int trebleLevel() const { return m_trebleLevel; }
+
+    void setBassLevel(qint8 level);
+    void setTrebleLevel(qint8 level);
+
     bool zone2Power() const { return m_z2Power; }
     bool zone2Muted() const { return m_z2Muted; }
     int zone2Volume() const { return m_z2Volume; }
@@ -224,6 +233,9 @@ signals:
     void masterMutedChanged();
     void masterInputChanged();
     void masterTunerFreqChanged();
+
+    void bassLevelChanged();
+    void trebleLevelChanged();
 
     void centerLevelChanged();
     void subwooferLevelChanged();
@@ -416,6 +428,9 @@ private:
     qint8 m_masterBass;
 
     quint8 m_maxvolume;
+
+    qint8 m_bassLevel;
+    qint8 m_trebleLevel;
 
     qint8 m_centerLevel;
     qint8 m_subwooferLevel;
