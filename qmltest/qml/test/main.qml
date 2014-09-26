@@ -133,9 +133,26 @@ Rectangle {
         Row {
             id: infoRow
             width: parent.width
+            spacing: 8
 
             Text {
-                text: "VOL:" + iscp.masterVolume
+                text: "VOL:" + iscp.masterVolume                
+            }
+
+            Text {
+                text: "B:" + iscp.bassLevel;
+            }
+
+            Text {
+                text: "T:" + iscp.trebleLevel;
+            }
+
+            Text {
+                text: "C:" + iscp.centerLevel;
+            }
+
+            Text {
+                text: "S:" + iscp.subwooferLevel;
             }
 
             Text {
