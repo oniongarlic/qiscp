@@ -538,11 +538,15 @@ void qiscp::readBroadcastDatagram()
 
         datagram.resize(m_broadcast->pendingDatagramSize());
         m_broadcast->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
-        qDebug() << "Got UDP data from: " << sender;
-        qDebug() << "Contents: " << datagram.toHex();
+        qDebug() << "Got UDP data from: " << sender << " size: " << datagram.size();
+
+        // As the only message we will ever get is either the query message itself
+        // or the answer from a device we can safely ignore any packget that is the
+        // size of the query message.
+        if (datagram.size()==26)
+            continue;
 
         ISCPMsg msg;
-
         if (!msg.fromData(&datagram))
                 continue;
 
@@ -559,7 +563,6 @@ void qiscp::readBroadcastDatagram()
         }
 
         QVariantMap device;
-
         device.insert("ip", sender.toString());
         device.insert("model", di.at(0));
         device.insert("port",  di.at(1).toInt());
