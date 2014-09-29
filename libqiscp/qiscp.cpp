@@ -285,14 +285,14 @@ void qiscp::readISCP() {
     m_buffer.append(tmp, ba);
     tmp.clear();
 
-    if (m_buffer.size()>ISCP_HEADER_SIZE) {
+
+    // Parse messages as long as we have data to parse
+    while (m_buffer.size()>ISCP_HEADER_SIZE) {
         ISCPMsg msg;
-        if (msg.fromData(&m_buffer)) {            
+        if (msg.fromData(&m_buffer)) {
             parseMessage(&msg);
             qDebug() << "*** DATA LEFT: " << m_buffer.size();
-            // m_buffer.clear();
         } else {
-             //m_buffer.clear();
             return;
         }
     }
