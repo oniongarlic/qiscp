@@ -122,6 +122,9 @@ qiscp::qiscp(QObject *parent) :
     m_inputs.insert(Inputs::CD, "TV/CD");
     m_inputs.insert(Inputs::Phono, "Phono");
 
+    // Blueooth
+    m_inputs.insert(Inputs::Bluetooth, "Bluetooth");
+
     // Radio
     m_inputs.insert(Inputs::FM, "FM");
     m_inputs.insert(Inputs::AM, "AM");
@@ -133,6 +136,7 @@ qiscp::qiscp(QObject *parent) :
     m_inputs.insert(Inputs::USBFront, "USB Front");
     m_inputs.insert(Inputs::USBBack, "USB Back");
     m_inputs.insert(Inputs::Network, "Network");
+    m_inputs.insert(Inputs::AirPlay, "AirPlay");
 
     m_timer.setSingleShot(true);
     m_timer.setInterval(m_discover_timeout);

@@ -396,7 +396,7 @@ private:
     "33"	sets DAB *5
     */
 
-    // Inputs
+    // The static input list codes
     struct Inputs {
         enum {
             Video1=0x00,
@@ -422,6 +422,14 @@ private:
             USBFront=0x29,
             USBBack=0x2A,
             Network=0x2B,
+            USBToggle=0x2C,
+            AirPlay=0x2D,
+            Bluetooth=0x2E,
+            Multi=0x30,
+            Xm1=0x31,
+            Sirius=0x32,
+            DAB=0x33,
+            UniversalPort=0x40,
             EndCommands=0xFF // Marker
         };
     };
