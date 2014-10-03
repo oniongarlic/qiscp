@@ -41,14 +41,16 @@ Rectangle {
             }
         }
 
-        ListView {
+        InputList {
             id: inputs
             enabled: iscp.connected
             height: parent.height;
             width: parent.width/4
             clip: true;
-            model: inputsModel
-            delegate: inputDelegate
+            model: inputsModel;
+            onInputSelected: {
+                iscp.setMasterInput(input);
+            }
         }
 
         TunerPresetList {
@@ -60,28 +62,7 @@ Rectangle {
                 iscp.tunePreset(preset.preset_id);
             }
         }
-    }
-
-    Component {
-        id: inputDelegate
-        Rectangle {
-            color: "#fff0f0";
-            width: parent.width;
-            height: txt.height;
-            MouseArea {
-                anchors.fill: parent;
-                Text {
-                    id: txt
-                    text: model.name;
-                    anchors.margins: 8;
-                    font.pointSize: 12
-                }
-                onClicked: {
-                    iscp.setMasterInput(model.input_id);
-                }
-            }
-        }
-    }
+    }   
 
     ListModel {
         id: presetsModel
@@ -251,9 +232,31 @@ Rectangle {
             }
 
             inputsModel.clear();
-            var inputs=iscp.getInputs();
+            var inputs=iscp.getStaticInputs();
             for (var i=0;i<inputs.length;i++) {
                 inputsModel.append(inputs[i]);
+            }
+        }
+
+        onZonesList: {
+            var zones=iscp.getZones();
+
+            console.debug("Got zones list:"+zones.length)
+        }
+
+        onInputsList: {
+            var inputs=iscp.getInputs();
+
+            console.debug("Got inputs list:"+inputs.length)
+
+            if (inputs.length==0)
+                return;
+
+            inputsModel.clear();
+            for (var i=0;i<inputs.length;i++) {
+                var input=inputs[i];
+                if (input.value==1)
+                    inputsModel.append(input);
             }
         }
 
