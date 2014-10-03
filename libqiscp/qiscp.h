@@ -63,8 +63,10 @@ public:
 
     Q_INVOKABLE void discoverHosts();
     Q_INVOKABLE QVariantList getDevices() const;
-    Q_INVOKABLE QVariantList getInputs() const;
-    Q_INVOKABLE QVariantList getZones() const;
+    Q_INVOKABLE QVariantList getStaticInputs() const;
+    Q_INVOKABLE QVariantList getInputs() const;    
+    Q_INVOKABLE QVariantList getZones() const;    
+    Q_INVOKABLE QVariantList getControls() const;
 
     Q_PROPERTY(QString host READ host WRITE setHost NOTIFY hostChanged)
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
@@ -246,6 +248,7 @@ signals:
     void presetsList();
     void networkList();
     void zonesList();
+    void inputsList();
     void controlList();
     void selectorList();
 
@@ -499,7 +502,8 @@ private:
     QVariantList m_tunerpresets;
     QVariantList m_networkservices;
     QVariantList m_zonesdata;
-    QVariantList m_inputsdata;
+    QVariantList m_inputsdata;    
+    QVariantList m_controls;
 
     // Device discovery
     QTimer m_timer;

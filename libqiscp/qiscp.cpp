@@ -529,6 +529,9 @@ void qiscp::parseMessage(ISCPMsg *message) {
 
             m_zonesdata=m_deviceinfoparser->getZones();
             emit zonesList();
+
+            m_inputsdata=m_deviceinfoparser->getSelectors();
+            emit inputsList();
         } else {
             // XXX: signal that NRI wasn't available
         }
@@ -675,7 +678,7 @@ QVariantList qiscp::getDevices() const {
  * @brief qiscp::getInputs
  * @return
  */
-QVariantList qiscp::getInputs() const {
+QVariantList qiscp::getStaticInputs() const {
     QVariantList inputs;
     QMapIterator<int, QString> i(m_inputs);
     while (i.hasNext()) {
@@ -698,9 +701,14 @@ QVariantList qiscp::getZones() const {
     return m_zonesdata;
 }
 
-QVariantList qiscp::getSelectors() const {
-    return m_selectors;
+QVariantList qiscp::getInputs() const {
+    return m_inputsdata;
 }
+
+QVariantList qiscp::getControls() const {
+    return m_controls;
+}
+
 
 /*************************************************************/
 
