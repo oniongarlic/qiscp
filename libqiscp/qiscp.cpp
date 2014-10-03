@@ -24,6 +24,11 @@ qiscp::qiscp(QObject *parent) :
     QObject(parent),
     m_port(ISCP_PORT),
     m_discover_timeout(1000),
+    m_connected(false),
+    m_power(false),
+    m_z2Power(false),
+    m_z3Power(false),
+    m_z4Power(false),
     m_masterMuted(false),
     m_masterVolume(0),
     m_maxvolume(20),
@@ -41,7 +46,7 @@ qiscp::qiscp(QObject *parent) :
 
     m_buffer.resize(1024);
 
-    m_cmdtimer.setInterval(50);
+    m_cmdtimer.setInterval(100);
     connect(&m_cmdtimer, SIGNAL(timeout()), this, SLOT(handleCommandQueue()));
 
     // Command to ID mapping
@@ -231,10 +236,6 @@ void qiscp::discoveryTimeout() {
     emit discoveringChanged();
 }
 
-QVariantList qiscp::getDevices() const {
-    return m_devices;
-}
-
 bool qiscp::close() {
     if (m_socket->isOpen()) {
         m_socket->disconnectFromHost();
@@ -399,6 +400,92 @@ void qiscp::parseMessage(ISCPMsg *message) {
             break;
         }
         break;
+    case ISCPCommands::Zone2Tone: {
+        QString p=message->getParamter();
+        m_z2Bass=p.mid(1,2).toInt(NULL, 16);
+        m_z2Treble=p.mid(4,2).toInt(NULL, 16);
+
+        emit zone2BassLevelChanged();
+        emit zone2TrebleLevelChanged();
+    }
+// Zone 3
+    case ISCPCommands::Zone3Power:
+        val=message->getIntValue();
+        m_z3Power=val==1 ? true : false;
+        emit powerChanged();
+        if (m_z3Power==true) {
+            requestZone3State();
+        }
+        break;
+    case ISCPCommands::Zone3Mute:
+        val=message->getIntValue();
+        m_z3Muted=val==1 ? true : false;
+        emit zone3MutedChanged();
+        break;
+    case ISCPCommands::Zone3Volume:
+        m_z3Volume=message->getIntValue();
+        emit zone3VolumeChanged();
+        break;
+    case ISCPCommands::Zone3Input:
+        m_z3Input=message->getIntValue();
+        emit zone3InputChanged();
+        switch (m_z3Input) {
+        case Inputs::FM:
+        case Inputs::AM:
+        case Inputs::Tuner:
+            writeCommand("TU3", "QSTN");
+            break;
+        case Inputs::InternetRadio:
+        case Inputs::MusicServer:
+        case Inputs::USBBack:
+        case Inputs::USBFront:
+            requestZone3State();
+            break;
+        }
+        break;
+    case ISCPCommands::Zone3Tone: {
+        QString p=message->getParamter();
+        m_z3Bass=p.mid(1,2).toInt(NULL, 16);
+        m_z3Treble=p.mid(4,2).toInt(NULL, 16);
+
+        emit zone3BassLevelChanged();
+        emit zone3TrebleLevelChanged();
+    }
+// Zone 4
+    case ISCPCommands::Zone4Power:
+        val=message->getIntValue();
+        m_z4Power=val==1 ? true : false;
+        emit zone4PowerChanged();
+        if (m_z4Power==true) {
+            requestZone4State();
+        }
+        break;
+    case ISCPCommands::Zone4Mute:
+        val=message->getIntValue();
+        m_z4Muted=val==1 ? true : false;
+        emit zone4MutedChanged();
+        break;
+    case ISCPCommands::Zone4Volume:
+        m_z4Volume=message->getIntValue();
+        emit zone4VolumeChanged();
+        break;
+    case ISCPCommands::Zone4Input:
+        m_z4Input=message->getIntValue();
+        emit zone4InputChanged();
+        switch (m_z4Input) {
+        case Inputs::FM:
+        case Inputs::AM:
+        case Inputs::Tuner:
+            writeCommand("TU4", "QSTN");
+            break;
+        case Inputs::InternetRadio:
+        case Inputs::MusicServer:
+        case Inputs::USBBack:
+        case Inputs::USBFront:
+            requestZone4State();
+            break;
+        }
+        break;
 // Network information
     case ISCPCommands::CurrentArtist:
         m_artist=message->getParamter();
@@ -439,6 +526,9 @@ void qiscp::parseMessage(ISCPMsg *message) {
 
             m_networkservices=m_deviceinfoparser->getNetservices();
             emit networkList();
+
+            m_zonesdata=m_deviceinfoparser->getZones();
+            emit zonesList();
         } else {
             // XXX: signal that NRI wasn't available
         }
@@ -574,6 +664,14 @@ void qiscp::readBroadcastDatagram()
 }
 
 /**
+ * @brief qiscp::getDevices
+ * @return a list of discovered devices on the network
+ */
+QVariantList qiscp::getDevices() const {
+    return m_devices;
+}
+
+/**
  * @brief qiscp::getInputs
  * @return
  */
@@ -592,6 +690,20 @@ QVariantList qiscp::getInputs() const {
     return inputs;
 }
 
+/**
+ * @brief qiscp::getZones
+ * @return
+ */
+QVariantList qiscp::getZones() const {
+    return m_zonesdata;
+}
+
+QVariantList qiscp::getSelectors() const {
+    return m_selectors;
+}
+
+/*************************************************************/
+
 void qiscp::setPower(bool p) {
     writeCommand("PWR", p==true ? "01" : "00");
 }
@@ -608,21 +720,60 @@ void qiscp::setZone4Power(bool p) {
     writeCommand("PW4", p==true ? "01" : "00");
 }
 
-
 void qiscp::setMasterMuted(bool m) {
     writeCommand("AMT", m==true ? "01" : "00");
 }
 
-void qiscp::setMasterInput(int t) {
-    // Check that input code is a valid one, if not just ignore it
+void qiscp::setZone2Muted(bool m) {
+    writeCommand("ZMT", m==true ? "01" : "00");
+}
+
+void qiscp::setZone3Muted(bool m) {
+    writeCommand("MT3", m==true ? "01" : "00");
+}
+
+void qiscp::setZone4Muted(bool m) {
+    writeCommand("MT4", m==true ? "01" : "00");
+}
+
+
+void qiscp::setZoneInput(int zone, int t) {
     if (!m_inputs.contains(t))
         return;
 
-    // Reset tuner information
-    m_masterTunerFreq=0;
-    emit masterTunerFreqChanged();
+    switch (zone) {
+    case 1:
+        // Reset tuner information
+        m_masterTunerFreq=0;
+        emit masterTunerFreqChanged();
+        writeCommand("SLI", getHex(t));
+        break;
+    case 2:
+        writeCommand("SLZ", getHex(t));
+        break;
+    case 3:
+        writeCommand("SL3", getHex(t));
+        break;
+    case 4:
+        writeCommand("SL4", getHex(t));
+        break;
+    }
+}
 
-    writeCommand("SLI", getHex(t));
+void qiscp::setMasterInput(int t) {
+    setZoneInput(1, t);
+}
+
+void qiscp::setZone2Input(int t) {
+    setZoneInput(2, t);
+}
+
+void qiscp::setZone3Input(int t) {
+    setZoneInput(3, t);
+}
+
+void qiscp::setZone4Input(int t) {
+    setZoneInput(4, t);
 }
 
 void qiscp::setSleepTimer(int t) {
@@ -654,12 +805,49 @@ void qiscp::setMaxDirectVolume(quint8 maxvol) {
     }
 }
 
+/**
+ * @brief qiscp::volumeUp
+ *
+ * Master volume up
+ *
+ */
 void qiscp::volumeUp() {
     writeCommand("MVL", "UP");
 }
 
+/**
+ * @brief qiscp::volumeDown
+ *
+ * Master volume down
+ */
 void qiscp::volumeDown() {
+    if (m_masterVolume==0)
+        return;
     writeCommand("MVL", "DOWN");
+}
+
+void qiscp::volumeZone2Up() {
+    writeCommand("ZVL", "UP");
+}
+
+void qiscp::volumeZone2Down() {
+    writeCommand("ZVL", "DOWN");
+}
+
+void qiscp::volumeZone3Up() {
+    writeCommand("VL3", "UP");
+}
+
+void qiscp::volumeZone3Down() {
+    writeCommand("VL3", "DOWN");
+}
+
+void qiscp::volumeZone4Up() {
+    writeCommand("VL4", "UP");
+}
+
+void qiscp::volumeZone4Down() {
+    writeCommand("VL4", "DOWN");
 }
 
 QVariantList qiscp::getPresets() const {

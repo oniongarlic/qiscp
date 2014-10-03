@@ -39,15 +39,15 @@ public:
 
     Q_PROPERTY (bool zone2power READ zone2Power WRITE setZone2Power NOTIFY zone2PowerChanged)
     Q_PROPERTY (int zone2Volume READ zone2Volume NOTIFY zone2VolumeChanged)
-    Q_PROPERTY (int zone2Input READ zone2Input NOTIFY zone2InputChanged)
+    Q_PROPERTY (int zone2Input READ zone2Input WRITE setZone2Input NOTIFY zone2InputChanged)
 
     Q_PROPERTY (bool zone3power READ zone3Power WRITE setZone3Power NOTIFY zone3PowerChanged)
     Q_PROPERTY (int zone3Volume READ zone3Volume NOTIFY zone3VolumeChanged)
-    Q_PROPERTY (int zone3Input READ zone3Input NOTIFY zone3InputChanged)
+    Q_PROPERTY (int zone3Input READ zone3Input WRITE setZone3Input NOTIFY zone3InputChanged)
 
     Q_PROPERTY (bool zone4power READ zone4Power WRITE setZone4Power NOTIFY zone4PowerChanged)
     Q_PROPERTY (int zone4Volume READ zone4Volume NOTIFY zone4VolumeChanged)
-    Q_PROPERTY (int zone4Input READ zone4Input NOTIFY zone4InputChanged)
+    Q_PROPERTY (int zone4Input READ zone4Input WRITE setZone4Input NOTIFY zone4InputChanged)
 
     Q_PROPERTY (QString currentArtist READ currentArtist NOTIFY currentArtistChanged)
     Q_PROPERTY (QString currentAlbum READ currentAlbum NOTIFY currentAlbumChanged)
@@ -64,6 +64,7 @@ public:
     Q_INVOKABLE void discoverHosts();
     Q_INVOKABLE QVariantList getDevices() const;
     Q_INVOKABLE QVariantList getInputs() const;
+    Q_INVOKABLE QVariantList getZones() const;
 
     Q_PROPERTY(QString host READ host WRITE setHost NOTIFY hostChanged)
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
@@ -80,17 +81,10 @@ public:
     Q_INVOKABLE void volumeDown();
     Q_INVOKABLE void setMasterMuted(bool m);
 
-    Q_INVOKABLE void setSleepTimer(int t);
-
-    Q_INVOKABLE void setMasterInput(int t);
-
-    Q_INVOKABLE void setPower(bool p);
-    Q_INVOKABLE void setZone2Power(bool p);
-    Q_INVOKABLE void setZone3Power(bool p);
-    Q_INVOKABLE void setZone4Power(bool p);
-
     Q_INVOKABLE void bluetoothPairing();
     Q_INVOKABLE void bluetoothClearPairing();
+
+    Q_INVOKABLE void setSleepTimer(int t);
 
     Q_INVOKABLE void tune(int t);
     Q_INVOKABLE void tunePreset(int t);
@@ -103,12 +97,38 @@ public:
 
     Q_INVOKABLE void bassLevelUp();
     Q_INVOKABLE void bassLevelDown();
+
     Q_INVOKABLE void trebleLevelUp();
     Q_INVOKABLE void trebleLevelDown();
-    Q_INVOKABLE void subwooferLevelDown();
+
     Q_INVOKABLE void subwooferLevelUp();
-    Q_INVOKABLE void centerLevelDown();
+    Q_INVOKABLE void subwooferLevelDown();
+
     Q_INVOKABLE void centerLevelUp();
+    Q_INVOKABLE void centerLevelDown();
+
+    Q_INVOKABLE void setZone2Muted(bool m);
+    Q_INVOKABLE void setZone3Muted(bool m);
+    Q_INVOKABLE void setZone4Muted(bool m);   
+
+    Q_INVOKABLE void setZoneInput(int zone, int t);
+    Q_INVOKABLE void setMasterInput(int t);
+    Q_INVOKABLE void setZone2Input(int t);
+    Q_INVOKABLE void setZone3Input(int t);
+    Q_INVOKABLE void setZone4Input(int t);
+
+    Q_INVOKABLE void setPower(bool p);
+    Q_INVOKABLE void setZone2Power(bool p);
+    Q_INVOKABLE void setZone3Power(bool p);
+    Q_INVOKABLE void setZone4Power(bool p);
+
+    Q_INVOKABLE void volumeZone2Up();
+    Q_INVOKABLE void volumeZone3Up();
+    Q_INVOKABLE void volumeZone4Up();
+
+    Q_INVOKABLE void volumeZone2Down();
+    Q_INVOKABLE void volumeZone3Down();
+    Q_INVOKABLE void volumeZone4Down();
 
     bool connected() const { return m_connected; }
     bool discovering() const { return m_discovering; }
@@ -225,7 +245,7 @@ signals:
     void deviceInfo();
     void presetsList();
     void networkList();
-    void zoneList();
+    void zonesList();
     void controlList();
     void selectorList();
 
@@ -257,6 +277,12 @@ signals:
     void zone2InputChanged();
     void zone3InputChanged();
     void zone4InputChanged();
+
+    void zone2BassLevelChanged();
+    void zone2TrebleLevelChanged();
+
+    void zone3BassLevelChanged();
+    void zone3TrebleLevelChanged();
 
     void currentArtistChanged();
     void currentAlbumChanged();
@@ -472,6 +498,8 @@ private:
     // NRI data
     QVariantList m_tunerpresets;
     QVariantList m_networkservices;
+    QVariantList m_zonesdata;
+    QVariantList m_inputsdata;
 
     // Device discovery
     QTimer m_timer;
