@@ -24,7 +24,7 @@
 DeviceInforParser::DeviceInforParser(QString xml, QObject *parent) :
     QObject(parent)
 {
-    m_xml.addData(xml);
+    m_xml.addData(xml);    
     m_ok=readResponse();
 }
 
@@ -208,12 +208,12 @@ void DeviceInforParser::readSelectors() {
 
     while (m_xml.readNextStartElement()) {
         if (m_xml.name() == "selector") {
-            QString id=m_xml.attributes().value("id").toString();
-            QString value=m_xml.attributes().value("value").toString();
+            int id=m_xml.attributes().value("id").toString().toInt(NULL, 16);
+            int value=m_xml.attributes().value("value").toString().toInt();
             QString name=m_xml.attributes().value("name").toString();
 
             QVariantMap ns;
-            ns.insert("id", id);
+            ns.insert("input_id", id);
             ns.insert("value", value);
             ns.insert("name", name);
 
@@ -226,6 +226,7 @@ void DeviceInforParser::readSelectors() {
             m_xml.skipCurrentElement();
         }
     }
+    qDebug() << "INPUTS: " << m_selectors;
 }
 
 void DeviceInforParser::readPresets() {
