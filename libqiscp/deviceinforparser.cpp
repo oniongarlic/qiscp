@@ -52,6 +52,16 @@ QVariantList DeviceInforParser::getZones() const
     return m_zones;
 }
 
+QVariantList DeviceInforParser::getSelectors() const
+{
+    return m_selectors;
+}
+
+QVariantList DeviceInforParser::getControls() const
+{
+    return m_controls;
+}
+
 bool DeviceInforParser::readResponse() {
     if (m_xml.readNextStartElement()) {
         if (m_xml.name() == "response" && m_xml.attributes().value("status")=="ok") {
@@ -119,7 +129,7 @@ void DeviceInforParser::readNetservices() {
     while (m_xml.readNextStartElement()) {
         if (m_xml.name() == "netservice") {
             QString id=m_xml.attributes().value("id").toString();
-            QString value=m_xml.attributes().value("value").toString();
+            int value=m_xml.attributes().value("value").toString().toInt();
             QString name=m_xml.attributes().value("name").toString();
 
             qDebug() << "NS: " << id << ":" << value << ":" << name;
@@ -145,14 +155,16 @@ void DeviceInforParser::readZones() {
     while (m_xml.readNextStartElement()) {
         if (m_xml.name() == "zone") {
             QString id=m_xml.attributes().value("id").toString();
-            QString value=m_xml.attributes().value("value").toString();
-            QString zone=m_xml.attributes().value("zone").toString();
+            int value=m_xml.attributes().value("value").toString().toInt();
+            int volmax=m_xml.attributes().value("volmax").toString().toInt();
+            int volstep=m_xml.attributes().value("volstep").toString().toInt();
             QString name=m_xml.attributes().value("name").toString();
 
             QVariantMap ns;
             ns.insert("id", id);
             ns.insert("value", value);
-            ns.insert("zone", zone);
+            ns.insert("volmax", volmax);
+            ns.insert("volstep", volstep);
             ns.insert("name", name);
 
             m_zones << ns;
@@ -172,10 +184,17 @@ void DeviceInforParser::readControls() {
     while (m_xml.readNextStartElement()) {
         if (m_xml.name() == "control") {
             QString id=m_xml.attributes().value("id").toString();
-            QString value=m_xml.attributes().value("value").toString();
-            QString name=m_xml.attributes().value("name").toString();
+            int value=m_xml.attributes().value("value").toString().toInt();
+            int zone=m_xml.attributes().value("zone").toString().toInt();
 
-            qDebug() << "C: " << id << ":" << value << ":" << name;
+            QVariantMap ns;
+            ns.insert("id", id);
+            ns.insert("value", value);
+            ns.insert("zone", zone);
+
+            m_controls << ns;
+
+            qDebug() << "C: " << id << ":" << value << ":" << zone;
             m_xml.skipCurrentElement();
         } else {
             qWarning() << "Unexpected XML element in controllist: " << m_xml.name();
@@ -192,6 +211,13 @@ void DeviceInforParser::readSelectors() {
             QString id=m_xml.attributes().value("id").toString();
             QString value=m_xml.attributes().value("value").toString();
             QString name=m_xml.attributes().value("name").toString();
+
+            QVariantMap ns;
+            ns.insert("id", id);
+            ns.insert("value", value);
+            ns.insert("name", name);
+
+            m_selectors << ns;
 
             qDebug() << "S: " << id << ":" << value << ":" << name;
             m_xml.skipCurrentElement();

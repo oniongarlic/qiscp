@@ -18,6 +18,8 @@ public:
     Q_INVOKABLE QVariantList getPresets() const;
     Q_INVOKABLE QVariantList getNetservices() const;
     Q_INVOKABLE QVariantList getZones() const;
+    Q_INVOKABLE QVariantList getSelectors() const;
+    Q_INVOKABLE QVariantList getControls() const;
 
 signals:
 
