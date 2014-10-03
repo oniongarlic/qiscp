@@ -22,6 +22,7 @@ ListView {
                     font.pointSize: 12
                 }
                 onClicked: {
+                    presets.currentIndex=index;
                     presets.presetSelected(model);
                 }
             }

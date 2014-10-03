@@ -22,6 +22,7 @@ ListView {
                     font.pointSize: 12
                 }
                 onClicked: {
+                    hosts.currentIndex=index;
                     hosts.deviceSelected(model);
                 }
             }
