@@ -154,14 +154,14 @@ void DeviceInforParser::readZones() {
 
     while (m_xml.readNextStartElement()) {
         if (m_xml.name() == "zone") {
-            QString id=m_xml.attributes().value("id").toString();
+            int id=m_xml.attributes().value("id").toString().toInt();
             int value=m_xml.attributes().value("value").toString().toInt();
             int volmax=m_xml.attributes().value("volmax").toString().toInt();
             int volstep=m_xml.attributes().value("volstep").toString().toInt();
             QString name=m_xml.attributes().value("name").toString();
 
             QVariantMap ns;
-            ns.insert("id", id);
+            ns.insert("zone_id", id);
             ns.insert("value", value);
             ns.insert("volmax", volmax);
             ns.insert("volstep", volstep);
@@ -188,7 +188,7 @@ void DeviceInforParser::readControls() {
             int zone=m_xml.attributes().value("zone").toString().toInt();
 
             QVariantMap ns;
-            ns.insert("id", id);
+            ns.insert("control_id", id);
             ns.insert("value", value);
             ns.insert("zone", zone);
 
@@ -234,8 +234,8 @@ void DeviceInforParser::readPresets() {
 
     while (m_xml.readNextStartElement()) {
         if (m_xml.name() == "preset") {
-            QString id=m_xml.attributes().value("id").toString();
-            QString band=m_xml.attributes().value("band").toString();
+            int id=m_xml.attributes().value("id").toString().toInt(NULL, 16);
+            int band=m_xml.attributes().value("band").toString().toInt();
             QString freq=m_xml.attributes().value("freq").toString(); // Parse into a int ?
             QString name=m_xml.attributes().value("name").toString();
 
