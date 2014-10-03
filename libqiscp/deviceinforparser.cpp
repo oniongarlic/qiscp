@@ -47,6 +47,11 @@ QVariantList DeviceInforParser::getNetservices() const
     return m_netservices;
 }
 
+QVariantList DeviceInforParser::getZones() const
+{
+    return m_zones;
+}
+
 bool DeviceInforParser::readResponse() {
     if (m_xml.readNextStartElement()) {
         if (m_xml.name() == "response" && m_xml.attributes().value("status")=="ok") {

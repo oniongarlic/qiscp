@@ -17,6 +17,7 @@ public:
     Q_INVOKABLE QVariantMap getDevice() const;
     Q_INVOKABLE QVariantList getPresets() const;
     Q_INVOKABLE QVariantList getNetservices() const;
+    Q_INVOKABLE QVariantList getZones() const;
 
 signals:
 
