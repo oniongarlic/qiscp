@@ -576,10 +576,14 @@ void qiscp::requestInitialState() {
     queueCommand("TFR", "QSTN");
     queueCommand("CTL", "QSTN");
     queueCommand("SWL", "QSTN");
+    // XXX: We should do this only if device supports the zones, but for now be stupid
+    queueCommand("ZPW", "QSTN");
+    // XXX: Funny, my device (master+z2 only) answers to PW3 with 00 but to PW4 with N/A so not reliable to probe it
+    queueCommand("PW3", "QSTN");
+    queueCommand("PW4", "QSTN");
 }
 
-void qiscp::requestZone2State() {
-    queueCommand("ZPW", "QSTN");
+void qiscp::requestZone2State() {    
     queueCommand("ZVL", "QSTN");
     queueCommand("ZMT", "QSTN");
     queueCommand("ZTN", "QSTN");
@@ -588,8 +592,6 @@ void qiscp::requestZone2State() {
 }
 
 void qiscp::requestZone3State() {
-    // XXX: Funny, my device (master+z2 only) answers to PW3 with 00 but to PW4 with N/A so not reliable to probe it
-    queueCommand("PW3", "QSTN");
     queueCommand("VL3", "QSTN");
     queueCommand("MT3", "QSTN");
     queueCommand("TN3", "QSTN");
@@ -597,8 +599,7 @@ void qiscp::requestZone3State() {
     queueCommand("SL3", "QSTN");
 }
 
-void qiscp::requestZone4State() {
-    queueCommand("PW4", "QSTN");
+void qiscp::requestZone4State() {    
     queueCommand("VL4", "QSTN");
     queueCommand("MT4", "QSTN");
     queueCommand("TN4", "QSTN");
