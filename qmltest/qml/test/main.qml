@@ -16,7 +16,7 @@ Rectangle {
             height: parent.height
             DeviceList {
                 id: hosts
-                height: parent.height;
+                height: parent.height/2;
                 width: parent.width;
                 model: hostsModel
                 onDeviceSelected: {
@@ -155,9 +155,13 @@ Rectangle {
             iscp: iscp
         }
 
+        // Main zone commands
         Row {
             id: cmdRow
             width: parent.width
+            Text {
+                text: "Main"
+            }
 
             Button {
                 title: "Discover"
@@ -174,7 +178,7 @@ Rectangle {
             }
             Button {
                 enabled: iscp.connected
-                title: iscp.power ? "Turn Off" : "Turn On"
+                title: iscp.power ? "Master On" : "Master Off"
                 onClicked: {
                     iscp.setPower(!iscp.power)
                 }
@@ -210,7 +214,55 @@ Rectangle {
                     iscp.presetDown();
                 }
             }
+        }
 
+        // Zone2 commands
+        Row {
+            id: cmdZ2Row
+            width: parent.width
+            Text {
+                text: "Zone 2"
+            }
+
+            Button {
+                enabled: iscp.connected
+                title: iscp.zone2power ? "On" : "Off"
+                onClicked: {
+                    iscp.setZone2Power(!iscp.zone2power)
+                }
+            }
+
+            /*
+            Button {
+                title: "Tune+"
+                enabled: iscp.connected
+                onClicked: {
+                    iscp.tuneUp();
+                }
+            }
+            Button {
+                title: "Tune-"
+                enabled: iscp.connected
+                onClicked: {
+                    iscp.tuneDown();
+                }
+            }
+
+            Button {
+                title: "Preset+"
+                enabled: iscp.connected
+                onClicked: {
+                    iscp.presetUp();
+                }
+            }
+            Button {
+                title: "Preset-"
+                enabled: iscp.connected
+                onClicked: {
+                    iscp.presetDown();
+                }
+            }
+            */
         }
 
     }

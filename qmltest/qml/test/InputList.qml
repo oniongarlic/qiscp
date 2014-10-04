@@ -22,6 +22,7 @@ ListView {
                     font.pointSize: 12
                 }
                 onClicked: {
+                    console.debug("Input ID: "+model.input_id);
                     inputs.inputSelected(model.input_id);                    
                 }
             }
