@@ -58,6 +58,12 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("SLP", ISCPCommands::SleepTimer);
     m_commands.insert("TUN", ISCPCommands::MasterTuner);
 
+    // Note: Tuner is shared so we don't need to handle it for every zone, but control is still separate so we still
+    // need to handle the zone specific tuner information messages
+    m_commands.insert("TUZ", ISCPCommands::MasterTuner);
+    m_commands.insert("TU3", ISCPCommands::MasterTuner);
+    m_commands.insert("TU4", ISCPCommands::MasterTuner);
+
     m_commands.insert("TFR", ISCPCommands::MasterTone);
 
     m_commands.insert("CTL", ISCPCommands::CenterLevel);
