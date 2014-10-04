@@ -184,7 +184,7 @@ void qiscp::handleCommandQueue() {
         return;
     }
 
-    ISCPMsg *msg=m_cmdqueue.takeLast();
+    ISCPMsg *msg=m_cmdqueue.takeFirst();
     writeCommand(msg);
     delete msg;
 }
