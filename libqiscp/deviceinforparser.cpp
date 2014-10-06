@@ -26,6 +26,7 @@ DeviceInforParser::DeviceInforParser(QString xml, QObject *parent) :
 {
     m_xml.addData(xml);    
     m_ok=readResponse();
+    m_xml.clear();
 }
 
 bool DeviceInforParser::isOk() {
@@ -60,6 +61,11 @@ QVariantList DeviceInforParser::getSelectors() const
 QVariantList DeviceInforParser::getControls() const
 {
     return m_controls;
+}
+
+bool DeviceInforParser::isZoneAvailable(int zone_id) const
+{
+    return m_zoneAvailable.value(zone_id);
 }
 
 bool DeviceInforParser::readResponse() {
@@ -166,6 +172,8 @@ void DeviceInforParser::readZones() {
             ns.insert("volmax", volmax);
             ns.insert("volstep", volstep);
             ns.insert("name", name);
+
+            m_zoneAvailable.insert(id, value==1 ? true : false);
 
             m_zones << ns;
 
