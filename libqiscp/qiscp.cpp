@@ -609,6 +609,16 @@ void qiscp::parseMessage(ISCPMsg *message) {
         m_deviceinfoparser=new DeviceInforParser(message->getParamter());
 
         if (m_deviceinfoparser->isOk()) {
+
+            if (m_deviceinfoparser->isZoneAvailable(2))
+                m_zonesAvailable|=Zone2;
+            if (m_deviceinfoparser->isZoneAvailable(3))
+                m_zonesAvailable|=Zone3;
+            if (m_deviceinfoparser->isZoneAvailable(4))
+                m_zonesAvailable|=Zone4;
+
+            qDebug() << "*** Zones: " << m_zonesAvailable;
+
             m_tunerpresets=m_deviceinfoparser->getPresets();
             emit presetsList();
 
@@ -997,19 +1007,19 @@ void qiscp::presetDown(Zones zone) {
     }
 }
 
-void qiscp::bassLevelUp() {
+void qiscp::bassLevelUp(Zones zone) {
     writeCommand("TFR", "BUP");
 }
 
-void qiscp::bassLevelDown() {
+void qiscp::bassLevelDown(Zones zone) {
     writeCommand("TFR", "BDOWN");
 }
 
-void qiscp::trebleLevelUp() {
+void qiscp::trebleLevelUp(Zones zone) {
     writeCommand("TFR", "TUP");
 }
 
-void qiscp::trebleLevelDown() {
+void qiscp::trebleLevelDown(Zones zone) {
     writeCommand("TFR", "TDOWN");
 }
 
@@ -1029,12 +1039,12 @@ void qiscp::centerLevelUp() {
     writeCommand("CTL", "UP");
 }
 
-void qiscp::setBassLevel(qint8 level) {
+void qiscp::setBassLevel(qint8 level, Zones zone) {
     int l=qBound(-0xA, (int)level, 0xA);
     writeCommand("TFR", getHex(l));
 }
 
-void qiscp::setTrebleLevel(qint8 level) {
+void qiscp::setTrebleLevel(qint8 level, Zones zone) {
     int l=qBound(-0xA, (int)level, 0xA);
     writeCommand("TFR", getHex(l));
 }
@@ -1057,24 +1067,158 @@ void qiscp::bluetoothClearPairing() {
     writeCommand("NBT", "CLEAR");
 }
 
+/**
+ * @brief qiscp::networkCommand
+ * @param cmd
+ *
+ * Network service specific commands
+ */
 void qiscp::networkCommand(Commands cmd) {
-int t=cmd;
+    const QString c="NTC";
 
-switch (cmd) {
-case Play:
-    writeCommand("NTC", "PLAY");
-    break;
-case Stop:
-    writeCommand("NTC", "STOP");
-    break;
-case Pause:
-    writeCommand("NTC", "PAUSE");
-    break;
-}
+    switch (cmd) {
+    case Play:
+        writeCommand(c, "PLAY");
+        break;
+    case Stop:
+        writeCommand(c, "STOP");
+        break;
+    case Pause:
+        writeCommand(c, "PAUSE");
+        break;
+    }
 }
 
+/**
+ * @brief qiscp::tvCommand
+ * @param cmd
+ *
+ * TV Control specific commands
+ *
+ */
 void qiscp::tvCommand(Commands cmd) {
+    const QString c="CDV";
 
+    switch (cmd) {
+    case PowerOn:
+        writeCommand(c, "PWRON");
+        break;
+    case PowerOff:
+        writeCommand(c, "PWROFF");
+        break;
+    case ChannelUp:
+        writeCommand(c, "CHUP");
+        break;
+    case ChannelDown:
+        writeCommand(c, "CHDOWN");
+        break;
+    case VolumeUp:
+        writeCommand(c, "VLUP");
+        break;
+    case VolumeDown:
+        writeCommand(c, "VLDN");
+        break;
+    case Mute:
+        writeCommand(c, "MUTE");
+        break;
+    case Display:
+        writeCommand(c, "DISP");
+        break;
+    case Input:
+        writeCommand(c, "INPUT");
+        break;
+    case Clear:
+        writeCommand(c, "CLEAR");
+        break;
+    case Setup:
+        writeCommand(c, "SETUP");
+        break;
+    case Guide:
+        writeCommand(c, "GUIDE");
+        break;
+    case Previous:
+        writeCommand(c, "PREV");
+        break;
+    case Enter:
+        writeCommand(c, "ENTER");
+        break;
+    case Return:
+        writeCommand(c, "RETURN");
+        break;
+    default:
+        keyCommand(c, cmd);
+    }
+}
+
+/**
+ * @brief qiscp::keyCommand
+ * @param c
+ * @param cmd
+ * @return true if valid command, false if not
+ *
+ * Send a key press command using given ISCP command.
+ *
+ */
+bool qiscp::keyCommand(QString c, Commands cmd) {
+switch (cmd) {
+case Up:
+    writeCommand(c, "UP");
+    break;
+case Down:
+    writeCommand(c, "DOWN");
+    break;
+case Left:
+    writeCommand(c, "LEFT");
+    break;
+case Right:
+    writeCommand(c, "RIGHT");
+    break;
+case KeyA:
+    writeCommand(c, "A");
+    break;
+case KeyB:
+    writeCommand(c, "B");
+    break;
+case KeyC:
+    writeCommand(c, "C");
+    break;
+case KeyD:
+    writeCommand(c, "D");
+    break;
+case Key0:
+    writeCommand(c, "0");
+    break;
+case Key1:
+    writeCommand(c, "1");
+    break;
+case Key2:
+    writeCommand(c, "2");
+    break;
+case Key3:
+    writeCommand(c, "3");
+    break;
+case Key4:
+    writeCommand(c, "4");
+    break;
+case Key5:
+    writeCommand(c, "5");
+    break;
+case Key6:
+    writeCommand(c, "6");
+    break;
+case Key7:
+    writeCommand(c, "7");
+    break;
+case Key8:
+    writeCommand(c, "8");
+    break;
+case Key9:
+    writeCommand(c, "9");
+    break;
+default:
+    return false;
+}
+return true;
 }
 
 void qiscp::dvdCommand(Commands cmd) {

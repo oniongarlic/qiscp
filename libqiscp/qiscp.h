@@ -105,11 +105,11 @@ public:
     Q_INVOKABLE void presetUp(Zones zone=Zone1);
     Q_INVOKABLE void presetDown(Zones zone=Zone1);
 
-    Q_INVOKABLE void bassLevelUp();
-    Q_INVOKABLE void bassLevelDown();
+    Q_INVOKABLE void bassLevelUp(Zones zone=Zone1);
+    Q_INVOKABLE void bassLevelDown(Zones zone=Zone1);
 
-    Q_INVOKABLE void trebleLevelUp();
-    Q_INVOKABLE void trebleLevelDown();
+    Q_INVOKABLE void trebleLevelUp(Zones zone=Zone1);
+    Q_INVOKABLE void trebleLevelDown(Zones zone=Zone1);
 
     Q_INVOKABLE void subwooferLevelUp();
     Q_INVOKABLE void subwooferLevelDown();
@@ -157,8 +157,8 @@ public:
     int bassLevel() const { return m_bassLevel; }
     int trebleLevel() const { return m_trebleLevel; }
 
-    void setBassLevel(qint8 level);
-    void setTrebleLevel(qint8 level);
+    void setBassLevel(qint8 level, Zones zone=Zone1);
+    void setTrebleLevel(qint8 level, Zones zone=Zone1);
 
     bool zone2Power() const { return m_z2Power; }
     bool zone2Muted() const { return m_z2Muted; }
@@ -203,6 +203,9 @@ public:
         Left,
         Up,
         Down,
+        Enter,
+        Return,
+        Previous,
         Select,
         Key0,
         Key1,
@@ -220,9 +223,18 @@ public:
         KeyD,
         Delete,
         Caps,
-        Menu,
+        Menu,        
+        Guide,
         Top,
-        Setup
+        Setup,
+        Input,
+        PowerOn,
+        PowerOff,
+        ChannelUp,
+        ChannelDown,
+        VolumeUp,
+        VolumeDown,
+        Mute
     };
 
     Q_INVOKABLE void networkCommand(Commands cmd);
@@ -529,6 +541,7 @@ private:
 
     bool writeCommand(ISCPMsg *message);
     void parseMessage(ISCPMsg *message);
+    bool keyCommand(QString c, Commands cmd);
 };
 
 #endif // QISCP_H
