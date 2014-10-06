@@ -18,8 +18,16 @@ class qiscp : public QObject
 {
     Q_OBJECT
     Q_ENUMS(Commands)
+    Q_ENUMS(Zones)
 public:
     explicit qiscp(QObject *parent = 0);
+
+    enum Zones {
+        Zone1=1,
+        Zone2=2,
+        Zone3=4,
+        Zone4=8
+    };
 
     Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
 
@@ -79,8 +87,8 @@ public:
     Q_INVOKABLE bool writeCommand(QString cmd, QString param);
     Q_INVOKABLE void queueCommand(QString cmd, QString param);
 
-    Q_INVOKABLE void volumeUp();
-    Q_INVOKABLE void volumeDown();
+    Q_INVOKABLE void volumeUp(Zones zone=Zone1);
+    Q_INVOKABLE void volumeDown(Zones zone=Zone1);
     Q_INVOKABLE void setMasterMuted(bool m);
 
     Q_INVOKABLE void bluetoothPairing();
@@ -88,14 +96,14 @@ public:
 
     Q_INVOKABLE void setSleepTimer(int t);
 
-    Q_INVOKABLE void tune(int t);
-    Q_INVOKABLE void tunePreset(int t);
-    Q_INVOKABLE void tuneUp();
-    Q_INVOKABLE void tuneDown();
+    Q_INVOKABLE void tune(int t, Zones zone=Zone1);
+    Q_INVOKABLE void tunePreset(int t, Zones zone=Zone1);
+    Q_INVOKABLE void tuneUp(Zones zone=Zone1);
+    Q_INVOKABLE void tuneDown(Zones zone=Zone1);
 
     Q_INVOKABLE QVariantList getPresets() const;
-    Q_INVOKABLE void presetUp();
-    Q_INVOKABLE void presetDown();
+    Q_INVOKABLE void presetUp(Zones zone=Zone1);
+    Q_INVOKABLE void presetDown(Zones zone=Zone1);
 
     Q_INVOKABLE void bassLevelUp();
     Q_INVOKABLE void bassLevelDown();
@@ -113,7 +121,7 @@ public:
     Q_INVOKABLE void setZone3Muted(bool m);
     Q_INVOKABLE void setZone4Muted(bool m);   
 
-    Q_INVOKABLE void setZoneInput(int zone, int t);
+    Q_INVOKABLE void setZoneInput(Zones zone, int t);
     Q_INVOKABLE void setMasterInput(int t);
     Q_INVOKABLE void setZone2Input(int t);
     Q_INVOKABLE void setZone3Input(int t);
@@ -123,14 +131,6 @@ public:
     Q_INVOKABLE void setZone2Power(bool p);
     Q_INVOKABLE void setZone3Power(bool p);
     Q_INVOKABLE void setZone4Power(bool p);
-
-    Q_INVOKABLE void volumeZone2Up();
-    Q_INVOKABLE void volumeZone3Up();
-    Q_INVOKABLE void volumeZone4Up();
-
-    Q_INVOKABLE void volumeZone2Down();
-    Q_INVOKABLE void volumeZone3Down();
-    Q_INVOKABLE void volumeZone4Down();
 
     bool connected() const { return m_connected; }
     bool discovering() const { return m_discovering; }
@@ -472,7 +472,9 @@ private:
     qint8 m_centerLevel;
     qint8 m_subwooferLevel;
 
-    // Zone 2
+    quint8 m_zonesAvailable;
+
+    // Zone 2    
     bool m_z2Power;
     quint8 m_z2Input;
     bool m_z2Muted;
@@ -481,7 +483,7 @@ private:
     qint8 m_z2Bass;
     qint8 m_z2Balance;
 
-    // Zone 3
+    // Zone 3    
     bool m_z3Power;
     quint8 m_z3Input;
     bool m_z3Muted;
@@ -490,7 +492,7 @@ private:
     qint8 m_z3Bass;
     qint8 m_z3Balance;
 
-    // Zone 4
+    // Zone 4    
     bool m_z4Power;
     quint8 m_z4Input;
     bool m_z4Muted;

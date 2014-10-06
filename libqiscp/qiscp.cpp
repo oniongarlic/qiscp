@@ -32,6 +32,7 @@ qiscp::qiscp(QObject *parent) :
     m_masterMuted(false),
     m_masterVolume(0),
     m_maxvolume(20),
+    m_zonesAvailable(Zone1),
     m_masterTunerFreq(0)
 {
     m_socket=new QTcpSocket(this);    
@@ -254,6 +255,32 @@ bool qiscp::close() {
     return false;
 }
 
+void qiscp::tcpConnected() {
+    qDebug("Connected");
+    m_buffer.clear();
+    m_connected=true;
+    emit connectedChanged();
+    emit connectedToHost();
+    requestInitialState();
+}
+
+void qiscp::tcpDisconnected() {
+    qDebug("DisConnected");
+    m_cmdtimer.stop();
+    m_cmdqueue.clear();
+    m_buffer.clear();
+    m_connected=false;
+    emit connectedChanged();
+    emit disconnectedFromHost();
+}
+
+void qiscp::tcpError(QAbstractSocket::SocketError se) {
+    m_buffer.clear();
+    qWarning() << "TCP Error:" << se;
+    qDebug("Closing connection");
+    close();
+}
+
 void qiscp::readISCP() {
     QByteArray tmp;
     QDataStream ds(m_socket);
@@ -306,6 +333,56 @@ void qiscp::readISCP() {
         } else {
             return;
         }
+    }
+}
+
+/**
+ * @brief qiscp::readBroadcastDatagram
+ *
+ * Read UDP broadcast packets from device discovery.
+ *
+ */
+void qiscp::readBroadcastDatagram()
+{
+    while (m_broadcast->hasPendingDatagrams()) {
+        QByteArray datagram;
+        QHostAddress sender;
+        quint16 senderPort;
+
+        datagram.resize(m_broadcast->pendingDatagramSize());
+        m_broadcast->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
+        qDebug() << "Got UDP data from: " << sender << " size: " << datagram.size();
+
+        // As the only message we will ever get is either the query message itself
+        // or the answer from a device we can safely ignore any packget that is the
+        // size of the query message.
+        if (datagram.size()==26)
+            continue;
+
+        ISCPMsg msg;
+        if (!msg.fromData(&datagram))
+                continue;
+
+        QString cmd=msg.getCommand();
+        if (cmd!="ECN")
+            continue;
+
+        QString param=msg.getParamter();
+        QStringList di=param.split("/");
+
+        if (di.count()!=4) {
+            qWarning("Invalid device information");
+            continue;
+        }
+
+        QVariantMap device;
+        device.insert("ip", sender.toString());
+        device.insert("model", di.at(0));
+        device.insert("port",  di.at(1).toInt());
+        device.insert("destination", di.at(2));
+        device.insert("mac", di.at(3).mid(0,12));
+
+        m_devices << device;
     }
 }
 
@@ -376,12 +453,12 @@ void qiscp::parseMessage(ISCPMsg *message) {
         emit masterTunerFreqChanged();
         break;
 // Zone 2
-    case ISCPCommands::Zone2Power:
+    case ISCPCommands::Zone2Power:        
         val=message->getIntValue();
         m_z2Power=val==1 ? true : false;
         emit powerChanged();
         if (m_z2Power==true) {
-            requestZone2State();
+            // requestZone2State();
         }
         break;
     case ISCPCommands::Zone2Mute:
@@ -394,6 +471,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
         emit zone2VolumeChanged();
         break;
     case ISCPCommands::Zone2Input:
+        return;
         m_z2Input=message->getIntValue();
         emit zone2InputChanged();
         switch (m_z2Input) {
@@ -406,7 +484,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case Inputs::MusicServer:
         case Inputs::USBBack:
         case Inputs::USBFront:
-            requestZone2State();
+            requestNetworkPlayState();
             break;
         }
         break;
@@ -449,7 +527,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case Inputs::MusicServer:
         case Inputs::USBBack:
         case Inputs::USBFront:
-            requestZone3State();
+            requestNetworkPlayState();
             break;
         }
         break;
@@ -492,7 +570,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case Inputs::MusicServer:
         case Inputs::USBBack:
         case Inputs::USBFront:
-            requestZone4State();
+            requestNetworkPlayState();
             break;
         }
         break;
@@ -554,128 +632,6 @@ void qiscp::parseMessage(ISCPMsg *message) {
     }
 }
 
-void qiscp::tcpConnected() {
-    qDebug("Connected");
-    m_buffer.clear();
-    m_connected=true;    
-    emit connectedChanged();
-    emit connectedToHost();
-    requestInitialState();
-}
-
-/**
- * @brief qiscp::requestInitialState
- *
- * Called when connection is succesfull to get the current state for:
- * Power
- * Volume
- * Input
- *
- */
-void qiscp::requestInitialState() {
-    queueCommand("PWR", "QSTN");
-    queueCommand("MVL", "QSTN");
-    queueCommand("AMT", "QSTN");
-    queueCommand("SLP", "QSTN");
-    queueCommand("SLI", "QSTN");
-    queueCommand("NRI", "QSTN");
-    queueCommand("TFR", "QSTN");
-    queueCommand("CTL", "QSTN");
-    queueCommand("SWL", "QSTN");
-    // XXX: We should do this only if device supports the zones, but for now be stupid
-    queueCommand("ZPW", "QSTN");
-    // XXX: Funny, my device (master+z2 only) answers to PW3 with 00 but to PW4 with N/A so not reliable to probe it
-    queueCommand("PW3", "QSTN");
-    queueCommand("PW4", "QSTN");
-}
-
-void qiscp::requestZone2State() {    
-    queueCommand("ZVL", "QSTN");
-    queueCommand("ZMT", "QSTN");
-    queueCommand("ZTN", "QSTN");
-    queueCommand("ZBL", "QSTN");
-    queueCommand("SLZ", "QSTN");
-}
-
-void qiscp::requestZone3State() {
-    queueCommand("VL3", "QSTN");
-    queueCommand("MT3", "QSTN");
-    queueCommand("TN3", "QSTN");
-    queueCommand("BL3", "QSTN");
-    queueCommand("SL3", "QSTN");
-}
-
-void qiscp::requestZone4State() {    
-    queueCommand("VL4", "QSTN");
-    queueCommand("MT4", "QSTN");
-    queueCommand("TN4", "QSTN");
-    queueCommand("BL4", "QSTN");
-    queueCommand("SL4", "QSTN");
-}
-
-void qiscp::requestNetworkPlayState() {
-    queueCommand("NAT", "QSTN");
-    queueCommand("NAL", "QSTN");
-    queueCommand("NTI", "QSTN");
-    queueCommand("NTR", "QSTN");
-}
-
-void qiscp::tcpDisconnected() {
-    qDebug("DisConnected");
-    m_buffer.clear();
-    m_connected=false;
-    emit connectedChanged();
-    emit disconnectedFromHost();
-}
-
-void qiscp::tcpError(QAbstractSocket::SocketError se) {
-    m_buffer.clear();
-    qWarning() << "TCP Error:" << se;
-}
-
-void qiscp::readBroadcastDatagram()
-{
-    while (m_broadcast->hasPendingDatagrams()) {
-        QByteArray datagram;
-        QHostAddress sender;
-        quint16 senderPort;
-
-        datagram.resize(m_broadcast->pendingDatagramSize());
-        m_broadcast->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
-        qDebug() << "Got UDP data from: " << sender << " size: " << datagram.size();
-
-        // As the only message we will ever get is either the query message itself
-        // or the answer from a device we can safely ignore any packget that is the
-        // size of the query message.
-        if (datagram.size()==26)
-            continue;
-
-        ISCPMsg msg;
-        if (!msg.fromData(&datagram))
-                continue;
-
-        QString cmd=msg.getCommand();
-        if (cmd!="ECN")
-            continue;
-
-        QString param=msg.getParamter();
-        QStringList di=param.split("/");
-
-        if (di.count()!=4) {
-            qWarning("Invalid device information");
-            continue;
-        }
-
-        QVariantMap device;
-        device.insert("ip", sender.toString());
-        device.insert("model", di.at(0));
-        device.insert("port",  di.at(1).toInt());
-        device.insert("destination", di.at(2));
-        device.insert("mac", di.at(3).mid(0,12));
-
-        m_devices << device;
-    }
-}
 
 /**
  * @brief qiscp::getDevices
@@ -720,6 +676,69 @@ QVariantList qiscp::getControls() const {
     return m_controls;
 }
 
+/*****************************************************************************/
+
+/**
+ * @brief qiscp::requestInitialState
+ *
+ * Called when connection is succesfull to get the current state for:
+ * Power
+ * Volume
+ * Input
+ *
+ */
+void qiscp::requestInitialState() {
+    qDebug("*** Requesting initial state");
+    queueCommand("PWR", "QSTN");
+    queueCommand("MVL", "QSTN");
+    queueCommand("AMT", "QSTN");
+    queueCommand("SLP", "QSTN");
+    queueCommand("SLI", "QSTN");
+    queueCommand("NRI", "QSTN");
+    queueCommand("TFR", "QSTN");
+    queueCommand("CTL", "QSTN");
+    queueCommand("SWL", "QSTN");
+    // XXX: We should do this only if device supports the zones, but for now be stupid
+    queueCommand("ZPW", "QSTN");
+    // XXX: Funny, my device (master+z2 only) answers to PW3 with 00 but to PW4 with N/A so not reliable to probe it
+    queueCommand("PW3", "QSTN");
+    queueCommand("PW4", "QSTN");
+}
+
+void qiscp::requestZone2State() {
+    qDebug("*** Requesting Zone 2 state");
+    queueCommand("ZVL", "QSTN");
+    queueCommand("ZMT", "QSTN");
+    queueCommand("ZTN", "QSTN");
+    queueCommand("ZBL", "QSTN");
+    queueCommand("SLZ", "QSTN");
+}
+
+void qiscp::requestZone3State() {
+    qDebug("*** Requesting Zone 3 state");
+    queueCommand("VL3", "QSTN");
+    queueCommand("MT3", "QSTN");
+    queueCommand("TN3", "QSTN");
+    queueCommand("BL3", "QSTN");
+    queueCommand("SL3", "QSTN");
+}
+
+void qiscp::requestZone4State() {
+    qDebug("*** Requesting Zone 4 state");
+    queueCommand("VL4", "QSTN");
+    queueCommand("MT4", "QSTN");
+    queueCommand("TN4", "QSTN");
+    queueCommand("BL4", "QSTN");
+    queueCommand("SL4", "QSTN");
+}
+
+void qiscp::requestNetworkPlayState() {
+    qDebug("*** Requesting Network playback state");
+    queueCommand("NAT", "QSTN");
+    queueCommand("NAL", "QSTN");
+    queueCommand("NTI", "QSTN");
+    queueCommand("NTR", "QSTN");
+}
 
 /*************************************************************/
 
@@ -755,44 +774,43 @@ void qiscp::setZone4Muted(bool m) {
     writeCommand("MT4", m==true ? "01" : "00");
 }
 
-
-void qiscp::setZoneInput(int zone, int t) {
+void qiscp::setZoneInput(Zones zone, int t) {
     if (!m_inputs.contains(t))
         return;
 
     switch (zone) {
-    case 1:
+    case Zone1:
         // Reset tuner information
         m_masterTunerFreq=0;
         emit masterTunerFreqChanged();
         writeCommand("SLI", getHex(t));
         break;
-    case 2:
+    case Zone2:
         writeCommand("SLZ", getHex(t));
         break;
-    case 3:
+    case Zone3:
         writeCommand("SL3", getHex(t));
         break;
-    case 4:
+    case Zone4:
         writeCommand("SL4", getHex(t));
         break;
     }
 }
 
 void qiscp::setMasterInput(int t) {
-    setZoneInput(1, t);
+    setZoneInput(Zone1, t);
 }
 
 void qiscp::setZone2Input(int t) {
-    setZoneInput(2, t);
+    setZoneInput(Zone2, t);
 }
 
 void qiscp::setZone3Input(int t) {
-    setZoneInput(3, t);
+    setZoneInput(Zone3, t);
 }
 
 void qiscp::setZone4Input(int t) {
-    setZoneInput(4, t);
+    setZoneInput(Zone4, t);
 }
 
 void qiscp::setSleepTimer(int t) {
@@ -830,8 +848,21 @@ void qiscp::setMaxDirectVolume(quint8 maxvol) {
  * Master volume up
  *
  */
-void qiscp::volumeUp() {
-    writeCommand("MVL", "UP");
+void qiscp::volumeUp(Zones zone) {
+    switch (zone) {
+    case Zone1:
+        writeCommand("MVL", "UP");
+    break;
+    case Zone2:
+        writeCommand("ZVL", "UP");
+        break;
+    case Zone3:
+        writeCommand("VL3", "UP");
+        break;
+    case Zone4:
+        writeCommand("VL4", "UP");
+        break;
+    }
 }
 
 /**
@@ -839,41 +870,30 @@ void qiscp::volumeUp() {
  *
  * Master volume down
  */
-void qiscp::volumeDown() {
-    if (m_masterVolume==0)
-        return;
-    writeCommand("MVL", "DOWN");
-}
-
-void qiscp::volumeZone2Up() {
-    writeCommand("ZVL", "UP");
-}
-
-void qiscp::volumeZone2Down() {
-    writeCommand("ZVL", "DOWN");
-}
-
-void qiscp::volumeZone3Up() {
-    writeCommand("VL3", "UP");
-}
-
-void qiscp::volumeZone3Down() {
-    writeCommand("VL3", "DOWN");
-}
-
-void qiscp::volumeZone4Up() {
-    writeCommand("VL4", "UP");
-}
-
-void qiscp::volumeZone4Down() {
-    writeCommand("VL4", "DOWN");
+void qiscp::volumeDown(Zones zone) {
+    switch (zone) {
+    case Zone1:
+        if (m_masterVolume==0)
+            return;
+        writeCommand("MVL", "DOWN");
+        break;
+    case Zone2:
+        writeCommand("ZVL", "DOWN");
+        break;
+    case Zone3:
+        writeCommand("VL3", "DOWN");
+        break;
+    case Zone4:
+        writeCommand("VL4", "DOWN");
+        break;
+    }
 }
 
 QVariantList qiscp::getPresets() const {
     return m_tunerpresets;
 }
 
-void qiscp::tune(int t) {
+void qiscp::tune(int t, Zones zone) {
     if (m_masterInput==Inputs::FM) {
         // XXX: Check limits!
         if (t>10800)
@@ -889,27 +909,92 @@ void qiscp::tune(int t) {
         return;
     }
 
-    writeCommand("TUN", getPaddedInt(t, 5));
+    switch (zone) {
+    case Zone1:
+        writeCommand("TUN", getPaddedInt(t, 5));
+        break;
+    case Zone2:
+        writeCommand("TUZ", getPaddedInt(t, 5));
+        break;
+    case Zone3:
+        writeCommand("TU3", getPaddedInt(t, 5));
+        break;
+    case Zone4:
+        writeCommand("TU4", getPaddedInt(t, 5));
+        break;
+    }
 }
 
-void qiscp::tunePreset(int t) {
+void qiscp::tunePreset(int t, Zones zone) {
     writeCommand("PRS", getHex(t));
 }
 
-void qiscp::tuneUp() {
-    writeCommand("TUN", "UP");
+void qiscp::tuneUp(Zones zone) {
+    switch (zone) {
+    case Zone1:
+        writeCommand("TUN", "UP");
+        break;
+    case Zone2:
+        writeCommand("TUZ", "UP");
+        break;
+    case Zone3:
+        writeCommand("TU3", "UP");
+        break;
+    case Zone4:
+        writeCommand("TU4", "UP");
+        break;
+    }
 }
 
-void qiscp::tuneDown() {
-    writeCommand("TUN", "DOWN");
+void qiscp::tuneDown(Zones zone) {
+    switch (zone) {
+    case Zone1:
+        writeCommand("TUN", "DOWN");
+        break;
+    case Zone2:
+        writeCommand("TUZ", "DOWN");
+        break;
+    case Zone3:
+        writeCommand("TU3", "DOWN");
+        break;
+    case Zone4:
+        writeCommand("TU4", "DOWN");
+        break;
+    }
 }
 
-void qiscp::presetUp() {
-    writeCommand("PRS", "UP");
+void qiscp::presetUp(Zones zone) {
+    switch (zone) {
+    case Zone1:
+        writeCommand("PRS", "UP");
+        break;
+    case Zone2:
+        writeCommand("PRZ", "UP");
+        break;
+    case Zone3:
+        writeCommand("PR3", "UP");
+        break;
+    case Zone4:
+        writeCommand("PR4", "UP");
+        break;
+    }
 }
 
-void qiscp::presetDown() {
-    writeCommand("PRS", "DOWN");
+void qiscp::presetDown(Zones zone) {
+    switch (zone) {
+    case Zone1:
+        writeCommand("PRS", "DOWN");
+        break;
+    case Zone2:
+        writeCommand("PRZ", "DOWN");
+        break;
+    case Zone3:
+        writeCommand("PR3", "DOWN");
+        break;
+    case Zone4:
+        writeCommand("PR4", "DOWN");
+        break;
+    }
 }
 
 void qiscp::bassLevelUp() {
