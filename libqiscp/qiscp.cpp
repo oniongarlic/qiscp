@@ -1068,15 +1068,25 @@ void qiscp::bluetoothClearPairing() {
 }
 
 /**
- * @brief qiscp::networkCommand
+ * @brief qiscp::baseCommand
+ * @param c
  * @param cmd
+ * @return
  *
- * Network service specific commands
+ * These are the common shared commands for both DVD/BD and TV control trough RHID/HDMI/CEC
+ *
  */
-void qiscp::networkCommand(Commands cmd) {
-    const QString c="NTC";
-
+bool qiscp::baseCommand(QString c, Commands cmd) {
     switch (cmd) {
+    case Power:
+        writeCommand(c, "POWER");
+        break;
+    case PowerOn:
+        writeCommand(c, "PWRON");
+        break;
+    case PowerOff:
+        writeCommand(c, "PWROFF");
+        break;
     case Play:
         writeCommand(c, "PLAY");
         break;
@@ -1086,59 +1096,6 @@ void qiscp::networkCommand(Commands cmd) {
     case Pause:
         writeCommand(c, "PAUSE");
         break;
-    }
-}
-
-/**
- * @brief qiscp::tvCommand
- * @param cmd
- *
- * TV Control specific commands
- *
- */
-void qiscp::tvCommand(Commands cmd) {
-    const QString c="CDV";
-
-    switch (cmd) {
-    case PowerOn:
-        writeCommand(c, "PWRON");
-        break;
-    case PowerOff:
-        writeCommand(c, "PWROFF");
-        break;
-    case ChannelUp:
-        writeCommand(c, "CHUP");
-        break;
-    case ChannelDown:
-        writeCommand(c, "CHDOWN");
-        break;
-    case VolumeUp:
-        writeCommand(c, "VLUP");
-        break;
-    case VolumeDown:
-        writeCommand(c, "VLDN");
-        break;
-    case Mute:
-        writeCommand(c, "MUTE");
-        break;
-    case Display:
-        writeCommand(c, "DISP");
-        break;
-    case Input:
-        writeCommand(c, "INPUT");
-        break;
-    case Clear:
-        writeCommand(c, "CLEAR");
-        break;
-    case Setup:
-        writeCommand(c, "SETUP");
-        break;
-    case Guide:
-        writeCommand(c, "GUIDE");
-        break;
-    case Previous:
-        writeCommand(c, "PREV");
-        break;
     case Enter:
         writeCommand(c, "ENTER");
         break;
@@ -1146,8 +1103,9 @@ void qiscp::tvCommand(Commands cmd) {
         writeCommand(c, "RETURN");
         break;
     default:
-        keyCommand(c, cmd);
+        return false;
     }
+    return true;
 }
 
 /**
@@ -1221,12 +1179,144 @@ default:
 return true;
 }
 
-void qiscp::dvdCommand(Commands cmd) {
-
+/**
+ * @brief qiscp::networkCommand
+ * @param cmd
+ *
+ * Network service specific commands
+ */
+void qiscp::networkCommand(Commands cmd) {
+    const QString c="NTC";
+    switch (cmd) {
+    case Menu:
+        writeCommand(c, "MENU");
+        break;
+    case TrackUp:
+        writeCommand(c, "TRUP");
+        break;
+    case TrackDown:
+        writeCommand(c, "TRDN");
+        break;
+    case Repeat:
+        writeCommand(c, "REPEAT");
+        break;
+    case Random:
+        writeCommand(c, "RANDOM");
+        break;
+    case Display:
+        writeCommand(c, "DISPLAY");
+        break;
+    case Select:
+        writeCommand(c, "SELECT");
+        break;
+    case FastForward:
+        writeCommand(c, "FF");
+        break;
+    case FastReverse:
+        writeCommand(c, "REW");
+        break;
+    default:
+        if (keyCommand(c,cmd))
+            return;
+        else if (baseCommand(c, cmd))
+            return;
+    }
 }
 
-void qiscp::bdCommand(Commands cmd) {
+/**
+ * @brief qiscp::tvCommand
+ * @param cmd
+ *
+ * TV Control specific commands
+ *
+ */
+void qiscp::tvCommand(Commands cmd) {
+    const QString c="CTV";
 
+    switch (cmd) {
+    case ChannelUp:
+        writeCommand(c, "CHUP");
+        break;
+    case ChannelDown:
+        writeCommand(c, "CHDOWN");
+        break;
+    case VolumeUp:
+        writeCommand(c, "VLUP");
+        break;
+    case VolumeDown:
+        writeCommand(c, "VLDN");
+        break;
+    case Mute:
+        writeCommand(c, "MUTE");
+        break;
+    case Display:
+        writeCommand(c, "DISP");
+        break;
+    case Input:
+        writeCommand(c, "INPUT");
+        break;
+    case Clear:
+        writeCommand(c, "CLEAR");
+        break;
+    case Setup:
+        writeCommand(c, "SETUP");
+        break;
+    case Guide:
+        writeCommand(c, "GUIDE");
+        break;
+    case Previous:
+        writeCommand(c, "PREV");
+        break;
+    default:
+        keyCommand(c, cmd);
+    }
+}
+
+void qiscp::dvdCommand(Commands cmd) {
+    const QString c="CDV";
+
+    switch (cmd) {
+    case FastForward:
+        writeCommand(c, "FF");
+        break;
+    case FastReverse:
+        writeCommand(c, "REW");
+        break;
+    case SkipForward:
+        writeCommand(c, "SKIP.F");
+        break;
+    case SkipReverse:
+        writeCommand(c, "SKIP.R");
+        break;
+    case Setup:
+        writeCommand(c, "SETUP");
+        break;
+    case Menu:
+        writeCommand(c, "MENU");
+        break;
+    case Top:
+        writeCommand(c, "TOPMENU");
+        break;
+    case OpenClose:
+        writeCommand(c, "OP/CL");
+        break;
+    default:
+        if (keyCommand(c,cmd))
+            return;
+        else if (baseCommand(c, cmd))
+            return;
+    }
+}
+
+/**
+ * @brief qiscp::bdCommand
+ * @param cmd
+ *
+ * Alias for dvdCommand();
+ *
+ */
+void qiscp::bdCommand(Commands cmd) {
+    dvdCommand(cmd);
 }
 
 void qiscp::command(Commands cmd) {

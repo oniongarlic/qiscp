@@ -23,10 +23,10 @@ public:
     explicit qiscp(QObject *parent = 0);
 
     enum Zones {
-        Zone1=1,
-        Zone2=2,
-        Zone3=4,
-        Zone4=8
+        Zone1=0x1,
+        Zone2=0x2,
+        Zone3=0x4,
+        Zone4=0x8
     };
 
     Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
@@ -195,6 +195,8 @@ public:
         TrackDown,
         FastForward,
         FastReverse,
+        SkipForward,
+        SkipReverse,
         ToggleRepeat,
         ToggleRandom,
         Display,
@@ -206,6 +208,8 @@ public:
         Enter,
         Return,
         Previous,
+        Repeat,
+        Random,
         Select,
         Key0,
         Key1,
@@ -228,6 +232,8 @@ public:
         Top,
         Setup,
         Input,
+        OpenClose,
+        Power,
         PowerOn,
         PowerOff,
         ChannelUp,
@@ -542,6 +548,7 @@ private:
     bool writeCommand(ISCPMsg *message);
     void parseMessage(ISCPMsg *message);
     bool keyCommand(QString c, Commands cmd);
+    bool baseCommand(QString c, Commands cmd);
 };
 
 #endif // QISCP_H
