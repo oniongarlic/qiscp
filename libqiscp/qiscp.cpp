@@ -85,6 +85,10 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("ATM", ISCPCommands::ElapsedTime);
     m_commands.insert("AST", ISCPCommands::PlayStatus);
 
+    // Misc
+    m_commands.insert("CEC", ISCPCommands::CEC);
+    m_commands.insert("HAO", ISCPCommands::HDMIAudio);
+
     // Zone 2
     m_commands.insert("ZPW", ISCPCommands::Zone2Power);
     m_commands.insert("ZVL", ISCPCommands::Zone2Volume);
@@ -1035,6 +1039,14 @@ void qiscp::centerLevelDown() {
     writeCommand("CTL", "DOWN");
 }
 
+void qiscp::setCEC(bool m) {
+    writeCommand("CEC", m==true ? "01" : "00");
+}
+
+void qiscp::setHDMIAudio(bool m) {
+    writeCommand("HAO", m==true ? "01" : "00");
+}
+
 void qiscp::centerLevelUp() {
     writeCommand("CTL", "UP");
 }
@@ -1185,7 +1197,7 @@ return true;
  *
  * Network service specific commands
  */
-void qiscp::networkCommand(Commands cmd) {
+bool qiscp::networkCommand(Commands cmd) {
     const QString c="NTC";
     switch (cmd) {
     case Menu:
@@ -1217,10 +1229,12 @@ void qiscp::networkCommand(Commands cmd) {
         break;
     default:
         if (keyCommand(c,cmd))
-            return;
+            return true;
         else if (baseCommand(c, cmd))
-            return;
+            return true;
+        return false;
     }
+    return true;
 }
 
 /**
@@ -1230,7 +1244,7 @@ void qiscp::networkCommand(Commands cmd) {
  * TV Control specific commands
  *
  */
-void qiscp::tvCommand(Commands cmd) {
+bool qiscp::tvCommand(Commands cmd) {
     const QString c="CTV";
 
     switch (cmd) {
@@ -1238,7 +1252,7 @@ void qiscp::tvCommand(Commands cmd) {
         writeCommand(c, "CHUP");
         break;
     case ChannelDown:
-        writeCommand(c, "CHDOWN");
+        writeCommand(c, "CHDN");
         break;
     case VolumeUp:
         writeCommand(c, "VLUP");
@@ -1250,7 +1264,7 @@ void qiscp::tvCommand(Commands cmd) {
         writeCommand(c, "MUTE");
         break;
     case Display:
-        writeCommand(c, "DISP");
+        writeCommand(c, "DISP"); // different from network!
         break;
     case Input:
         writeCommand(c, "INPUT");
@@ -1268,11 +1282,12 @@ void qiscp::tvCommand(Commands cmd) {
         writeCommand(c, "PREV");
         break;
     default:
-        keyCommand(c, cmd);
+        return keyCommand(c, cmd);
     }
+    return true;
 }
 
-void qiscp::dvdCommand(Commands cmd) {
+bool qiscp::dvdCommand(Commands cmd) {
     const QString c="CDV";
 
     switch (cmd) {
@@ -1300,12 +1315,23 @@ void qiscp::dvdCommand(Commands cmd) {
     case OpenClose:
         writeCommand(c, "OP/CL");
         break;
+    case Angle:
+        writeCommand(c, "ANGLE");
+        break;
+    case Display:
+        writeCommand(c, "DISP"); // different from network!
+        break;
+    case Clear:
+        writeCommand(c, "CLEAR");
+        break;
     default:
         if (keyCommand(c,cmd))
-            return;
+            return true;
         else if (baseCommand(c, cmd))
-            return;
+            return true;
+        return false;
     }
+    return true;
 }
 
 /**
@@ -1315,11 +1341,18 @@ void qiscp::dvdCommand(Commands cmd) {
  * Alias for dvdCommand();
  *
  */
-void qiscp::bdCommand(Commands cmd) {
-    dvdCommand(cmd);
+bool qiscp::bdCommand(Commands cmd) {
+    return dvdCommand(cmd);
 }
 
-void qiscp::command(Commands cmd) {
+/**
+ * @brief qiscp::command
+ * @param cmd
+ *
+ * Wrapper around the different commands, it maps them according to the currently selected input
+ *
+ */
+bool qiscp::command(Commands cmd, Zones zone) {
 switch (m_masterInput) {
 case Inputs::InternetRadio:
 case Inputs::Network:

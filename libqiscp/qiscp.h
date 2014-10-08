@@ -31,7 +31,7 @@ public:
 
     Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
 
-    Q_PROPERTY (bool power READ power WRITE setPower NOTIFY powerChanged)    
+    Q_PROPERTY (bool power READ power WRITE setPower NOTIFY powerChanged)
     Q_PROPERTY (int masterVolume READ masterVolume NOTIFY masterVolumeChanged)
     Q_PROPERTY (int maxDirectVolume READ maxDirectVolume WRITE setMaxDirectVolume NOTIFY maxDirectVolumeChanged)
     Q_PROPERTY (bool masterMuted READ masterMuted WRITE setMasterMuted NOTIFY masterMutedChanged)
@@ -66,6 +66,9 @@ public:
 
     Q_PROPERTY (int currentTrack READ currentTrack NOTIFY currentTrackChanged)
     Q_PROPERTY (int currentTracks READ currentTracks NOTIFY currentTracksChanged)
+
+    Q_PROPERTY (bool hdmiAudio READ hdmiAudio NOTIFY hdmiAudioChanged)
+    Q_PROPERTY (bool cec READ cec NOTIFY cecChanged)
 
     Q_PROPERTY (bool discovering READ discovering NOTIFY discoveringChanged)
 
@@ -117,6 +120,9 @@ public:
     Q_INVOKABLE void centerLevelUp();
     Q_INVOKABLE void centerLevelDown();
 
+    Q_INVOKABLE void setCEC(bool m);
+    Q_INVOKABLE void setHDMIAudio(bool m);
+
     Q_INVOKABLE void setZone2Muted(bool m);
     Q_INVOKABLE void setZone3Muted(bool m);
     Q_INVOKABLE void setZone4Muted(bool m);   
@@ -137,7 +143,7 @@ public:
     int port() const { return m_port; }
     QString host() const { return m_host; }    
 
-    bool power() const { return m_power; }
+    bool power() const { return m_power; }        
 
     int maxDirectVolume() const { return m_maxvolume; }
     void setMaxDirectVolume(quint8 maxvol);
@@ -187,6 +193,9 @@ public:
     int currentTrack() const { return m_track; }
     int currentTracks() const { return m_tracks; }
 
+    bool hdmiAudio() const { return m_hdmiAudio; }
+    bool cec() const { return m_cec; }
+
     enum Commands {
         Play=1,
         Stop,
@@ -229,6 +238,7 @@ public:
         Caps,
         Menu,        
         Guide,
+        Angle,
         Top,
         Setup,
         Input,
@@ -243,12 +253,11 @@ public:
         Mute
     };
 
-    Q_INVOKABLE void networkCommand(Commands cmd);
-    Q_INVOKABLE void tvCommand(Commands cmd);
-    Q_INVOKABLE void dvdCommand(Commands cmd);
-    Q_INVOKABLE void bdCommand(Commands cmd);
-    Q_INVOKABLE void command(Commands cmd);
-
+    Q_INVOKABLE bool networkCommand(Commands cmd);
+    Q_INVOKABLE bool tvCommand(Commands cmd);
+    Q_INVOKABLE bool dvdCommand(Commands cmd);
+    Q_INVOKABLE bool bdCommand(Commands cmd);
+    Q_INVOKABLE bool command(Commands cmd, Zones zone=Zone1);
 
 signals:
     void portChanged();
@@ -261,6 +270,9 @@ signals:
 
     void connectedChanged();
     void powerChanged();
+
+    void hdmiAudioChanged();
+    void cecChanged();
 
     void deviceInfo();
     void presetsList();
@@ -371,6 +383,8 @@ private:
             PlayStatus,
             ListInfo,
             DeviceInformation,
+            CEC,
+            HDMIAudio,
             // Airplay, these are untested but should work as the data format is same as other network
             AirplayCurrentArtist,
             AirplayCurrentAlbum,
@@ -525,6 +539,9 @@ private:
 
     quint16 m_track;
     quint16 m_tracks;
+
+    bool m_cec;
+    bool m_hdmiAudio;
 
     // NRI data
     QVariantList m_tunerpresets;
