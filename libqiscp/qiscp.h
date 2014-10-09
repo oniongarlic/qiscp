@@ -578,8 +578,10 @@ private:
     void requestZone3State();
     void requestZone4State();
 
-    bool writeCommand(ISCPMsg *message);
+    bool writeCommand(ISCPMsg *message);    
+    bool writeCommand(QString cmd, const char *param);
     void parseMessage(ISCPMsg *message);
+
     bool keyCommand(QString c, Commands cmd);
     bool baseCommand(QString c, Commands cmd);
 };

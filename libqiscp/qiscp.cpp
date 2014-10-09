@@ -181,6 +181,13 @@ bool qiscp::writeCommand(QString cmd, QString param) {
     return writeCommand(&message);
 }
 
+bool qiscp::writeCommand(QString cmd, const char *param)
+{
+    QString tmp(param);
+
+    return writeCommand(cmd, tmp);
+}
+
 bool qiscp::writeCommand(QString cmd, bool param)
 {
     return writeCommand(cmd, param ? "01" : "00");
