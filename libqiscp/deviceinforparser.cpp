@@ -218,11 +218,13 @@ void DeviceInforParser::readSelectors() {
         if (m_xml.name() == "selector") {
             int id=m_xml.attributes().value("id").toString().toInt(NULL, 16);
             int value=m_xml.attributes().value("value").toString().toInt();
-            QString name=m_xml.attributes().value("name").toString();
+            int zone=m_xml.attributes().value("zone").toString().toInt();
+            QString name=m_xml.attributes().value("name").toString().simplified();
 
             QVariantMap ns;
             ns.insert("input_id", id);
             ns.insert("value", value);
+            ns.insert("zone", zone);
             ns.insert("name", name);
 
             m_selectors << ns;
