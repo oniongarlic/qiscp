@@ -804,35 +804,35 @@ void qiscp::requestNetworkPlayState() {
 /*************************************************************/
 
 void qiscp::setPower(bool p) {
-    writeCommand("PWR", p==true ? "01" : "00");
+    writeCommand("PWR", p);
 }
 
 void qiscp::setZone2Power(bool p) {
-    writeCommand("ZPW", p==true ? "01" : "00");
+    writeCommand("ZPW", p);
 }
 
 void qiscp::setZone3Power(bool p) {
-    writeCommand("PW3", p==true ? "01" : "00");
+    writeCommand("PW3", p);
 }
 
 void qiscp::setZone4Power(bool p) {
-    writeCommand("PW4", p==true ? "01" : "00");
+    writeCommand("PW4", p);
 }
 
 void qiscp::setMasterMuted(bool m) {
-    writeCommand("AMT", m==true ? "01" : "00");
+    writeCommand("AMT", m);
 }
 
 void qiscp::setZone2Muted(bool m) {
-    writeCommand("ZMT", m==true ? "01" : "00");
+    writeCommand("ZMT", m);
 }
 
 void qiscp::setZone3Muted(bool m) {
-    writeCommand("MT3", m==true ? "01" : "00");
+    writeCommand("MT3", m);
 }
 
 void qiscp::setZone4Muted(bool m) {
-    writeCommand("MT4", m==true ? "01" : "00");
+    writeCommand("MT4", m);
 }
 
 void qiscp::setZoneInput(Zones zone, int t) {
@@ -1087,16 +1087,16 @@ void qiscp::centerLevelDown() {
 }
 
 void qiscp::setCEC(bool m) {
-    writeCommand("CEC", m==true ? "01" : "00");
+    writeCommand("CEC", m);
 }
 
 void qiscp::setHDMIAudio(bool m) {
-    writeCommand("HAO", m==true ? "01" : "00");
+    writeCommand("HAO", m);
 }
 
 void qiscp::setMusicOptimizer(bool m)
 {
-    writeCommand("MOT", m==true ? "01" : "00");
+    writeCommand("MOT", m);
 }
 
 void qiscp::setListeningMode(int m)
