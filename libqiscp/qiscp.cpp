@@ -89,6 +89,10 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("CEC", ISCPCommands::CEC);
     m_commands.insert("HAO", ISCPCommands::HDMIAudio);
 
+    m_commands.insert("LMD", ISCPCommands::ListeningMode);
+    m_commands.insert("LTN", ISCPCommands::LateNightMode);
+    m_commands.insert("MOT", ISCPCommands::MusicOptimizer);
+
     // Zone 2
     m_commands.insert("ZPW", ISCPCommands::Zone2Power);
     m_commands.insert("ZVL", ISCPCommands::Zone2Volume);
@@ -175,6 +179,11 @@ bool qiscp::writeCommand(QString cmd, QString param) {
     message.setCommand(cmd, param);
 
     return writeCommand(&message);
+}
+
+bool qiscp::writeCommand(QString cmd, bool param)
+{
+    return writeCommand(cmd, param ? "01" : "00");
 }
 
 bool qiscp::writeCommand(ISCPMsg *message) {
@@ -456,6 +465,29 @@ void qiscp::parseMessage(ISCPMsg *message) {
         m_masterTunerFreq=message->getTunerValue();
         emit masterTunerFreqChanged();
         break;
+    case ISCPCommands::MusicOptimizer:
+        val=message->getIntValue();
+        m_musicOptimizer=val==1 ? true : false;
+        emit musicOptimizerChanged();
+        break;
+    case ISCPCommands::CEC:
+        val=message->getIntValue();
+        m_cec=val==1 ? true : false;
+        emit cecChanged();
+        break;
+    case ISCPCommands::HDMIAudio:
+        val=message->getIntValue();
+        m_hdmiAudio=val==1 ? true : false;
+        emit hdmiAudioChanged();
+        break;
+    case ISCPCommands::ListeningMode:
+        m_listeningmode=message->getIntValue();
+        emit listeningModeChanged();
+        break;
+    case ISCPCommands::LateNightMode:
+        m_latenight=message->getIntValue();
+        emit lateNightModeChanged();
+        break;
 // Zone 2
     case ISCPCommands::Zone2Power:        
         val=message->getIntValue();
@@ -717,6 +749,21 @@ void qiscp::requestInitialState() {
     // XXX: Funny, my device (master+z2 only) answers to PW3 with 00 but to PW4 with N/A so not reliable to probe it
     queueCommand("PW3", "QSTN");
     queueCommand("PW4", "QSTN");
+
+    //
+    queueCommand("CEC", "QSTN");
+    queueCommand("MOT", "QSTN");
+    queueCommand("LTN", "QSTN");
+    queueCommand("LMD", "QSTN");
+    queueCommand("HAO", "QSTN");
+    // queueCommand("HAS", "QSTN");
+    // queueCommand("HDO", "QSTN");
+    // queueCommand("RAS", "QSTN");
+
+    // Audyssey
+    // queueCommand("ADY", "QSTN");
+    // queueCommand("ADQ", "QSTN");
+    // queueCommand("ADV", "QSTN");
 }
 
 void qiscp::requestZone2State() {
@@ -1045,6 +1092,21 @@ void qiscp::setCEC(bool m) {
 
 void qiscp::setHDMIAudio(bool m) {
     writeCommand("HAO", m==true ? "01" : "00");
+}
+
+void qiscp::setMusicOptimizer(bool m)
+{
+    writeCommand("MOT", m==true ? "01" : "00");
+}
+
+void qiscp::setListeningMode(int m)
+{
+    writeCommand("LMD", getHex(m));
+}
+
+void qiscp::setLateNightMode(int m)
+{
+    writeCommand("LTN", getHex(m));
 }
 
 void qiscp::centerLevelUp() {

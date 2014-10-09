@@ -69,6 +69,7 @@ public:
 
     Q_PROPERTY (bool hdmiAudio READ hdmiAudio NOTIFY hdmiAudioChanged)
     Q_PROPERTY (bool cec READ cec NOTIFY cecChanged)
+    Q_PROPERTY (bool musicOptimizer READ musicOptimizer NOTIFY musicOptimizerChanged)
 
     Q_PROPERTY (bool discovering READ discovering NOTIFY discoveringChanged)
 
@@ -88,6 +89,7 @@ public:
     Q_INVOKABLE bool close();
 
     Q_INVOKABLE bool writeCommand(QString cmd, QString param);
+    Q_INVOKABLE bool writeCommand(QString cmd, bool param);
     Q_INVOKABLE void queueCommand(QString cmd, QString param);
 
     Q_INVOKABLE void volumeUp(Zones zone=Zone1);
@@ -122,6 +124,9 @@ public:
 
     Q_INVOKABLE void setCEC(bool m);
     Q_INVOKABLE void setHDMIAudio(bool m);
+    Q_INVOKABLE void setMusicOptimizer(bool m);
+    Q_INVOKABLE void setListeningMode(int m); // XXX Use enum for this!
+    Q_INVOKABLE void setLateNightMode(int m);
 
     Q_INVOKABLE void setZone2Muted(bool m);
     Q_INVOKABLE void setZone3Muted(bool m);
@@ -143,7 +148,7 @@ public:
     int port() const { return m_port; }
     QString host() const { return m_host; }    
 
-    bool power() const { return m_power; }        
+    bool power() const { return m_power; }
 
     int maxDirectVolume() const { return m_maxvolume; }
     void setMaxDirectVolume(quint8 maxvol);
@@ -195,6 +200,7 @@ public:
 
     bool hdmiAudio() const { return m_hdmiAudio; }
     bool cec() const { return m_cec; }
+    bool musicOptimizer() const { return m_musicOptimizer; }
 
     enum Commands {
         Play=1,
@@ -273,6 +279,9 @@ signals:
 
     void hdmiAudioChanged();
     void cecChanged();
+    void musicOptimizerChanged();
+    void listeningModeChanged();
+    void lateNightModeChanged();
 
     void deviceInfo();
     void presetsList();
@@ -385,6 +394,9 @@ private:
             DeviceInformation,
             CEC,
             HDMIAudio,
+            MusicOptimizer,
+            ListeningMode,
+            LateNightMode,
             // Airplay, these are untested but should work as the data format is same as other network
             AirplayCurrentArtist,
             AirplayCurrentAlbum,
@@ -542,6 +554,10 @@ private:
 
     bool m_cec;
     bool m_hdmiAudio;
+    bool m_musicOptimizer;
+
+    quint8 m_listeningmode;
+    quint8 m_latenight;
 
     // NRI data
     QVariantList m_tunerpresets;
