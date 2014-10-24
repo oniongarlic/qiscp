@@ -247,7 +247,7 @@ void DeviceInforParser::readPresets() {
             int id=m_xml.attributes().value("id").toString().toInt(NULL, 16);
             int band=m_xml.attributes().value("band").toString().toInt();
             QString freq=m_xml.attributes().value("freq").toString(); // Parse into a int ?
-            QString name=m_xml.attributes().value("name").toString();
+            QString name=m_xml.attributes().value("name").toString().simplified();
 
             QVariantMap ns;
             ns.insert("preset_id", id);
