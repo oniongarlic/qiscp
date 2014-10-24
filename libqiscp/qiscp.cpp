@@ -153,6 +153,9 @@ qiscp::qiscp(QObject *parent) :
     m_inputs.insert(Inputs::Network, "Network");
     m_inputs.insert(Inputs::AirPlay, "AirPlay");
 
+    // Zone 1 as source
+    m_inputs.insert(Inputs::Source, "Source");
+
     m_timer.setSingleShot(true);
     m_timer.setInterval(m_discover_timeout);
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(discoveryTimeout()));
