@@ -1081,50 +1081,126 @@ void qiscp::trebleLevelDown(Zones zone) {
     writeCommand("TFR", "TDOWN");
 }
 
-void qiscp::subwooferLevelDown() {
-    writeCommand("SWL", "DOWN");
-}
-
+/**
+ * @brief qiscp::subwooferLevelUp
+ *
+ * Adjust master Subwoofer volume up
+ *
+ */
 void qiscp::subwooferLevelUp() {
     writeCommand("SWL", "UP");
 }
 
+
+/**
+ * @brief qiscp::subwooferLevelDown
+ *
+ * Adjust master Subwoofer volume down
+ *
+ */
+void qiscp::subwooferLevelDown() {
+    writeCommand("SWL", "DOWN");
+}
+
+/**
+ * @brief qiscp::centerLevelUp
+ *
+ * Adjust master Center speaker volume up
+ *
+ */
+void qiscp::centerLevelUp() {
+    writeCommand("CTL", "UP");
+}
+
+/**
+ * @brief qiscp::centerLevelDown
+ *
+ * Adjust master Center speak volume down
+ *
+ */
 void qiscp::centerLevelDown() {
     writeCommand("CTL", "DOWN");
 }
 
+/**
+ * @brief qiscp::setCEC
+ * @param m
+ *
+ * Enable/Disable CEC device control trough HDMI
+ *
+ */
 void qiscp::setCEC(bool m) {
     writeCommand("CEC", m);
 }
 
+/**
+ * @brief qiscp::setHDMIAudio
+ * @param m
+ *
+ * Toggle Audio trough HDMI On/Off
+ *
+ */
 void qiscp::setHDMIAudio(bool m) {
     writeCommand("HAO", m);
 }
 
+/**
+ * @brief qiscp::setMusicOptimizer
+ * @param m
+ *
+ * Toggle Compressed Music Optimizer On/Off
+ *
+ */
 void qiscp::setMusicOptimizer(bool m)
 {
     writeCommand("MOT", m);
 }
 
-void qiscp::setListeningMode(int m)
+/**
+ * @brief qiscp::setListeningMode
+ * @param m
+ *
+ * Set listening mode
+ *
+ */
+void qiscp::setListeningMode(ListeningModes m)
 {
     writeCommand("LMD", getHex(m));
 }
 
-void qiscp::setLateNightMode(int m)
+/**
+ * @brief qiscp::setLateNightMode
+ * @param m
+ *
+ * Set late night listening mode. Only available when input is xxx
+ *
+ */
+void qiscp::setLateNightMode(LateNightModes m)
 {
     writeCommand("LTN", getHex(m));
 }
 
-void qiscp::centerLevelUp() {
-    writeCommand("CTL", "UP");
-}
-
+/**
+ * @brief qiscp::setBassLevel
+ * @param level
+ * @param zone
+ *
+ * Set bass level direclty. Range is from -10 to 10.
+ *
+ */
 void qiscp::setBassLevel(qint8 level, Zones zone) {
     int l=qBound(-0xA, (int)level, 0xA);
     writeCommand("TFR", getHex(l));
 }
 
+/**
+ * @brief qiscp::setTrebleLevel
+ * @param level
+ * @param zone
+ *
+ * Set treble level directly. Range is from -10 to 10.
+ *
+ */
 void qiscp::setTrebleLevel(qint8 level, Zones zone) {
     int l=qBound(-0xA, (int)level, 0xA);
     writeCommand("TFR", getHex(l));
@@ -1140,10 +1216,22 @@ void qiscp::setSubwooferLevel(qint8 level) {
     writeCommand("SWL", getHex(l));
 }
 
+/**
+ * @brief qiscp::bluetoothPairing
+ *
+ * Switch to Bluetooth input and enable device pairing.
+ *
+ */
 void qiscp::bluetoothPairing() {
     writeCommand("NBT", "PAIRING");
 }
 
+/**
+ * @brief qiscp::bluetoothClearPairing
+ *
+ * Clear bluetooth device pairing settings.
+ *
+ */
 void qiscp::bluetoothClearPairing() {
     writeCommand("NBT", "CLEAR");
 }

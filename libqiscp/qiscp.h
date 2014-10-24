@@ -19,6 +19,9 @@ class qiscp : public QObject
     Q_OBJECT
     Q_ENUMS(Commands)
     Q_ENUMS(Zones)
+    Q_ENUMS(LateNightModes)
+    Q_ENUMS(ListeningModesQuick)
+
 public:
     explicit qiscp(QObject *parent = 0);
 
@@ -27,6 +30,28 @@ public:
         Zone2=0x2,
         Zone3=0x4,
         Zone4=0x8
+    };
+
+    enum LateNightModes {
+        Off=0,
+        Low=1,
+        High=2,
+        Auto=3,
+    };
+
+    enum ListeningModes {
+        Stereo=0,
+        Direct,
+        Surround,
+        Film,
+        THX,
+        Action,
+    };
+
+    enum ListeningModesQuick {
+        ToggleMovie,
+        ToggleMusic,
+        ToggleGame
     };
 
     Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
@@ -125,8 +150,8 @@ public:
     Q_INVOKABLE void setCEC(bool m);
     Q_INVOKABLE void setHDMIAudio(bool m);
     Q_INVOKABLE void setMusicOptimizer(bool m);
-    Q_INVOKABLE void setListeningMode(int m); // XXX Use enum for this!
-    Q_INVOKABLE void setLateNightMode(int m);
+    Q_INVOKABLE void setListeningMode(ListeningModes m);
+    Q_INVOKABLE void setLateNightMode(LateNightModes m);
 
     Q_INVOKABLE void setZone2Muted(bool m);
     Q_INVOKABLE void setZone3Muted(bool m);
@@ -474,6 +499,7 @@ private:
             Sirius=0x32,
             DAB=0x33,
             UniversalPort=0x40,
+            Source=0x80,
             EndCommands=0xFF // Marker
         };
     };
