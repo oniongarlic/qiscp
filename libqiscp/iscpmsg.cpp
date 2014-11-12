@@ -5,6 +5,10 @@
 
 #define ISCP_MAGIC "ISCP"
 
+// Define for more ISCP debug output
+#define ISCP_DEBUG_PARSED 1
+// #define ISCP_DEBUG_MESSAGE 1
+
 ISCPMsg::ISCPMsg(QObject *parent) :
     QObject(parent),
     m_version(1),
@@ -114,14 +118,15 @@ bool ISCPMsg::fromData(QByteArray *data) {
     qDebug() << "EOF at: " << eofidx;
     m_param=msg.mid(5,eofidx-5);
 
+#if ISCP_DEBUG_PARSED
     qDebug() << QTime::currentTime();
-    qDebug() << "Datamsg sz: " << msg.size();
-    qDebug() << "Command sz: " << dsize;
+    qDebug() << "MSZ: " << msg.size() << " : CSZ: " << dsize;
     qDebug() << "Command is: " << m_cmd;
     qDebug() << "Command pa: " << m_param;
-    qDebug("-------------------------------------------------------");
-    qDebug() << "Full ISCP Message is: " << msg;
-    qDebug("-------------------------------------------------------");
+#endif
+#if ISPC_DEBUG_MESSAGE
+    qDebug() << "ISCP: " << msg;
+#endif
 
     // Remove the data we used.
     data->remove(0, ISCP_HEADER_SIZE+dsize);
