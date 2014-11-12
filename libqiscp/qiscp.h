@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QTime>
 #include <QtXml/QXmlSimpleReader>
+#include <QImage>
 
 #include "iscpmsg.h"
 #include "deviceinforparser.h"
@@ -21,6 +22,7 @@ class qiscp : public QObject
     Q_ENUMS(Zones)
     Q_ENUMS(LateNightModes)
     Q_ENUMS(ListeningModesQuick)
+    Q_ENUMS(NetworkService)
 
 public:
     explicit qiscp(QObject *parent = 0);
@@ -54,6 +56,27 @@ public:
         ToggleGame
     };
 
+    enum NetworkService {
+        NSDLNA=0x0,
+        NSFavorite=0x1,
+        vTuner=0x2,
+        Sirius=0x3,
+        Pandora=0x4,
+        Rhapsody=0x5,
+        LastFM=0x6,
+        Napster=0x7,
+        Slacker=0x8,
+        Mediafly=0x9,
+        Spotify=0xA,
+        AUPEO=0xB,
+        Radiko=0xC,
+        eOnkyo=0xD,
+        TuneInRadio=0xE,
+        mp3tunes=0xF,
+        Simfy=0x10,
+        HomeMedia=0x11
+    };
+
     Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
 
     Q_PROPERTY (bool debug READ getDebug WRITE setDebug NOTIFY debugChanged)
@@ -65,6 +88,8 @@ public:
 
     Q_PROPERTY (int masterInput READ masterInput WRITE setMasterInput NOTIFY masterInputChanged)
     Q_PROPERTY (int masterTunerFreq READ masterTunerFreq NOTIFY masterTunerFreqChanged)
+
+    Q_PROPERTY (NetworkService networkService READ networkService WRITE setNetworkService NOTIFY networkServiceChanged)
 
     Q_PROPERTY (int bassLevel READ bassLevel WRITE setBassLevel NOTIFY bassLevelChanged)
     Q_PROPERTY (int trebleLevel READ trebleLevel WRITE setTrebleLevel NOTIFY trebleLevelChanged)
@@ -297,6 +322,11 @@ public:
         return m_debug;
     }
 
+    NetworkService networkService() const
+    {
+        return m_networkService;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -367,6 +397,9 @@ signals:
     void currentTrackLengthChanged();
     void currentTrackChanged();
     void currentTracksChanged();
+    void currentArtworkChanged();
+
+    void networkServiceChanged(NetworkService arg);
 
 public slots:
 
@@ -377,6 +410,8 @@ public slots:
             emit debugChanged();
         }
     }
+
+    void setNetworkService(NetworkService arg);
 
 private slots:
     void tcpConnected();
@@ -433,6 +468,7 @@ private:
             PlayStatus,
             ListInfo,
             DeviceInformation,
+            Artwork,
             CEC,
             HDMIAudio,
             MusicOptimizer,
@@ -627,6 +663,11 @@ private:
     bool keyCommand(QString c, Commands cmd);
     bool baseCommand(QString c, Commands cmd);
     bool m_debug;
+    NetworkService m_networkService;
+
+    void parseArtworkMessage(ISCPMsg *message);
+    QByteArray m_artbuffer;
+    QImage m_artwork;
 };
 
 #endif // QISCP_H

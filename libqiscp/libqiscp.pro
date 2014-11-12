@@ -6,7 +6,8 @@
 
 QT       += core
 QT       += network
-QT       -= gui
+# Needed for QImage
+QT       += gui
 
 TARGET = qiscp
 CONFIG   -= app_bundle

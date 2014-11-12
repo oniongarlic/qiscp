@@ -71,12 +71,15 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("CTL", ISCPCommands::CenterLevel);
     m_commands.insert("SWL", ISCPCommands::SubwooferLevel);
 
+    // USB/Network
     m_commands.insert("NAL", ISCPCommands::CurrentAlbum);
     m_commands.insert("NAT", ISCPCommands::CurrentArtist);
     m_commands.insert("NTI", ISCPCommands::CurrentTitle);
     m_commands.insert("NRT", ISCPCommands::CurrentTrack);
     m_commands.insert("NTM", ISCPCommands::ElapsedTime);
     m_commands.insert("NST", ISCPCommands::PlayStatus);
+    m_commands.insert("NJA", ISCPCommands::Artwork);
+
     m_commands.insert("NRI", ISCPCommands::DeviceInformation);
 
     // XXX: Needs feedback, but should work
@@ -410,6 +413,36 @@ void qiscp::readBroadcastDatagram()
     }
 }
 
+void qiscp::parseArtworkMessage(ISCPMsg *message) {
+    QString p=message->getParamter();
+    int type=p.mid(0,1).toInt(NULL, 10);
+    int marker=p.mid(1,1).toInt(NULL, 10);
+
+    qDebug() << "ARTM: " << marker;
+
+    switch (marker) {
+    case 0:
+        m_artbuffer.clear();
+        m_artbuffer.append(p.mid(2));
+        break;
+    case 1:
+        m_artbuffer.append(p.mid(2));
+        break;
+    case 2:
+        m_artbuffer.append(p.mid(2));
+        m_artwork.fromData(QByteArray::fromHex(m_artbuffer));
+        emit currentArtworkChanged();
+        break;
+    }
+}
+
+/**
+ * @brief qiscp::parseMessage
+ * @param message
+ *
+ * Analyzes the given ISCPMsg commands and parameter and decodes/parses into appropriate structures
+ *
+ */
 void qiscp::parseMessage(ISCPMsg *message) {
     QString cmd=message->getCommand();
 
@@ -475,6 +508,9 @@ void qiscp::parseMessage(ISCPMsg *message) {
     case ISCPCommands::MasterTuner:
         m_masterTunerFreq=message->getTunerValue();
         emit masterTunerFreqChanged();
+        break;
+    case ISCPCommands::Artwork:
+        parseArtworkMessage(message);
         break;
     case ISCPCommands::MusicOptimizer:
         val=message->getIntValue();
@@ -720,15 +756,32 @@ QVariantList qiscp::getStaticInputs() const {
 /**
  * @brief qiscp::getZones
  * @return
+ *
+ * Get list of Zones the connected device supports.
+ *
  */
 QVariantList qiscp::getZones() const {
     return m_zonesdata;
 }
 
+/**
+ * @brief qiscp::getInputs
+ * @return
+ *
+ * Get list of Inputs the connected device supports.
+ *
+ */
 QVariantList qiscp::getInputs() const {
     return m_inputsdata;
 }
 
+/**
+ * @brief qiscp::getControls
+ * @return
+ *
+ * Get list of Audio controls the connected device supports.
+ *
+ */
 QVariantList qiscp::getControls() const {
     return m_controls;
 }
@@ -738,10 +791,7 @@ QVariantList qiscp::getControls() const {
 /**
  * @brief qiscp::requestInitialState
  *
- * Called when connection is succesfull to get the current state for:
- * Power
- * Volume
- * Input
+ * Called when connected is made, to get the current state of the receiver.
  *
  */
 void qiscp::requestInitialState() {
@@ -774,7 +824,7 @@ void qiscp::requestInitialState() {
     // Audyssey
     // queueCommand("ADY", "QSTN");
     // queueCommand("ADQ", "QSTN");
-    // queueCommand("ADV", "QSTN");
+    // queueCommand("ADV", "QSTN");  
 }
 
 void qiscp::requestZone2State() {
@@ -810,6 +860,7 @@ void qiscp::requestNetworkPlayState() {
     queueCommand("NAL", "QSTN");
     queueCommand("NTI", "QSTN");
     queueCommand("NTR", "QSTN");
+    queueCommand("NJA", "QSTN");
 }
 
 /*************************************************************/
@@ -1524,4 +1575,16 @@ case Inputs::DVD:
     dvdCommand(cmd);
     break;
 }
+}
+
+void qiscp::setNetworkService(qiscp::NetworkService arg)
+{
+    QString p;
+    if (m_networkService != arg) {
+        m_networkService = arg;
+        p=getHex(m_networkService, 1);
+        p.append("0");
+        writeCommand("NSV", p);
+        emit networkServiceChanged(arg);
+    }
 }
