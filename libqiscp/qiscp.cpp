@@ -345,8 +345,6 @@ void qiscp::readISCP() {
     // Read in the data
     tmp.resize(ba);
     ds.readRawData(tmp.data(), ba);
-    qDebug() << "DS: " << tmp.size();
-    qDebug() << "DATA: " << tmp.toHex();
     m_buffer.append(tmp, ba);
     tmp.clear();
 
@@ -356,7 +354,6 @@ void qiscp::readISCP() {
         ISCPMsg msg;
         if (msg.fromData(&m_buffer)) {
             parseMessage(&msg);
-            qDebug() << "*** DATA LEFT: " << m_buffer.size();
         } else {
             return;
         }
