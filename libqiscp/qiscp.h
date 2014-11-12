@@ -56,6 +56,8 @@ public:
 
     Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
 
+    Q_PROPERTY (bool debug READ getDebug WRITE setDebug NOTIFY debugChanged)
+
     Q_PROPERTY (bool power READ power WRITE setPower NOTIFY powerChanged)
     Q_PROPERTY (int masterVolume READ masterVolume NOTIFY masterVolumeChanged)
     Q_PROPERTY (int maxDirectVolume READ maxDirectVolume WRITE setMaxDirectVolume NOTIFY maxDirectVolumeChanged)
@@ -290,6 +292,11 @@ public:
     Q_INVOKABLE bool bdCommand(Commands cmd);
     Q_INVOKABLE bool command(Commands cmd, Zones zone=Zone1);
 
+    bool getDebug() const
+    {
+        return m_debug;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -300,6 +307,7 @@ signals:
     void disconnectedFromHost();
 
     void connectedChanged();
+    void debugChanged();
     void powerChanged();
 
     void hdmiAudioChanged();
@@ -362,7 +370,15 @@ signals:
 
 public slots:
 
-private slots:    
+    void setDebug(bool arg)
+    {
+        if (m_debug != arg) {
+            m_debug = arg;
+            emit debugChanged();
+        }
+    }
+
+private slots:
     void tcpConnected();
     void tcpDisconnected();
     void tcpError(QAbstractSocket::SocketError se);
@@ -610,6 +626,7 @@ private:
 
     bool keyCommand(QString c, Commands cmd);
     bool baseCommand(QString c, Commands cmd);
+    bool m_debug;
 };
 
 #endif // QISCP_H

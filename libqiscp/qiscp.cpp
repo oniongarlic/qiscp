@@ -25,6 +25,7 @@ qiscp::qiscp(QObject *parent) :
     m_port(ISCP_PORT),
     m_discover_timeout(1000),
     m_connected(false),
+    m_debug(false),
     m_power(false),
     m_z2Power(false),
     m_z3Power(false),
@@ -32,7 +33,7 @@ qiscp::qiscp(QObject *parent) :
     m_masterMuted(false),
     m_masterVolume(0),
     m_maxvolume(20),
-    m_zonesAvailable(Zone1),
+    m_zonesAvailable(Zone1),   
     m_masterTunerFreq(0)
 {
     m_socket=new QTcpSocket(this);    
