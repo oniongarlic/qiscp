@@ -214,6 +214,14 @@ Rectangle {
                     iscp.presetDown();
                 }
             }
+            // misc
+            Button {
+                title: iscp.musicOptimizer ? "MO Off" : "MO On";
+                enabled: iscp.connected
+                onClicked: {
+                    iscp.setMusicOptimizer(!iscp.musicOptimizer);
+                }
+            }
         }
 
         // Zone2 commands
@@ -232,19 +240,18 @@ Rectangle {
                 }
             }
 
-            /*
             Button {
                 title: "Tune+"
                 enabled: iscp.connected
                 onClicked: {
-                    iscp.tuneUp();
+                    iscp.tuneUp(QISCP.Zone2);
                 }
             }
             Button {
                 title: "Tune-"
                 enabled: iscp.connected
                 onClicked: {
-                    iscp.tuneDown();
+                    iscp.tuneDown(QISCP.Zone2);
                 }
             }
 
@@ -252,19 +259,82 @@ Rectangle {
                 title: "Preset+"
                 enabled: iscp.connected
                 onClicked: {
-                    iscp.presetUp();
+                    iscp.presetUp(QISCP.Zone2);
                 }
             }
             Button {
                 title: "Preset-"
                 enabled: iscp.connected
                 onClicked: {
-                    iscp.presetDown();
+                    iscp.presetDown(QISCP.Zone2);
                 }
             }
-            */
         }
 
+
+        /* BD/DVD */
+        Row {
+            Button {
+                title: "Power"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.Power) }
+            }
+            Button {
+                title: "Play"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.Play) }
+            }
+            Button {
+                title: "Stop"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.Stop) }
+            }
+            Button {
+                title: "Pause"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.Pause) }
+            }
+            Button {
+                title: "|<<"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.SkipReverse) }
+            }
+            Button {
+                title: ">>|"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.SkipForward) }
+            }
+        }
+
+        Row {
+            id: tvCmds
+            Button {
+                title: "Power"
+                enabled: iscp.connected
+                onClicked: { iscp.tvCommand(QISCP.Power) }
+            }
+            Button {
+                title: "Prog+"
+                enabled: iscp.connected
+                onClicked: { iscp.tvCommand(QISCP.ChannelUp) }
+            }
+            Button {
+                title: "Prog-"
+                enabled: iscp.connected
+                onClicked: { iscp.tvCommand(QISCP.ChannelDown) }
+            }
+            Button {
+                title: "Vol+"
+                enabled: iscp.connected
+                onClicked: { iscp.tvCommand(QISCP.VolumeUp) }
+            }
+            Button {
+                title: "Vol-"
+                enabled: iscp.connected
+                onClicked: { iscp.tvCommand(QISCP.VolumeDown) }
+            }
+
+        }
     }
 
     QISCP {
