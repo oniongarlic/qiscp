@@ -280,6 +280,16 @@ Rectangle {
                 onClicked: { iscp.command(QISCP.Power) }
             }
             Button {
+                title: "Menu"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.Menu) }
+            }
+            Button {
+                title: "Select"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.Select) }
+            }
+            Button {
                 title: "Play"
                 enabled: iscp.connected
                 onClicked: { iscp.command(QISCP.Play) }
@@ -303,6 +313,16 @@ Rectangle {
                 title: ">>|"
                 enabled: iscp.connected
                 onClicked: { iscp.command(QISCP.SkipForward) }
+            }
+            Button {
+                title: "T<<"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.TrackDown) }
+            }
+            Button {
+                title: ">>T"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.TrackUp) }
             }
         }
 
