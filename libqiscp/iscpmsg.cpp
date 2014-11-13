@@ -7,7 +7,7 @@
 
 // Define for more ISCP debug output
 #define ISCP_DEBUG_PARSED 1
-// #define ISCP_DEBUG_MESSAGE 1
+#define ISCP_DEBUG_MESSAGE 1
 
 ISCPMsg::ISCPMsg(QObject *parent) :
     QObject(parent),
@@ -111,21 +111,28 @@ bool ISCPMsg::fromData(QByteArray *data) {
 
     // Get the message command part into m_cmd
     QString msg=QString::fromUtf8(m_data.data(), dsize);
+
+#if ISCP_DEBUG_MESSAGE
+    qDebug() << "ISCP: " << msg;
+#endif
+
     m_cmd=msg.mid(2,3);
 
     // The rest depends on the command, read it into param, higher up can then decide what to do
     int eofidx=msg.indexOf(0x1A, 5);
-    qDebug() << "EOF at: " << eofidx;
-    m_param=msg.mid(5,eofidx-5);
+    if (eofidx>=5) {
+        m_param=msg.mid(5,eofidx-5);
+    } else if (eofidx==-1) {
+        // Special case, discover response packet does not follow the other commands format
+        m_param=msg.mid(5);
+    } else {
+        qWarning() << "EOF marker at invalid position:" << eofidx;
+        m_param="";
+    }
 
 #if ISCP_DEBUG_PARSED
-    qDebug() << QTime::currentTime();
-    qDebug() << "MSZ: " << msg.size() << " : CSZ: " << dsize;
-    qDebug() << "Command is: " << m_cmd;
-    qDebug() << "Command pa: " << m_param;
-#endif
-#if ISPC_DEBUG_MESSAGE
-    qDebug() << "ISCP: " << msg;
+    qDebug() << QTime::currentTime() << " [" << "MSZ: " << msg.size() << " : CSZ: " << dsize << "]";
+    qDebug() << "[ " << m_cmd << "]:[" << m_param << "]";
 #endif
 
     // Remove the data we used.
