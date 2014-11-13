@@ -414,6 +414,7 @@ void qiscp::parseArtworkMessage(ISCPMsg *message) {
     QString p=message->getParamter();
     int type=p.mid(0,1).toInt(NULL, 10);
     int marker=p.mid(1,1).toInt(NULL, 10);
+    bool ok;
 
     qDebug() << "ARTM: " << marker;
 
@@ -427,7 +428,13 @@ void qiscp::parseArtworkMessage(ISCPMsg *message) {
         break;
     case 2:
         m_artbuffer.append(p.mid(2));
-        m_artwork.fromData(QByteArray::fromHex(m_artbuffer));
+        ok=m_artwork.loadFromData(QByteArray::fromHex(m_artbuffer));
+        if (!ok) {
+            qWarning("Failed to load artwork image");
+        } else {
+            m_artwork.save("/tmp/artwork.png", "PNG");
+        }
+
         emit currentArtworkChanged();
         break;
     }
