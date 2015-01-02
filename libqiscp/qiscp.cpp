@@ -160,8 +160,7 @@ qiscp::qiscp(QObject *parent) :
     // Zone 1 as source
     m_inputs.insert(Inputs::Source, "Source");
 
-    m_timer.setSingleShot(true);
-    m_timer.setInterval(m_discoveryTimeout);
+    m_timer.setSingleShot(true);    
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(deviceDiscoveryTimeout()));
 }
 
@@ -244,6 +243,7 @@ void qiscp::discoverHosts() {
     m_discovering=true;
     emit discoveringChanged();
 
+    m_timer.setInterval(m_discoveryTimeout);
     m_timer.stop();
     m_devices.clear();
     m_timer.start();
