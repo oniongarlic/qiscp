@@ -1068,6 +1068,14 @@ void qiscp::tune(int t, Zones zone) {
     }
 }
 
+/**
+ * @brief qiscp::tunePreset
+ * @param t
+ * @param zone
+ *
+ * Set AM/FM tuner to given preset memory location on given zone.
+ *
+ */
 void qiscp::tunePreset(int t, Zones zone) {
     QString thex=getHex(t);
     switch (zone) {
@@ -1086,6 +1094,13 @@ void qiscp::tunePreset(int t, Zones zone) {
     }
 }
 
+/**
+ * @brief qiscp::tuneUp
+ * @param zone
+ *
+ * Autotune AM/FM tuner upwards on given zone
+ *
+ */
 void qiscp::tuneUp(Zones zone) {
     switch (zone) {
     case Zone1:
@@ -1103,6 +1118,13 @@ void qiscp::tuneUp(Zones zone) {
     }
 }
 
+/**
+ * @brief qiscp::tuneDown
+ * @param zone
+ *
+ * Autotune AM/FM tuner downwards on given zone
+ *
+ */
 void qiscp::tuneDown(Zones zone) {
     switch (zone) {
     case Zone1:
