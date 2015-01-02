@@ -23,7 +23,7 @@ static QString getHexWithPrefix(int n) {
 qiscp::qiscp(QObject *parent) :
     QObject(parent),
     m_port(ISCP_PORT),
-    m_discoveryTimeout(1000),
+    m_discoveryTimeout(2000),
     m_connected(false),
     m_debug(false),
     m_power(false),
