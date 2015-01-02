@@ -1069,7 +1069,21 @@ void qiscp::tune(int t, Zones zone) {
 }
 
 void qiscp::tunePreset(int t, Zones zone) {
-    writeCommand("PRS", getHex(t));
+    QString thex=getHex(t);
+    switch (zone) {
+    case Zone1:
+        writeCommand("PRS", thex);
+        break;
+    case Zone2:
+        writeCommand("PRZ", thex);
+        break;
+    case Zone3:
+        writeCommand("PR3", thex);
+        break;
+    case Zone4:
+        writeCommand("PR4", thex);
+        break;
+    }
 }
 
 void qiscp::tuneUp(Zones zone) {
