@@ -26,6 +26,7 @@ class qiscp : public QObject
 
 public:
     explicit qiscp(QObject *parent = 0);
+    ~qiscp();
 
     enum Zones {
         Zone1=0x1,
@@ -332,6 +333,7 @@ public:
     Q_INVOKABLE bool dvdCommand(Commands cmd);
     Q_INVOKABLE bool bdCommand(Commands cmd);
     Q_INVOKABLE bool command(Commands cmd, Zones zone=Zone1);
+    Q_INVOKABLE bool saveArtwork(QString file);
 
 signals:
     void portChanged();
@@ -682,7 +684,7 @@ private:
 
     void parseArtworkMessage(ISCPMsg *message);
     QByteArray m_artbuffer;
-    QImage m_artwork;
+    QImage *m_artwork;
     int m_discoveryTimeout;
 };
 

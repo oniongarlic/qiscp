@@ -48,6 +48,8 @@ qiscp::qiscp(QObject *parent) :
 
     m_buffer.resize(1024);
 
+    m_artwork=new QImage();
+
     m_cmdtimer.setInterval(100);
     connect(&m_cmdtimer, SIGNAL(timeout()), this, SLOT(handleCommandQueue()));
 
@@ -162,6 +164,11 @@ qiscp::qiscp(QObject *parent) :
 
     m_timer.setSingleShot(true);    
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(deviceDiscoveryTimeout()));
+}
+
+qiscp::~qiscp()
+{
+    delete m_artwork;
 }
 
 void qiscp::connectToHost() {
@@ -419,25 +426,34 @@ void qiscp::parseArtworkMessage(ISCPMsg *message) {
     qDebug() << "ARTM: " << marker;
 
     switch (marker) {
-    case 0:
+    case 0:        
         m_artbuffer.clear();
-        m_artbuffer.append(p.mid(2));
+        m_artbuffer.append(p.mid(2));        
         break;
     case 1:
         m_artbuffer.append(p.mid(2));
         break;
     case 2:
         m_artbuffer.append(p.mid(2));
-        ok=m_artwork.loadFromData(QByteArray::fromHex(m_artbuffer));
+        m_artwork=new QImage();
+        ok=m_artwork->loadFromData(QByteArray::fromHex(m_artbuffer));
         if (!ok) {
             qWarning("Failed to load artwork image");
         } else {
-            m_artwork.save("/tmp/artwork.png", "PNG");
-        }
+            m_artwork->save("/tmp/artwork.png", "PNG");
+        }        
+        m_artbuffer.clear();
 
         emit currentArtworkChanged();
         break;
     }
+}
+
+bool qiscp::saveArtwork(QString file) {
+    if (m_artwork->isNull())
+        return false;
+
+    return m_artwork->save(file, "PNG");
 }
 
 /**
