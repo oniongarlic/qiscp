@@ -171,6 +171,7 @@ public:
     Q_PROPERTY (QString currentArtist READ currentArtist NOTIFY currentArtistChanged)
     Q_PROPERTY (QString currentAlbum READ currentAlbum NOTIFY currentAlbumChanged)
     Q_PROPERTY (QString currentTitle READ currentTitle NOTIFY currentTitleChanged)
+    Q_PROPERTY (bool hasArtwork READ hasArtwork NOTIFY hasArtworkChanged)
 
     Q_PROPERTY (QTime currentTrackPosition READ currentTrackPosition NOTIFY currentTrackPositionChanged)
     Q_PROPERTY (QTime currentTrackLength READ currentTrackLength NOTIFY currentTrackLengthChanged)
@@ -335,6 +336,11 @@ public:
     Q_INVOKABLE bool command(Commands cmd, Zones zone=Zone1);
     Q_INVOKABLE bool saveArtwork(QString file);
 
+    bool hasArtwork() const
+    {
+        return m_hasArtwork;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -410,6 +416,8 @@ signals:
     void networkServiceChanged(NetworkService arg);
 
     void discoveryTimeoutChanged(int arg);
+
+    void hasArtworkChanged(bool arg);
 
 public slots:
 
@@ -686,6 +694,7 @@ private:
     QByteArray m_artbuffer;
     QImage *m_artwork;
     int m_discoveryTimeout;
+    bool m_hasArtwork;
 };
 
 #endif // QISCP_H

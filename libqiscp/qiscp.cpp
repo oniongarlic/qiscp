@@ -34,7 +34,8 @@ qiscp::qiscp(QObject *parent) :
     m_masterVolume(0),
     m_maxvolume(20),
     m_zonesAvailable(Zone1),   
-    m_masterTunerFreq(0)
+    m_masterTunerFreq(0),
+    m_hasArtwork(false)
 {
     m_socket=new QTcpSocket(this);    
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(readISCP()));
@@ -438,12 +439,15 @@ void qiscp::parseArtworkMessage(ISCPMsg *message) {
         m_artwork=new QImage();
         ok=m_artwork->loadFromData(QByteArray::fromHex(m_artbuffer));
         if (!ok) {
+            m_hasArtwork=false;
             qWarning("Failed to load artwork image");
         } else {
+            m_hasArtwork=true;
             m_artwork->save("/tmp/artwork.png", "PNG");
-        }        
+        }
         m_artbuffer.clear();
 
+        emit hasArtworkChanged(m_hasArtwork);
         emit currentArtworkChanged();
         break;
     }
@@ -876,11 +880,12 @@ void qiscp::requestZone4State() {
 
 void qiscp::requestNetworkPlayState() {
     qDebug("*** Requesting Network playback state");
-    queueCommand("NAT", "QSTN");
-    queueCommand("NAL", "QSTN");
-    queueCommand("NTI", "QSTN");
-    queueCommand("NTR", "QSTN");
-    queueCommand("NJA", "QSTN");
+    queueCommand("NST", "QSTN"); // Status
+    queueCommand("NAT", "QSTN"); // Artist
+    queueCommand("NAL", "QSTN"); // Album
+    queueCommand("NTI", "QSTN"); // Title
+    queueCommand("NTR", "QSTN"); // Track
+    queueCommand("NJA", "QSTN"); // Artwork
 }
 
 /*************************************************************/
