@@ -23,7 +23,7 @@ static QString getHexWithPrefix(int n) {
 qiscp::qiscp(QObject *parent) :
     QObject(parent),
     m_port(ISCP_PORT),
-    m_discover_timeout(1000),
+    m_discoveryTimeout(1000),
     m_connected(false),
     m_debug(false),
     m_power(false),
@@ -161,8 +161,8 @@ qiscp::qiscp(QObject *parent) :
     m_inputs.insert(Inputs::Source, "Source");
 
     m_timer.setSingleShot(true);
-    m_timer.setInterval(m_discover_timeout);
-    connect(&m_timer, SIGNAL(timeout()), this, SLOT(discoveryTimeout()));
+    m_timer.setInterval(m_discoveryTimeout);
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(deviceDiscoveryTimeout()));
 }
 
 void qiscp::connectToHost() {
@@ -265,7 +265,7 @@ void qiscp::discoverHosts() {
     }
 }
 
-void qiscp::discoveryTimeout() {
+void qiscp::deviceDiscoveryTimeout() {
     qDebug("Device discovery done");
     qDebug() << m_devices;
     emit devicesDiscovered();

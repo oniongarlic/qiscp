@@ -77,7 +77,65 @@ public:
         HomeMedia=0x11
     };
 
+    enum Commands {
+        Play=1,
+        Stop,
+        Pause,
+        TrackUp,
+        TrackDown,
+        FastForward,
+        FastReverse,
+        SkipForward,
+        SkipReverse,
+        ToggleRepeat,
+        ToggleRandom,
+        Display,
+        Clear,
+        Right,
+        Left,
+        Up,
+        Down,
+        Enter,
+        Return,
+        Previous,
+        Repeat,
+        Random,
+        Select,
+        Key0,
+        Key1,
+        Key2,
+        Key3,
+        Key4,
+        Key5,
+        Key6,
+        Key7,
+        Key8,
+        Key9,
+        KeyA,
+        KeyB,
+        KeyC,
+        KeyD,
+        Delete,
+        Caps,
+        Menu,
+        Guide,
+        Angle,
+        Top,
+        Setup,
+        Input,
+        OpenClose,
+        Power,
+        PowerOn,
+        PowerOff,
+        ChannelUp,
+        ChannelDown,
+        VolumeUp,
+        VolumeDown,
+        Mute
+    };
+
     Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
+    Q_PROPERTY (int discoveryTimeout READ discoveryTimeout WRITE setDiscoveryTimeout NOTIFY discoveryTimeoutChanged)
 
     Q_PROPERTY (bool debug READ getDebug WRITE setDebug NOTIFY debugChanged)
 
@@ -254,69 +312,6 @@ public:
     bool cec() const { return m_cec; }
     bool musicOptimizer() const { return m_musicOptimizer; }
 
-    enum Commands {
-        Play=1,
-        Stop,
-        Pause,
-        TrackUp,
-        TrackDown,
-        FastForward,
-        FastReverse,
-        SkipForward,
-        SkipReverse,
-        ToggleRepeat,
-        ToggleRandom,
-        Display,
-        Clear,
-        Right,
-        Left,
-        Up,
-        Down,
-        Enter,
-        Return,
-        Previous,
-        Repeat,
-        Random,
-        Select,
-        Key0,
-        Key1,
-        Key2,
-        Key3,
-        Key4,
-        Key5,
-        Key6,
-        Key7,
-        Key8,
-        Key9,
-        KeyA,
-        KeyB,
-        KeyC,
-        KeyD,
-        Delete,
-        Caps,
-        Menu,        
-        Guide,
-        Angle,
-        Top,
-        Setup,
-        Input,
-        OpenClose,
-        Power,
-        PowerOn,
-        PowerOff,
-        ChannelUp,
-        ChannelDown,
-        VolumeUp,
-        VolumeDown,
-        Mute
-    };
-
-    Q_INVOKABLE bool networkCommand(Commands cmd);
-    Q_INVOKABLE bool tvCommand(Commands cmd);
-    Q_INVOKABLE bool dvdCommand(Commands cmd);
-    Q_INVOKABLE bool bdCommand(Commands cmd);
-    Q_INVOKABLE bool command(Commands cmd, Zones zone=Zone1);
-
     bool getDebug() const
     {
         return m_debug;
@@ -326,6 +321,17 @@ public:
     {
         return m_networkService;
     }
+
+    int discoveryTimeout() const
+    {
+        return m_discoveryTimeout;
+    }
+
+    Q_INVOKABLE bool networkCommand(Commands cmd);
+    Q_INVOKABLE bool tvCommand(Commands cmd);
+    Q_INVOKABLE bool dvdCommand(Commands cmd);
+    Q_INVOKABLE bool bdCommand(Commands cmd);
+    Q_INVOKABLE bool command(Commands cmd, Zones zone=Zone1);
 
 signals:
     void portChanged();
@@ -401,6 +407,8 @@ signals:
 
     void networkServiceChanged(NetworkService arg);
 
+    void discoveryTimeoutChanged(int arg);
+
 public slots:
 
     void setDebug(bool arg)
@@ -413,14 +421,22 @@ public slots:
 
     void setNetworkService(NetworkService arg);
 
+    void setDiscoveryTimeout(int arg)
+    {
+        if (m_discoveryTimeout != arg && arg>=1000) {
+            m_discoveryTimeout = arg;
+            emit discoveryTimeoutChanged(arg);
+        }
+    }
+
 private slots:
     void tcpConnected();
     void tcpDisconnected();
     void tcpError(QAbstractSocket::SocketError se);
     void readISCP();
-    void readBroadcastDatagram();
-    void discoveryTimeout();
-    void handleCommandQueue();
+    void readBroadcastDatagram();    
+    void handleCommandQueue();  
+    void deviceDiscoveryTimeout();
 
 private:
     // Commands
@@ -572,8 +588,7 @@ private:
     QTcpSocket *m_socket;
     QUdpSocket *m_broadcast;
     QString m_host;
-    quint16 m_port;
-    int m_discover_timeout;
+    quint16 m_port;    
     bool m_discovering;
     bool m_connected;
 
@@ -668,6 +683,7 @@ private:
     void parseArtworkMessage(ISCPMsg *message);
     QByteArray m_artbuffer;
     QImage m_artwork;
+    int m_discoveryTimeout;
 };
 
 #endif // QISCP_H
