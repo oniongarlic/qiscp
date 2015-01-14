@@ -274,6 +274,9 @@ Rectangle {
 
         /* BD/DVD */
         Row {
+            Text {
+                text: "BD/DVD"
+            }
             Button {
                 title: "Power"
                 enabled: iscp.connected
@@ -328,6 +331,9 @@ Rectangle {
 
         Row {
             id: tvCmds
+            Text {
+                text: "TV/CEC"
+            }
             Button {
                 title: "Power"
                 enabled: iscp.connected
@@ -353,12 +359,12 @@ Rectangle {
                 enabled: iscp.connected
                 onClicked: { iscp.tvCommand(QISCP.VolumeDown) }
             }
-
         }
     }
 
     QISCP {
         id: iscp
+        discoveryTimeout: 5000
 
         onDevicesDiscovered: {
             console.debug("Devices found")
