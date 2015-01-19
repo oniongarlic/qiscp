@@ -173,8 +173,9 @@ public:
     Q_PROPERTY (QString currentTitle READ currentTitle NOTIFY currentTitleChanged)
     Q_PROPERTY (bool hasArtwork READ hasArtwork NOTIFY hasArtworkChanged)
 
-    Q_PROPERTY (QTime currentTrackPosition READ currentTrackPosition NOTIFY currentTrackPositionChanged)
-    Q_PROPERTY (QTime currentTrackLength READ currentTrackLength NOTIFY currentTrackLengthChanged)
+    // In Seconds
+    Q_PROPERTY (int currentTrackPosition READ currentTrackPosition NOTIFY currentTrackPositionChanged)
+    Q_PROPERTY (int currentTrackLength READ currentTrackLength NOTIFY currentTrackLengthChanged)
 
     Q_PROPERTY (int currentTrack READ currentTrack NOTIFY currentTrackChanged)
     Q_PROPERTY (int currentTracks READ currentTracks NOTIFY currentTracksChanged)
@@ -305,8 +306,8 @@ public:
     QString currentAlbum() const { return m_album; }
     QString currentTitle() const { return m_title; }
 
-    QTime currentTrackPosition() const { return m_position; }
-    QTime currentTrackLength() const { return m_length; }
+    int currentTrackPosition() const { return QTime().secsTo(m_position); }
+    int currentTrackLength() const { return QTime().secsTo(m_length); }
     int currentTrack() const { return m_track; }
     int currentTracks() const { return m_tracks; }
 
