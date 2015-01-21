@@ -306,8 +306,8 @@ public:
     QString currentAlbum() const { return m_album; }
     QString currentTitle() const { return m_title; }
 
-    int currentTrackPosition() const { return QTime().secsTo(m_position); }
-    int currentTrackLength() const { return QTime().secsTo(m_length); }
+    int currentTrackPosition() const { return m_timeRef.secsTo(m_position); }
+    int currentTrackLength() const { return m_timeRef.secsTo(m_length); }
     int currentTrack() const { return m_track; }
     int currentTracks() const { return m_tracks; }
 
@@ -650,6 +650,8 @@ private:
     QString m_artist;
     QString m_album;
     QString m_title;
+
+    QTime m_timeRef;
     QTime m_position;
     QTime m_length;
 
@@ -696,6 +698,8 @@ private:
     QImage *m_artwork;
     int m_discoveryTimeout;
     bool m_hasArtwork;
+    void parseElapsedTime(QString et);
+    void clearCurrentTrack();
 };
 
 #endif // QISCP_H

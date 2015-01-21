@@ -35,6 +35,7 @@ qiscp::qiscp(QObject *parent) :
     m_maxvolume(20),
     m_zonesAvailable(Zone1),   
     m_masterTunerFreq(0),
+    m_timeRef(0,0),
     m_hasArtwork(false)
 {
     m_socket=new QTcpSocket(this);    
@@ -345,7 +346,6 @@ void qiscp::readISCP() {
         if ((char)s!='P')
             return;
 
-        qDebug("Got response signature");
         m_buffer.append("ISCP");
         ba-=4;
     }
@@ -383,7 +383,6 @@ void qiscp::readBroadcastDatagram()
 
         datagram.resize(m_broadcast->pendingDatagramSize());
         m_broadcast->readDatagram(datagram.data(), datagram.size(), &sender, &senderPort);
-        qDebug() << "Got UDP data from: " << sender << " size: " << datagram.size();
 
         // As the only message we will ever get is either the query message itself
         // or the answer from a device we can safely ignore any packget that is the
@@ -423,8 +422,6 @@ void qiscp::parseArtworkMessage(ISCPMsg *message) {
     int type=p.mid(0,1).toInt(NULL, 10);
     int marker=p.mid(1,1).toInt(NULL, 10);
     bool ok;
-
-    qDebug() << "ARTM: " << marker;
 
     switch (marker) {
     case 0:        
@@ -694,23 +691,8 @@ void qiscp::parseMessage(ISCPMsg *message) {
         m_title=message->getParamter();
         emit currentTitleChanged();
         break;
-    case ISCPCommands::ElapsedTime: {
-        QStringList tmp=message->getParamter().split("/");
-
-        if (tmp.size()!=2) {
-            qWarning("Invalid time stamp");
-            return;
-        }
-
-        QString pos=tmp.at(0);
-        QString len=tmp.at(1);
-
-        m_length=QTime::fromString(len, "mm:ss");
-        emit currentTrackLengthChanged();
-
-        m_position=QTime::fromString(pos, "mm:ss");
-        emit currentTrackPositionChanged();
-    }
+    case ISCPCommands::ElapsedTime:
+        parseElapsedTime(message->getParamter());
         break;
     case ISCPCommands::DeviceInformation: {
         m_deviceinfoparser=new DeviceInforParser(message->getParamter());
@@ -745,10 +727,57 @@ void qiscp::parseMessage(ISCPMsg *message) {
     }
         break;
     default:
-        qWarning("Unhandled CMD!");
+        qWarning() << "Known command not handled: " << cmd;
     }
 }
 
+void qiscp::parseElapsedTime(QString et) {
+    QStringList tmp=et.split("/");
+
+    if (tmp.size()!=2) {
+        qWarning("Invalid time stamp");
+        return;
+    } else {
+        qDebug() << "Elapsed " << tmp;
+    }
+
+    QTime tmptime;
+
+    tmptime=QTime::fromString(tmp.at(1), "mm:ss");
+    if (tmptime!=m_length) {
+        qDebug() << "TLen " << tmptime;
+        m_length=tmptime;
+        emit currentTrackLengthChanged();
+    }
+
+    tmptime=QTime::fromString(tmp.at(0), "mm:ss");
+    if (tmptime!=m_position) {
+        qDebug() << "TPos " << tmptime;
+        m_position=tmptime;
+        emit currentTrackPositionChanged();
+    }
+}
+
+/**
+ * @brief qiscp::clearCurrentTrack
+ *
+ * Clears the current track information
+ *
+ */
+void qiscp::clearCurrentTrack() {
+    m_position=QTime();
+    m_length=QTime();
+    m_artist.clear();
+    m_album.clear();
+    m_title.clear();
+    m_track=0;
+    m_tracks=0;
+    emit currentTrackPositionChanged();
+    emit currentTrackLengthChanged();
+    emit currentTitleChanged();
+    emit currentArtistChanged();
+    emit currentAlbumChanged();
+}
 
 /**
  * @brief qiscp::getDevices
