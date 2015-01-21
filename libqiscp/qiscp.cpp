@@ -737,22 +737,18 @@ void qiscp::parseElapsedTime(QString et) {
     if (tmp.size()!=2) {
         qWarning("Invalid time stamp");
         return;
-    } else {
-        qDebug() << "Elapsed " << tmp;
     }
 
     QTime tmptime;
 
     tmptime=QTime::fromString(tmp.at(1), "mm:ss");
     if (tmptime!=m_length) {
-        qDebug() << "TLen " << tmptime;
         m_length=tmptime;
         emit currentTrackLengthChanged();
     }
 
     tmptime=QTime::fromString(tmp.at(0), "mm:ss");
     if (tmptime!=m_position) {
-        qDebug() << "TPos " << tmptime;
         m_position=tmptime;
         emit currentTrackPositionChanged();
     }
