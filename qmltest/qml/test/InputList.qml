@@ -6,11 +6,12 @@ ListView {
     clip: true;
 
     signal inputSelected(variant input);
+    property int currentInput: -1;
 
     Component {
         id: inputDelegate
         Rectangle {
-            color: "#fff0f0";
+            color: model.input_id==inputs.currentInput ? "#e5ffe5" : "#ffffff";
             width: parent.width;
             height: txt.height;
             MouseArea {

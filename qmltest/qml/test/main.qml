@@ -22,21 +22,39 @@ Rectangle {
                 onDeviceSelected: {
                     connectToDevice(device);
                 }
+                visible: !iscp.discovering
+            }
+            Rectangle {
+                id: discovering
+                width: parent.width
+                height: parent.height/2
+                visible: iscp.discovering
+                Text {
+                    text: "Searching for devices..."
+                    font.pixelSize: 16
+                    anchors.centerIn: parent
+                }
+            }
+
+            Row {
+                Text {
+                    text: iscp.currentArtist;
+                    font.bold: true
+                    font.pointSize: 12
+                }
+                Text {
+                    text: iscp.currentAlbum;
+                    font.pointSize: 12
+                }
+                Text {
+                    text: iscp.currentTitle;
+                    font.italic: true
+                    font.pointSize: 12
+                }
             }
             Text {
-                text: iscp.currentArtist;
-                font.pointSize: 12
-            }
-            Text {
-                text: iscp.currentAlbum;
-                font.pointSize: 12
-            }
-            Text {
-                text: iscp.currentTitle;
-                font.pointSize: 12
-            }
-            Text {
-                text: iscp.currentTrackPosition+"/"+iscp.currentTrackLength;
+                text: "POS:"+iscp.currentTrackPosition+"/"+iscp.currentTrackLength;
+                font.italic: true
                 font.pointSize: 12
             }
         }
@@ -51,6 +69,7 @@ Rectangle {
             onInputSelected: {
                 iscp.setMasterInput(input);
             }
+            currentInput: iscp.masterInput;
         }
 
         TunerPresetList {
@@ -58,9 +77,11 @@ Rectangle {
             height: parent.height;
             width: parent.width/4
             model: presetsModel
+            // visible: iscp.masterInput==
             onPresetSelected: {
                 iscp.tunePreset(preset.preset_id);
             }
+            // currentInput: iscp.cu
         }
     }   
 
