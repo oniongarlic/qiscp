@@ -1768,10 +1768,8 @@ case Inputs::DVD:
 void qiscp::setNetworkService(qiscp::NetworkService arg)
 {
     QString p;
-    if (m_networkService != arg) {
-        m_networkService = arg;
-        p=getHex(m_networkService, 2);
-        writeCommand("NSV", p);
-        emit networkServiceChanged(arg);
-    }
+    m_networkService = arg;
+    p=getHex(m_networkService, 2);
+    writeCommand("NSV", p);
+    emit networkServiceChanged(arg);
 }
