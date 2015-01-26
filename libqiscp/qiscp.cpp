@@ -558,6 +558,10 @@ void qiscp::parseMessage(ISCPMsg *message) {
         m_latenight=message->getIntValue();
         emit lateNightModeChanged();
         break;
+    case ISCPCommands::SleepTimer:
+        m_sleepTimer=message->getIntValue();
+        emit sleepTimerChanged(m_sleepTimer);
+        break;
 // Zone 2
     case ISCPCommands::Zone2Power:        
         val=message->getIntValue();

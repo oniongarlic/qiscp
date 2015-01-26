@@ -289,6 +289,8 @@ public:
     Q_PROPERTY (bool cec READ cec NOTIFY cecChanged)
     Q_PROPERTY (bool musicOptimizer READ musicOptimizer NOTIFY musicOptimizerChanged)
 
+    Q_PROPERTY (int sleepTimer READ sleepTimer NOTIFY sleepTimerChanged)
+
     Q_PROPERTY (bool discovering READ discovering NOTIFY discoveringChanged)
 
     Q_INVOKABLE void discoverHosts();
@@ -462,6 +464,11 @@ public:
         return m_repeatMode;
     }
 
+    int sleepTimer() const
+    {
+        return m_sleepTimer;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -545,6 +552,8 @@ signals:
     void shuffleModeChanged(ShuffleModes arg);
 
     void repeatModeChanged(RepeatModes arg);
+
+    void sleepTimerChanged(int arg);
 
 public slots:
 
@@ -805,6 +814,7 @@ private:
         emit currentTrackChanged(track);
     }
     void parseTrackInfo(QString data);
+    int m_sleepTimer;
 };
 
 #endif // QISCP_H
