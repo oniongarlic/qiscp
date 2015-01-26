@@ -475,17 +475,14 @@ void qiscp::parseMessage(ISCPMsg *message) {
     }
 
     int cmdid=m_commands.value(cmd);
-    int val;
 
     switch (cmdid) {
     case ISCPCommands::MasterPower:
-        val=message->getIntValue();
-        m_power=val==1 ? true : false;
+        m_power=message->getIntValue()==1 ? true : false;
         emit powerChanged();
         break;
     case ISCPCommands::MasterMute:
-        val=message->getIntValue();
-        m_masterMuted=val==1 ? true : false;
+        m_masterMuted=message->getIntValue()==1 ? true : false;
         emit masterMutedChanged();
         break;
     case ISCPCommands::MasterVolume:
@@ -518,6 +515,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case Inputs::Tuner:
             writeCommand("TUN", "QSTN");
             break;
+        case Inputs::Network:
         case Inputs::InternetRadio:
         case Inputs::MusicServer:
         case Inputs::USBBack:
@@ -534,18 +532,15 @@ void qiscp::parseMessage(ISCPMsg *message) {
         parseArtworkMessage(message);
         break;
     case ISCPCommands::MusicOptimizer:
-        val=message->getIntValue();
-        m_musicOptimizer=val==1 ? true : false;
+        m_musicOptimizer=message->getIntValue()==1 ? true : false;
         emit musicOptimizerChanged();
         break;
     case ISCPCommands::CEC:
-        val=message->getIntValue();
-        m_cec=val==1 ? true : false;
+        m_cec=message->getIntValue()==1 ? true : false;
         emit cecChanged();
         break;
     case ISCPCommands::HDMIAudio:
-        val=message->getIntValue();
-        m_hdmiAudio=val==1 ? true : false;
+        m_hdmiAudio=message->getIntValue()==1 ? true : false;
         emit hdmiAudioChanged();
         break;
     case ISCPCommands::ListeningMode:
@@ -561,17 +556,15 @@ void qiscp::parseMessage(ISCPMsg *message) {
         emit sleepTimerChanged(m_sleepTimer);
         break;
 // Zone 2
-    case ISCPCommands::Zone2Power:        
-        val=message->getIntValue();
-        m_z2Power=val==1 ? true : false;
+    case ISCPCommands::Zone2Power:
+        m_z2Power=message->getIntValue()==1 ? true : false;
         emit powerChanged();
         if (m_z2Power==true) {
             // requestZone2State();
         }
         break;
     case ISCPCommands::Zone2Mute:
-        val=message->getIntValue();
-        m_z2Muted=val==1 ? true : false;
+        m_z2Muted=message->getIntValue()==1 ? true : false;
         emit zone2MutedChanged();
         break;
     case ISCPCommands::Zone2Volume:
@@ -588,6 +581,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case Inputs::Tuner:
             writeCommand("TUZ", "QSTN");
             break;
+        case Inputs::Network:
         case Inputs::InternetRadio:
         case Inputs::MusicServer:
         case Inputs::USBBack:
@@ -606,16 +600,14 @@ void qiscp::parseMessage(ISCPMsg *message) {
     }
 // Zone 3
     case ISCPCommands::Zone3Power:
-        val=message->getIntValue();
-        m_z3Power=val==1 ? true : false;
+        m_z3Power=message->getIntValue()==1 ? true : false;
         emit powerChanged();
         if (m_z3Power==true) {
             requestZone3State();
         }
         break;
     case ISCPCommands::Zone3Mute:
-        val=message->getIntValue();
-        m_z3Muted=val==1 ? true : false;
+        m_z3Muted=message->getIntValue()==1 ? true : false;
         emit zone3MutedChanged();
         break;
     case ISCPCommands::Zone3Volume:
@@ -631,6 +623,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case Inputs::Tuner:
             writeCommand("TU3", "QSTN");
             break;
+        case Inputs::Network:
         case Inputs::InternetRadio:
         case Inputs::MusicServer:
         case Inputs::USBBack:
@@ -649,16 +642,14 @@ void qiscp::parseMessage(ISCPMsg *message) {
     }
 // Zone 4
     case ISCPCommands::Zone4Power:
-        val=message->getIntValue();
-        m_z4Power=val==1 ? true : false;
+        m_z4Power=message->getIntValue()==1 ? true : false;
         emit zone4PowerChanged();
         if (m_z4Power==true) {
             requestZone4State();
         }
         break;
     case ISCPCommands::Zone4Mute:
-        val=message->getIntValue();
-        m_z4Muted=val==1 ? true : false;
+        m_z4Muted=message->getIntValue()==1 ? true : false;
         emit zone4MutedChanged();
         break;
     case ISCPCommands::Zone4Volume:
@@ -674,6 +665,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case Inputs::Tuner:
             writeCommand("TU4", "QSTN");
             break;
+        case Inputs::Network:
         case Inputs::InternetRadio:
         case Inputs::MusicServer:
         case Inputs::USBBack:
