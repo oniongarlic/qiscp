@@ -162,6 +162,14 @@ int ISCPMsg::getIntValue() const {
 }
 
 /**
+ * @brief ISCPMsg::getBooleanValue
+ * @return
+ */
+bool ISCPMsg::getBooleanValue() const {
+    return getIntValue()==1 ? true : false;
+}
+
+/**
  * @brief ISCPMsg::getTunerValue
  * @return
  */
