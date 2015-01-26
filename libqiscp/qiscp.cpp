@@ -83,6 +83,7 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("NTM", ISCPCommands::ElapsedTime);
     m_commands.insert("NST", ISCPCommands::PlayStatus);
     m_commands.insert("NJA", ISCPCommands::Artwork);
+    m_commands.insert("NTR", ISCPCommands::TrackInfo);
 
     m_commands.insert("NRI", ISCPCommands::DeviceInformation);
 
@@ -302,6 +303,7 @@ void qiscp::tcpConnected() {
 
 void qiscp::tcpDisconnected() {
     qDebug("DisConnected");
+    clearCurrentTrack();
     m_cmdtimer.stop();
     m_cmdqueue.clear();
     m_buffer.clear();
@@ -421,33 +423,44 @@ void qiscp::parseArtworkMessage(ISCPMsg *message) {
     QString p=message->getParamter();
     int type=p.mid(0,1).toInt(NULL, 10);
     int marker=p.mid(1,1).toInt(NULL, 10);
-    bool ok;
 
     switch (marker) {
-    case 0:        
+    case 0: // Start marker
         m_artbuffer.clear();
         m_artbuffer.append(p.mid(2));        
         break;
-    case 1:
+    case 1: // Image data
         m_artbuffer.append(p.mid(2));
         break;
-    case 2:
+    case 2: // End of image data
         m_artbuffer.append(p.mid(2));
-        m_artwork=new QImage();
-        ok=m_artwork->loadFromData(QByteArray::fromHex(m_artbuffer));
-        if (!ok) {
-            m_hasArtwork=false;
-            qWarning("Failed to load artwork image");
-        } else {
-            m_hasArtwork=true;
-            m_artwork->save("/tmp/artwork.png", "PNG");
-        }
+        setArtwork(QByteArray::fromHex(m_artbuffer));
         m_artbuffer.clear();
-
-        emit hasArtworkChanged(m_hasArtwork);
-        emit currentArtworkChanged();
         break;
     }
+}
+
+void qiscp::setArtwork(QByteArray data) {
+    m_artwork=new QImage();
+
+    bool ok=m_artwork->loadFromData(data);
+    if (!ok) {
+        m_hasArtwork=false;
+        qWarning("Failed to load artwork image");
+    } else {
+        m_hasArtwork=true;
+        m_artwork->save("/tmp/artwork.png", "PNG");
+    }
+
+    emit hasArtworkChanged(m_hasArtwork);
+    emit currentArtworkChanged();
+}
+
+void qiscp::clearArtwork() {
+    m_artwork=new QImage();
+    m_hasArtwork=false;
+    emit hasArtworkChanged(m_hasArtwork);
+    emit currentArtworkChanged();
 }
 
 bool qiscp::saveArtwork(QString file) {
@@ -473,17 +486,14 @@ void qiscp::parseMessage(ISCPMsg *message) {
     }
 
     int cmdid=m_commands.value(cmd);
-    int val;
 
     switch (cmdid) {
     case ISCPCommands::MasterPower:
-        val=message->getIntValue();
-        m_power=val==1 ? true : false;
+        m_power=message->getIntValue()==1 ? true : false;
         emit powerChanged();
         break;
     case ISCPCommands::MasterMute:
-        val=message->getIntValue();
-        m_masterMuted=val==1 ? true : false;
+        m_masterMuted=message->getIntValue()==1 ? true : false;
         emit masterMutedChanged();
         break;
     case ISCPCommands::MasterVolume:
@@ -501,12 +511,10 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::CenterLevel:
         m_centerLevel=message->getIntValue();
-        qDebug() << "CenterLevel: " << m_centerLevel;
         emit centerLevelChanged();
         break;
     case ISCPCommands::SubwooferLevel:
         m_subwooferLevel=message->getIntValue();
-        qDebug() << "SubwooferLevel: " << m_subwooferLevel;
         emit subwooferLevelChanged();
         break;
     case ISCPCommands::MasterInput:
@@ -518,6 +526,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case Inputs::Tuner:
             writeCommand("TUN", "QSTN");
             break;
+        case Inputs::Network:
         case Inputs::InternetRadio:
         case Inputs::MusicServer:
         case Inputs::USBBack:
@@ -534,18 +543,15 @@ void qiscp::parseMessage(ISCPMsg *message) {
         parseArtworkMessage(message);
         break;
     case ISCPCommands::MusicOptimizer:
-        val=message->getIntValue();
-        m_musicOptimizer=val==1 ? true : false;
+        m_musicOptimizer=message->getIntValue()==1 ? true : false;
         emit musicOptimizerChanged();
         break;
     case ISCPCommands::CEC:
-        val=message->getIntValue();
-        m_cec=val==1 ? true : false;
+        m_cec=message->getIntValue()==1 ? true : false;
         emit cecChanged();
         break;
     case ISCPCommands::HDMIAudio:
-        val=message->getIntValue();
-        m_hdmiAudio=val==1 ? true : false;
+        m_hdmiAudio=message->getIntValue()==1 ? true : false;
         emit hdmiAudioChanged();
         break;
     case ISCPCommands::ListeningMode:
@@ -556,18 +562,20 @@ void qiscp::parseMessage(ISCPMsg *message) {
         m_latenight=message->getIntValue();
         emit lateNightModeChanged();
         break;
+    case ISCPCommands::SleepTimer:
+        m_sleepTimer=message->getIntValue();
+        emit sleepTimerChanged(m_sleepTimer);
+        break;
 // Zone 2
-    case ISCPCommands::Zone2Power:        
-        val=message->getIntValue();
-        m_z2Power=val==1 ? true : false;
+    case ISCPCommands::Zone2Power:
+        m_z2Power=message->getIntValue()==1 ? true : false;
         emit powerChanged();
         if (m_z2Power==true) {
             // requestZone2State();
         }
         break;
     case ISCPCommands::Zone2Mute:
-        val=message->getIntValue();
-        m_z2Muted=val==1 ? true : false;
+        m_z2Muted=message->getIntValue()==1 ? true : false;
         emit zone2MutedChanged();
         break;
     case ISCPCommands::Zone2Volume:
@@ -584,6 +592,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case Inputs::Tuner:
             writeCommand("TUZ", "QSTN");
             break;
+        case Inputs::Network:
         case Inputs::InternetRadio:
         case Inputs::MusicServer:
         case Inputs::USBBack:
@@ -602,16 +611,14 @@ void qiscp::parseMessage(ISCPMsg *message) {
     }
 // Zone 3
     case ISCPCommands::Zone3Power:
-        val=message->getIntValue();
-        m_z3Power=val==1 ? true : false;
+        m_z3Power=message->getIntValue()==1 ? true : false;
         emit powerChanged();
         if (m_z3Power==true) {
             requestZone3State();
         }
         break;
     case ISCPCommands::Zone3Mute:
-        val=message->getIntValue();
-        m_z3Muted=val==1 ? true : false;
+        m_z3Muted=message->getIntValue()==1 ? true : false;
         emit zone3MutedChanged();
         break;
     case ISCPCommands::Zone3Volume:
@@ -627,6 +634,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case Inputs::Tuner:
             writeCommand("TU3", "QSTN");
             break;
+        case Inputs::Network:
         case Inputs::InternetRadio:
         case Inputs::MusicServer:
         case Inputs::USBBack:
@@ -645,16 +653,14 @@ void qiscp::parseMessage(ISCPMsg *message) {
     }
 // Zone 4
     case ISCPCommands::Zone4Power:
-        val=message->getIntValue();
-        m_z4Power=val==1 ? true : false;
+        m_z4Power=message->getIntValue()==1 ? true : false;
         emit zone4PowerChanged();
         if (m_z4Power==true) {
             requestZone4State();
         }
         break;
     case ISCPCommands::Zone4Mute:
-        val=message->getIntValue();
-        m_z4Muted=val==1 ? true : false;
+        m_z4Muted=message->getIntValue()==1 ? true : false;
         emit zone4MutedChanged();
         break;
     case ISCPCommands::Zone4Volume:
@@ -670,6 +676,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case Inputs::Tuner:
             writeCommand("TU4", "QSTN");
             break;
+        case Inputs::Network:
         case Inputs::InternetRadio:
         case Inputs::MusicServer:
         case Inputs::USBBack:
@@ -694,41 +701,134 @@ void qiscp::parseMessage(ISCPMsg *message) {
     case ISCPCommands::ElapsedTime:
         parseElapsedTime(message->getParamter());
         break;
-    case ISCPCommands::DeviceInformation: {
-        m_deviceinfoparser=new DeviceInforParser(message->getParamter());
-
-        if (m_deviceinfoparser->isOk()) {
-
-            if (m_deviceinfoparser->isZoneAvailable(2))
-                m_zonesAvailable|=Zone2;
-            if (m_deviceinfoparser->isZoneAvailable(3))
-                m_zonesAvailable|=Zone3;
-            if (m_deviceinfoparser->isZoneAvailable(4))
-                m_zonesAvailable|=Zone4;
-
-            qDebug() << "*** Zones: " << m_zonesAvailable;
-
-            m_tunerpresets=m_deviceinfoparser->getPresets();
-            emit presetsList();
-
-            m_networkservices=m_deviceinfoparser->getNetservices();
-            emit networkList();
-
-            m_zonesdata=m_deviceinfoparser->getZones();
-            emit zonesList();
-
-            m_inputsdata=m_deviceinfoparser->getSelectors();
-            emit inputsList();
-        } else {
-            // XXX: signal that NRI wasn't available
-        }
-
-        delete m_deviceinfoparser;
-    }
+    case ISCPCommands::PlayStatus:
+         parsePlayStatus(message->getParamter());
+        break;
+    case ISCPCommands::TrackInfo:
+        parseTrackInfo(message->getParamter());
+        break;
+// Device information
+    case ISCPCommands::DeviceInformation:
+        parseDeviceInformation(message->getParamter());
         break;
     default:
         qWarning() << "Known command not handled: " << cmd;
     }
+}
+
+void qiscp::parseTrackInfo(QString data) {
+    QStringList tis=data.split("/");
+
+    if (tis.size()<2) {
+        qWarning("Invalid track info");
+        setTracks(0);
+        setTrack(0);
+        return;
+    }
+
+    setTracks(tis.at(1).toInt(NULL, 10));
+    setTrack(tis.at(0).toInt(NULL, 10));
+}
+
+void qiscp::parseDeviceInformation(QString data) {
+    m_deviceinfoparser=new DeviceInforParser(data);
+
+    if (m_deviceinfoparser->isOk()) {
+
+        if (m_deviceinfoparser->isZoneAvailable(2))
+            m_zonesAvailable|=Zone2;
+        if (m_deviceinfoparser->isZoneAvailable(3))
+            m_zonesAvailable|=Zone3;
+        if (m_deviceinfoparser->isZoneAvailable(4))
+            m_zonesAvailable|=Zone4;
+
+        qDebug() << "*** Zones: " << m_zonesAvailable;
+
+        m_tunerpresets=m_deviceinfoparser->getPresets();
+        emit presetsList();
+
+        m_networkservices=m_deviceinfoparser->getNetservices();
+        emit networkList();
+
+        m_zonesdata=m_deviceinfoparser->getZones();
+        emit zonesList();
+
+        m_inputsdata=m_deviceinfoparser->getSelectors();
+        emit inputsList();
+    } else {
+        // XXX: signal that NRI wasn't available
+    }
+
+    delete m_deviceinfoparser;
+}
+
+void qiscp::parsePlayStatus(QString data) {
+    if (data.size()<3) {
+        qWarning("Invalid play status");
+        return;
+    }
+
+    const char ps=data.at(0).toLatin1();
+    const char rs=data.at(1).toLatin1();
+    const char ss=data.at(2).toLatin1();
+
+    switch (ps) {
+    case 'S':
+        setPlayMode(Stopped);
+        break;
+    case 'P':
+        setPlayMode(Playing);
+        break;
+    case 'p':
+        setPlayMode(Paused);
+        break;
+    case 'F':
+        setPlayMode(FastForwarding);
+        break;
+    case 'R':
+        setPlayMode(FastReversing);
+        break;
+    case 'E':
+        setPlayMode(EndOfFile);
+        break;
+    }
+
+    switch (rs) {
+    case '-':
+        setRepeatMode(RepeatOff);
+        break;
+    case 'R':
+        setRepeatMode(RepeatAll);
+        break;
+    case 'F':
+        setRepeatMode(RepeatFolder);
+        break;
+    case '1':
+        setRepeatMode(RepeatOne);
+        break;
+    case 'x':
+        setRepeatMode(RepeatDisabled);
+        break;
+    }
+
+    switch (ss) {
+    case '-':
+        setShuffleMode(ShuffleOff);
+        break;
+    case 'S':
+        setShuffleMode(ShuffleAll);
+        break;
+    case 'A':
+        setShuffleMode(ShuffleAlbum);
+        break;
+    case 'F':
+        setShuffleMode(ShuffleFolder);
+        break;
+    case 'x':
+        setShuffleMode(ShuffleDisabled);
+        break;
+    }
+
 }
 
 void qiscp::parseElapsedTime(QString et) {
@@ -766,13 +866,17 @@ void qiscp::clearCurrentTrack() {
     m_artist.clear();
     m_album.clear();
     m_title.clear();
-    m_track=0;
-    m_tracks=0;
     emit currentTrackPositionChanged();
     emit currentTrackLengthChanged();
     emit currentTitleChanged();
     emit currentArtistChanged();
     emit currentAlbumChanged();
+    clearArtwork();
+    setTracks(0);
+    setTrack(0);
+    setPlayMode(Stopped);
+    setRepeatMode(RepeatOff);
+    setShuffleMode(ShuffleOff);
 }
 
 /**
@@ -822,6 +926,14 @@ QVariantList qiscp::getZones() const {
  */
 QVariantList qiscp::getInputs() const {
     return m_inputsdata;
+}
+
+/**
+ * @brief qiscp::getNetworkSources
+ * @return
+ */
+QVariantList qiscp::getNetworkSources() const {
+    return m_networkservices;
 }
 
 /**
@@ -1655,6 +1767,8 @@ switch (m_masterInput) {
 case Inputs::InternetRadio:
 case Inputs::Network:
 case Inputs::MusicServer:
+case Inputs::USBBack:
+case Inputs::USBFront:
     networkCommand(cmd);
     break;
 case Inputs::DVD:
@@ -1666,11 +1780,8 @@ case Inputs::DVD:
 void qiscp::setNetworkService(qiscp::NetworkService arg)
 {
     QString p;
-    if (m_networkService != arg) {
-        m_networkService = arg;
-        p=getHex(m_networkService, 1);
-        p.append("0");
-        writeCommand("NSV", p);
-        emit networkServiceChanged(arg);
-    }
+    m_networkService = arg;
+    p=getHex(m_networkService, 2);
+    writeCommand("NSV", p);
+    emit networkServiceChanged(arg);
 }

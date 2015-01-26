@@ -83,6 +83,9 @@ class qiscp : public QObject
     Q_ENUMS(ListeningModesQuick)
     Q_ENUMS(NetworkService)
     Q_ENUMS(Inputs::InputID)
+    Q_ENUMS(PlayModes)
+    Q_ENUMS(RepeatModes)
+    Q_ENUMS(ShuffleModes)
 
 public:
     explicit qiscp(QObject *parent = 0);
@@ -267,6 +270,31 @@ public:
         Mute
     };
 
+    enum PlayModes {
+        Stopped,
+        Playing,
+        Paused,
+        FastForwarding,
+        FastReversing,
+        EndOfFile
+    };
+
+    enum RepeatModes {
+        RepeatOff,
+        RepeatAll,
+        RepeatFolder,
+        RepeatOne,
+        RepeatDisabled
+    };
+
+    enum ShuffleModes {
+        ShuffleOff,
+        ShuffleAll,
+        ShuffleAlbum,
+        ShuffleFolder,
+        ShuffleDisabled
+    };
+
     Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
     Q_PROPERTY (int discoveryTimeout READ discoveryTimeout WRITE setDiscoveryTimeout NOTIFY discoveryTimeoutChanged)
 
@@ -312,9 +340,15 @@ public:
     Q_PROPERTY (int currentTrack READ currentTrack NOTIFY currentTrackChanged)
     Q_PROPERTY (int currentTracks READ currentTracks NOTIFY currentTracksChanged)
 
+    Q_PROPERTY(PlayModes playMode READ playMode WRITE setPlayMode NOTIFY playModeChanged)
+    Q_PROPERTY(ShuffleModes shuffleMode READ shuffleMode WRITE setShuffleMode NOTIFY shuffleModeChanged)
+    Q_PROPERTY(RepeatModes repeatMode READ repeatMode WRITE setRepeatMode NOTIFY repeatModeChanged)
+
     Q_PROPERTY (bool hdmiAudio READ hdmiAudio NOTIFY hdmiAudioChanged)
     Q_PROPERTY (bool cec READ cec NOTIFY cecChanged)
     Q_PROPERTY (bool musicOptimizer READ musicOptimizer NOTIFY musicOptimizerChanged)
+
+    Q_PROPERTY (int sleepTimer READ sleepTimer NOTIFY sleepTimerChanged)
 
     Q_PROPERTY (bool discovering READ discovering NOTIFY discoveringChanged)
 
@@ -324,6 +358,7 @@ public:
     Q_INVOKABLE QVariantList getInputs() const;    
     Q_INVOKABLE QVariantList getZones() const;    
     Q_INVOKABLE QVariantList getControls() const;
+    Q_INVOKABLE QVariantList getNetworkSources() const;
 
     Q_PROPERTY(QString host READ host WRITE setHost NOTIFY hostChanged)
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
@@ -474,6 +509,26 @@ public:
         return m_hasArtwork;
     }
 
+    PlayModes playMode() const
+    {
+        return m_playMode;
+    }
+
+    ShuffleModes shuffleMode() const
+    {
+        return m_shuffleMode;
+    }
+
+    RepeatModes repeatMode() const
+    {
+        return m_repeatMode;
+    }
+
+    int sleepTimer() const
+    {
+        return m_sleepTimer;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -542,8 +597,8 @@ signals:
 
     void currentTrackPositionChanged();
     void currentTrackLengthChanged();
-    void currentTrackChanged();
-    void currentTracksChanged();
+    void currentTrackChanged(quint16 track);
+    void currentTracksChanged(quint16 tracks);
     void currentArtworkChanged();
 
     void networkServiceChanged(NetworkService arg);
@@ -551,6 +606,14 @@ signals:
     void discoveryTimeoutChanged(int arg);
 
     void hasArtworkChanged(bool arg);
+
+    void playModeChanged(PlayModes arg);
+
+    void shuffleModeChanged(ShuffleModes arg);
+
+    void repeatModeChanged(RepeatModes arg);
+
+    void sleepTimerChanged(int arg);
 
 public slots:
 
@@ -570,6 +633,33 @@ public slots:
             m_discoveryTimeout = arg;
             emit discoveryTimeoutChanged(arg);
         }
+    }
+
+    void setPlayMode(PlayModes arg)
+    {
+        if (m_playMode == arg)
+            return;
+
+        m_playMode = arg;
+        emit playModeChanged(arg);
+    }
+
+    void setShuffleMode(ShuffleModes arg)
+    {
+        if (m_shuffleMode == arg)
+            return;
+
+        m_shuffleMode = arg;
+        emit shuffleModeChanged(arg);
+    }
+
+    void setRepeatMode(RepeatModes arg)
+    {
+        if (m_repeatMode == arg)
+            return;
+
+        m_repeatMode = arg;
+        emit repeatModeChanged(arg);
     }
 
 private slots:
@@ -625,6 +715,7 @@ private:
             ElapsedTime,
             CurrentTrack,
             PlayStatus,
+            TrackInfo,
             ListInfo,
             DeviceInformation,
             Artwork,
@@ -714,6 +805,10 @@ private:
     QTime m_position;
     QTime m_length;
 
+    PlayModes m_playMode;
+    ShuffleModes m_shuffleMode;
+    RepeatModes m_repeatMode;
+
     quint16 m_track;
     quint16 m_tracks;
 
@@ -759,6 +854,29 @@ private:
     bool m_hasArtwork;
     void parseElapsedTime(QString et);
     void clearCurrentTrack();
+    void parseDeviceInformation(QString data);
+    void parsePlayStatus(QString data);
+
+    void setTracks(quint16 tracks)
+    {
+        if (m_tracks == tracks)
+            return;
+
+        m_tracks = tracks;
+        emit currentTracksChanged(tracks);
+    }
+    void setTrack(quint16 track)
+    {
+        if (m_track == track)
+            return;
+
+        m_track = track;
+        emit currentTrackChanged(track);
+    }
+    void parseTrackInfo(QString data);
+    int m_sleepTimer;
+    void setArtwork(QByteArray data);
+    void clearArtwork();
 };
 
 #endif // QISCP_H

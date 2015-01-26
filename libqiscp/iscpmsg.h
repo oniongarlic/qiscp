@@ -27,6 +27,7 @@ public:
 
     QByteArray getData(void) const;
 
+    bool getBooleanValue() const;
 signals:
 
 public slots:

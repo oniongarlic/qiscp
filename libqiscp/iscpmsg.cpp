@@ -155,10 +155,18 @@ QString ISCPMsg::getParamter() const {
 
 /**
  * @brief ISCPMsg::getIntValue
- * @return Command paramter hex value converted to int
+ * @return Command parameter hex value converted to int
  */
 int ISCPMsg::getIntValue() const {
     return getParamter().mid(0,2).toInt(NULL, 16);
+}
+
+/**
+ * @brief ISCPMsg::getBooleanValue
+ * @return True if parameter value is 1, false otherwise
+ */
+bool ISCPMsg::getBooleanValue() const {
+    return getIntValue()==1 ? true : false;
 }
 
 /**

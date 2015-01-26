@@ -12,7 +12,7 @@ Rectangle {
         anchors.bottom: controls.top
 
         Column {
-            width: parent.width/2
+            width: parent.width/3
             height: parent.height
             DeviceList {
                 id: hosts
@@ -36,26 +36,44 @@ Rectangle {
                 }
             }
 
-            Row {
-                Text {
-                    text: iscp.currentArtist;
-                    font.bold: true
-                    font.pointSize: 12
-                }
-                Text {
-                    text: iscp.currentAlbum;
-                    font.pointSize: 12
-                }
-                Text {
-                    text: iscp.currentTitle;
-                    font.italic: true
-                    font.pointSize: 12
-                }
+            Image {
+                id: albumArtwork
+                width: 128
+                height: 128
+                visible: iscp.hasArtwork
+                cache: false
+                opacity: status==Image.Ready ? 1.0 : 0.0
+                asynchronous: true;
+                Behavior on opacity { NumberAnimation { duration: 800 } }
             }
+
+            Text {
+                text: iscp.currentArtist;
+                font.bold: true
+                font.pointSize: 12
+            }
+            Text {
+                text: iscp.currentAlbum;
+                font.pointSize: 11
+            }
+            Text {
+                text: iscp.currentTitle;
+                font.italic: true
+                font.pointSize: 12
+            }
+
             Text {
                 text: "POS:"+iscp.currentTrackPosition+"/"+iscp.currentTrackLength;
                 font.italic: true
-                font.pointSize: 12
+                font.pointSize: 11
+            }
+            Text {
+                text: "Track:"+iscp.currentTrack+"/"+iscp.currentTracks;
+                font.pointSize: 10
+            }
+            Text {
+                text: "Status:"+iscp.playMode + ":"+iscp.repeatMode+":"+iscp.shuffleMode;
+                font.pointSize: 10
             }
         }
 
@@ -63,7 +81,7 @@ Rectangle {
             id: inputs
             enabled: iscp.connected
             height: parent.height;
-            width: parent.width/4
+            width: parent.width/5
             clip: true;
             model: inputsModel;
             onInputSelected: {
@@ -75,13 +93,25 @@ Rectangle {
         TunerPresetList {
             id: presets
             height: parent.height;
-            width: parent.width/4
+            width: parent.width/5
             model: presetsModel
             visible: iscp.masterInput==ISCPInputs.Tuner
             onPresetSelected: {
                 iscp.tunePreset(preset.preset_id);
             }
             // currentInput: iscp.cu
+        }
+
+        NetworkServicesList {
+            id: services
+            model: networksModel;
+            height: parent.height;
+            width: parent.width/5
+            visible: iscp.masterInput==0x2B;
+            onServiceSelected: {
+                console.debug("*** Network service: "+service.service_id);
+                iscp.setNetworkService(service.service_id);
+            }
         }
     }   
 
@@ -95,6 +125,10 @@ Rectangle {
 
     ListModel {
         id: inputsModel
+    }
+
+    ListModel {
+        id: networksModel
     }
 
     Column {
@@ -169,6 +203,9 @@ Rectangle {
                         return freq+" MHz"
                     }
                 }
+            }
+            Text {
+               text: "ST: "+iscp.sleepTimer
             }
         }
 
@@ -351,6 +388,34 @@ Rectangle {
         }
 
         Row {
+            Button {
+                title: "LEFT"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.Left) }
+            }
+            Button {
+                title: "RIGHT"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.Right) }
+            }
+            Button {
+                title: "UP"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.Up) }
+            }
+            Button {
+                title: "DOWN"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.Down) }
+            }
+            Button {
+                title: "RETURN"
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.Return) }
+            }
+        }
+
+        Row {
             id: tvCmds
             Text {
                 text: "TV/CEC"
@@ -438,6 +503,26 @@ Rectangle {
             for (var i=0;i<p.length;i++) {
                 console.debug("Add: "+p[i].freq);
                 presetsModel.append(p[i]);
+            }
+        }
+
+        onNetworkList: {
+            networksModel.clear();
+
+            var p=iscp.getNetworkSources()
+
+            console.debug("*** Got network sources:"+p.length);
+
+            for (var i=0;i<p.length;i++) {
+                console.debug("Add: "+p[i].name);
+                networksModel.append(p[i]);
+            }
+        }
+
+        onCurrentArtworkChanged: {
+            albumArtwork.source="";
+            if (hasArtwork) {
+                albumArtwork.source="/tmp/artwork.png"; // XXX just for testing!!
             }
         }
 
