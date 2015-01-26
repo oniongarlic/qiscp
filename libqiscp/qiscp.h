@@ -816,6 +816,8 @@ private:
     }
     void parseTrackInfo(QString data);
     int m_sleepTimer;
+    void setArtwork(QByteArray data);
+    void clearArtwork();
 };
 
 #endif // QISCP_H

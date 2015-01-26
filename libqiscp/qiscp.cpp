@@ -423,7 +423,6 @@ void qiscp::parseArtworkMessage(ISCPMsg *message) {
     QString p=message->getParamter();
     int type=p.mid(0,1).toInt(NULL, 10);
     int marker=p.mid(1,1).toInt(NULL, 10);
-    bool ok;
 
     switch (marker) {
     case 0:        
@@ -435,21 +434,33 @@ void qiscp::parseArtworkMessage(ISCPMsg *message) {
         break;
     case 2:
         m_artbuffer.append(p.mid(2));
-        m_artwork=new QImage();
-        ok=m_artwork->loadFromData(QByteArray::fromHex(m_artbuffer));
-        if (!ok) {
-            m_hasArtwork=false;
-            qWarning("Failed to load artwork image");
-        } else {
-            m_hasArtwork=true;
-            m_artwork->save("/tmp/artwork.png", "PNG");
-        }
+        setArtwork(QByteArray::fromHex(m_artbuffer));
         m_artbuffer.clear();
-
-        emit hasArtworkChanged(m_hasArtwork);
-        emit currentArtworkChanged();
         break;
     }
+}
+
+void qiscp::setArtwork(QByteArray data) {
+    m_artwork=new QImage();
+
+    bool ok=m_artwork->loadFromData(data);
+    if (!ok) {
+        m_hasArtwork=false;
+        qWarning("Failed to load artwork image");
+    } else {
+        m_hasArtwork=true;
+        m_artwork->save("/tmp/artwork.png", "PNG");
+    }
+
+    emit hasArtworkChanged(m_hasArtwork);
+    emit currentArtworkChanged();
+}
+
+void qiscp::clearArtwork() {
+    m_artwork=new QImage();
+    m_hasArtwork=false;
+    emit hasArtworkChanged(m_hasArtwork);
+    emit currentArtworkChanged();
 }
 
 bool qiscp::saveArtwork(QString file) {
@@ -860,6 +871,7 @@ void qiscp::clearCurrentTrack() {
     emit currentTitleChanged();
     emit currentArtistChanged();
     emit currentAlbumChanged();
+    clearArtwork();
     setTracks(0);
     setTrack(0);
     setPlayMode(Stopped);
