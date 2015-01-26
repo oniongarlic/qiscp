@@ -15,6 +15,65 @@
 
 #define ISCP_PORT 60128
 
+class qiscpInputs : public QObject {
+    Q_OBJECT
+    Q_ENUMS(Input)
+
+public:
+    enum Input {
+        Video1=0x00,
+        Video2=0x01,
+        Video3=0x02,
+        Video4=0x03,
+        Video5=0x04,
+        Video6=0x05,
+        Video7=0x06,
+        Extra1=0x07,
+        Extra2=0x08,
+        Extra3=0x09,
+        DVD=0x10,
+        Tape1=0x20,
+        Tape2=0x21,
+        Phono=0x22,
+        CD=0x23,
+        FM=0x24,
+        AM=0x25,
+        Tuner=0x26,
+        MusicServer=0x27,
+        InternetRadio=0x28,
+        USBFront=0x29,
+        USBBack=0x2A,
+        Network=0x2B,
+        USBToggle=0x2C,
+        AirPlay=0x2D,
+        Bluetooth=0x2E,
+        Multi=0x30,
+        Xm1=0x31,
+        Sirius=0x32,
+        DAB=0x33,
+        UniversalPort=0x40,
+        Source=0x80,
+        EndCommands=0xFF // Marker
+    };
+
+    Q_INVOKABLE static bool isTuner(Input i) {
+        return (i==FM || i==AM || i==Tuner);
+    }
+    Q_INVOKABLE static bool isNetworkOrUSB(Input i) {
+        return (i==MusicServer || i==Network || i==USBBack || i==USBFront);
+    }
+    Q_INVOKABLE static bool isNetwork(Input i) {
+        return (i==MusicServer || i==Network || i==InternetRadio);
+    }
+    Q_INVOKABLE static bool isUSB(Input i) {
+        return (i==USBBack || i==USBFront);
+    }
+    Q_INVOKABLE static bool isControllable(Input i) {
+        return (isNetworkOrUSB(i) || i==DVD);
+    }
+
+};
+
 class qiscp : public QObject
 {
     Q_OBJECT
@@ -23,7 +82,7 @@ class qiscp : public QObject
     Q_ENUMS(LateNightModes)
     Q_ENUMS(ListeningModesQuick)
     Q_ENUMS(NetworkService)
-    Q_ENUMS(Inputs)
+    Q_ENUMS(Inputs::InputID)
 
 public:
     explicit qiscp(QObject *parent = 0);
@@ -93,7 +152,7 @@ public:
 
     // The static input list codes
     struct Inputs {
-        enum {
+        enum InputID {
             Video1=0x00,
             Video2=0x01,
             Video3=0x02,
