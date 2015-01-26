@@ -917,6 +917,14 @@ QVariantList qiscp::getInputs() const {
 }
 
 /**
+ * @brief qiscp::getNetworkSources
+ * @return
+ */
+QVariantList qiscp::getNetworkSources() const {
+    return m_networkservices;
+}
+
+/**
  * @brief qiscp::getControls
  * @return
  *
@@ -1762,8 +1770,7 @@ void qiscp::setNetworkService(qiscp::NetworkService arg)
     QString p;
     if (m_networkService != arg) {
         m_networkService = arg;
-        p=getHex(m_networkService, 1);
-        p.append("0");
+        p=getHex(m_networkService, 2);
         writeCommand("NSV", p);
         emit networkServiceChanged(arg);
     }

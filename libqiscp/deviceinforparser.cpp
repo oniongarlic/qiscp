@@ -134,14 +134,14 @@ void DeviceInforParser::readNetservices() {
 
     while (m_xml.readNextStartElement()) {
         if (m_xml.name() == "netservice") {
-            QString id=m_xml.attributes().value("id").toString();
+            int id=m_xml.attributes().value("id").toString().toInt(NULL, 16);
             int value=m_xml.attributes().value("value").toString().toInt();
             QString name=m_xml.attributes().value("name").toString();
 
             qDebug() << "NS: " << id << ":" << value << ":" << name;
 
             QVariantMap ns;
-            ns.insert("id", id);
+            ns.insert("service_id", id);
             ns.insert("value", value);
             ns.insert("name", name);
 

@@ -299,6 +299,7 @@ public:
     Q_INVOKABLE QVariantList getInputs() const;    
     Q_INVOKABLE QVariantList getZones() const;    
     Q_INVOKABLE QVariantList getControls() const;
+    Q_INVOKABLE QVariantList getNetworkSources() const;
 
     Q_PROPERTY(QString host READ host WRITE setHost NOTIFY hostChanged)
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
