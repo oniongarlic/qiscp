@@ -208,6 +208,31 @@ public:
         Mute
     };
 
+    enum PlayModes {
+        Stopped,
+        Playing,
+        Paused,
+        FastForwarding,
+        FastReversing,
+        EndOfFile
+    };
+
+    enum RepeatModes {
+        RepeatOff,
+        RepeatAll,
+        RepeatFolder,
+        RepeatOne,
+        RepeatDisabled
+    };
+
+    enum ShuffleModes {
+        ShuffleOff,
+        ShuffleAll,
+        ShuffleAlbum,
+        ShuffleFolder,
+        ShuffleDisabled
+    };
+
     Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
     Q_PROPERTY (int discoveryTimeout READ discoveryTimeout WRITE setDiscoveryTimeout NOTIFY discoveryTimeoutChanged)
 
