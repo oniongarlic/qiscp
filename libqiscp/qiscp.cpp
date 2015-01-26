@@ -425,14 +425,14 @@ void qiscp::parseArtworkMessage(ISCPMsg *message) {
     int marker=p.mid(1,1).toInt(NULL, 10);
 
     switch (marker) {
-    case 0:        
+    case 0: // Start marker
         m_artbuffer.clear();
         m_artbuffer.append(p.mid(2));        
         break;
-    case 1:
+    case 1: // Image data
         m_artbuffer.append(p.mid(2));
         break;
-    case 2:
+    case 2: // End of image data
         m_artbuffer.append(p.mid(2));
         setArtwork(QByteArray::fromHex(m_artbuffer));
         m_artbuffer.clear();
