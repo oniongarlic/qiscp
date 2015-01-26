@@ -694,41 +694,101 @@ void qiscp::parseMessage(ISCPMsg *message) {
     case ISCPCommands::ElapsedTime:
         parseElapsedTime(message->getParamter());
         break;
-    case ISCPCommands::DeviceInformation: {
-        m_deviceinfoparser=new DeviceInforParser(message->getParamter());
-
-        if (m_deviceinfoparser->isOk()) {
-
-            if (m_deviceinfoparser->isZoneAvailable(2))
-                m_zonesAvailable|=Zone2;
-            if (m_deviceinfoparser->isZoneAvailable(3))
-                m_zonesAvailable|=Zone3;
-            if (m_deviceinfoparser->isZoneAvailable(4))
-                m_zonesAvailable|=Zone4;
-
-            qDebug() << "*** Zones: " << m_zonesAvailable;
-
-            m_tunerpresets=m_deviceinfoparser->getPresets();
-            emit presetsList();
-
-            m_networkservices=m_deviceinfoparser->getNetservices();
-            emit networkList();
-
-            m_zonesdata=m_deviceinfoparser->getZones();
-            emit zonesList();
-
-            m_inputsdata=m_deviceinfoparser->getSelectors();
-            emit inputsList();
-        } else {
-            // XXX: signal that NRI wasn't available
-        }
-
-        delete m_deviceinfoparser;
-    }
+    case ISCPCommands::PlayStatus:
+         parsePlayStatus(message->getParamter());
+        break;
+// Device information
+    case ISCPCommands::DeviceInformation:
+        parseDeviceInformation(message->getParamter());
         break;
     default:
         qWarning() << "Known command not handled: " << cmd;
     }
+}
+
+void qiscp::parseDeviceInformation(QString data) {
+    m_deviceinfoparser=new DeviceInforParser();
+
+    if (m_deviceinfoparser->isOk()) {
+
+        if (m_deviceinfoparser->isZoneAvailable(2))
+            m_zonesAvailable|=Zone2;
+        if (m_deviceinfoparser->isZoneAvailable(3))
+            m_zonesAvailable|=Zone3;
+        if (m_deviceinfoparser->isZoneAvailable(4))
+            m_zonesAvailable|=Zone4;
+
+        qDebug() << "*** Zones: " << m_zonesAvailable;
+
+        m_tunerpresets=m_deviceinfoparser->getPresets();
+        emit presetsList();
+
+        m_networkservices=m_deviceinfoparser->getNetservices();
+        emit networkList();
+
+        m_zonesdata=m_deviceinfoparser->getZones();
+        emit zonesList();
+
+        m_inputsdata=m_deviceinfoparser->getSelectors();
+        emit inputsList();
+    } else {
+        // XXX: signal that NRI wasn't available
+    }
+
+    delete m_deviceinfoparser;
+}
+
+void qiscp::parsePlayStatus(QString data) {
+    if (data.size()<3) {
+        qWarning("Invalid play status");
+        return;
+    }
+
+    const char ps=data.at(0).toLatin1();
+    const char rs=data.at(1).toLatin1();
+    const char ss=data.at(2).toLatin1();
+
+    switch (ps) {
+    case 'S':
+        break;
+    case 'P':
+        break;
+    case 'p':
+        break;
+    case 'F':
+        break;
+    case 'R':
+        break;
+    case 'E':
+        break;
+    }
+
+    switch (rs) {
+    case '-':
+        break;
+    case 'R':
+        break;
+    case 'F':
+        break;
+    case '1':
+        break;
+    case 'x':
+        break;
+    }
+
+    switch (ss) {
+    case '-':
+        break;
+    case 'S':
+        break;
+    case 'A':
+        break;
+    case 'F':
+        break;
+    case 'x':
+        break;
+    }
+
 }
 
 void qiscp::parseElapsedTime(QString et) {
