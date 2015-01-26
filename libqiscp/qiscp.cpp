@@ -503,12 +503,10 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::CenterLevel:
         m_centerLevel=message->getIntValue();
-        qDebug() << "CenterLevel: " << m_centerLevel;
         emit centerLevelChanged();
         break;
     case ISCPCommands::SubwooferLevel:
         m_subwooferLevel=message->getIntValue();
-        qDebug() << "SubwooferLevel: " << m_subwooferLevel;
         emit subwooferLevelChanged();
         break;
     case ISCPCommands::MasterInput:
