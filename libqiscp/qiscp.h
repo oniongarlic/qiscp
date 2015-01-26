@@ -278,6 +278,10 @@ public:
     Q_PROPERTY (int currentTrack READ currentTrack NOTIFY currentTrackChanged)
     Q_PROPERTY (int currentTracks READ currentTracks NOTIFY currentTracksChanged)
 
+    Q_PROPERTY(PlayModes playMode READ playMode WRITE setPlayMode NOTIFY playModeChanged)
+    Q_PROPERTY(ShuffleModes shuffleMode READ shuffleMode WRITE setShuffleMode NOTIFY shuffleModeChanged)
+    Q_PROPERTY(RepeatModes repeatMode READ repeatMode WRITE setRepeatMode NOTIFY repeatModeChanged)
+
     Q_PROPERTY (bool hdmiAudio READ hdmiAudio NOTIFY hdmiAudioChanged)
     Q_PROPERTY (bool cec READ cec NOTIFY cecChanged)
     Q_PROPERTY (bool musicOptimizer READ musicOptimizer NOTIFY musicOptimizerChanged)
@@ -440,6 +444,21 @@ public:
         return m_hasArtwork;
     }
 
+    PlayModes playMode() const
+    {
+        return m_playMode;
+    }
+
+    ShuffleModes shuffleMode() const
+    {
+        return m_shuffleMode;
+    }
+
+    RepeatModes repeatMode() const
+    {
+        return m_repeatMode;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -518,6 +537,12 @@ signals:
 
     void hasArtworkChanged(bool arg);
 
+    void playModeChanged(PlayModes arg);
+
+    void shuffleModeChanged(ShuffleModes arg);
+
+    void repeatModeChanged(RepeatModes arg);
+
 public slots:
 
     void setDebug(bool arg)
@@ -536,6 +561,33 @@ public slots:
             m_discoveryTimeout = arg;
             emit discoveryTimeoutChanged(arg);
         }
+    }
+
+    void setPlayMode(PlayModes arg)
+    {
+        if (m_playMode == arg)
+            return;
+
+        m_playMode = arg;
+        emit playModeChanged(arg);
+    }
+
+    void setShuffleMode(ShuffleModes arg)
+    {
+        if (m_shuffleMode == arg)
+            return;
+
+        m_shuffleMode = arg;
+        emit shuffleModeChanged(arg);
+    }
+
+    void setRepeatMode(RepeatModes arg)
+    {
+        if (m_repeatMode == arg)
+            return;
+
+        m_repeatMode = arg;
+        emit repeatModeChanged(arg);
     }
 
 private slots:
@@ -680,6 +732,10 @@ private:
     QTime m_position;
     QTime m_length;
 
+    PlayModes m_playMode;
+    ShuffleModes m_shuffleMode;
+    RepeatModes m_repeatMode;
+
     quint16 m_track;
     quint16 m_tracks;
 
@@ -725,6 +781,8 @@ private:
     bool m_hasArtwork;
     void parseElapsedTime(QString et);
     void clearCurrentTrack();
+    void parseDeviceInformation(QString data);
+    void parsePlayStatus(QString data);
 };
 
 #endif // QISCP_H

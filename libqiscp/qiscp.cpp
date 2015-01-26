@@ -750,42 +750,58 @@ void qiscp::parsePlayStatus(QString data) {
 
     switch (ps) {
     case 'S':
+        setPlayMode(Stopped);
         break;
     case 'P':
+        setPlayMode(Playing);
         break;
     case 'p':
+        setPlayMode(Paused);
         break;
     case 'F':
+        setPlayMode(FastForwarding);
         break;
     case 'R':
+        setPlayMode(FastReversing);
         break;
     case 'E':
+        setPlayMode(EndOfFile);
         break;
     }
 
     switch (rs) {
     case '-':
+        setRepeatMode(RepeatOff);
         break;
     case 'R':
+        setRepeatMode(RepeatAll);
         break;
     case 'F':
+        setRepeatMode(RepeatFolder);
         break;
     case '1':
+        setRepeatMode(RepeatOne);
         break;
     case 'x':
+        setRepeatMode(RepeatDisabled);
         break;
     }
 
     switch (ss) {
     case '-':
+        setShuffleMode(ShuffleOff);
         break;
     case 'S':
+        setShuffleMode(ShuffleAll);
         break;
     case 'A':
+        setShuffleMode(ShuffleAlbum);
         break;
     case 'F':
+        setShuffleMode(ShuffleFolder);
         break;
     case 'x':
+        setShuffleMode(ShuffleDisabled);
         break;
     }
 
