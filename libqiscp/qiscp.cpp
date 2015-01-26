@@ -303,6 +303,7 @@ void qiscp::tcpConnected() {
 
 void qiscp::tcpDisconnected() {
     qDebug("DisConnected");
+    clearCurrentTrack();
     m_cmdtimer.stop();
     m_cmdqueue.clear();
     m_buffer.clear();
@@ -699,7 +700,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
          parsePlayStatus(message->getParamter());
         break;
     case ISCPCommands::TrackInfo:
-
+        parseTrackInfo(message->getParamter());
         break;
 // Device information
     case ISCPCommands::DeviceInformation:
@@ -860,13 +861,16 @@ void qiscp::clearCurrentTrack() {
     m_artist.clear();
     m_album.clear();
     m_title.clear();
-    m_track=0;
-    m_tracks=0;
     emit currentTrackPositionChanged();
     emit currentTrackLengthChanged();
     emit currentTitleChanged();
     emit currentArtistChanged();
     emit currentAlbumChanged();
+    setTracks(0);
+    setTrack(0);
+    setPlayMode(Stopped);
+    setRepeatMode(RepeatOff);
+    setShuffleMode(ShuffleOff);
 }
 
 /**
