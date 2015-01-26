@@ -527,8 +527,8 @@ signals:
 
     void currentTrackPositionChanged();
     void currentTrackLengthChanged();
-    void currentTrackChanged();
-    void currentTracksChanged();
+    void currentTrackChanged(quint16 track);
+    void currentTracksChanged(quint16 tracks);
     void currentArtworkChanged();
 
     void networkServiceChanged(NetworkService arg);
@@ -784,6 +784,24 @@ private:
     void clearCurrentTrack();
     void parseDeviceInformation(QString data);
     void parsePlayStatus(QString data);
+
+    void setTracks(quint16 tracks)
+    {
+        if (m_tracks == tracks)
+            return;
+
+        m_tracks = tracks;
+        emit currentTracksChanged(tracks);
+    }
+    void setTrack(quint16 track)
+    {
+        if (m_track == track)
+            return;
+
+        m_track = track;
+        emit currentTrackChanged(track);
+    }
+    void parseTrackInfo(QString data);
 };
 
 #endif // QISCP_H

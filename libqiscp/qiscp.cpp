@@ -710,6 +710,20 @@ void qiscp::parseMessage(ISCPMsg *message) {
     }
 }
 
+void qiscp::parseTrackInfo(QString data) {
+    QStringList tis=data.split("/");
+
+    if (tis.size()<2) {
+        qWarning("Invalid track info");
+        setTracks(0);
+        setTrack(0);
+        return;
+    }
+
+    setTracks(tis.at(1).toInt(NULL, 10));
+    setTrack(tis.at(0).toInt(NULL, 10));
+}
+
 void qiscp::parseDeviceInformation(QString data) {
     m_deviceinfoparser=new DeviceInforParser(data);
 
