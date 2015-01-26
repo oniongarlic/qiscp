@@ -77,7 +77,7 @@ Rectangle {
             height: parent.height;
             width: parent.width/4
             model: presetsModel
-            // visible: iscp.masterInput==
+            visible: iscp.masterInput==ISCPInputs.Tuner
             onPresetSelected: {
                 iscp.tunePreset(preset.preset_id);
             }
@@ -155,10 +155,10 @@ Rectangle {
 
             Text {
                 text: "S:" + iscp.subwooferLevel;
-            }
+            }           
 
-            Text {
-                visible: iscp.masterInput===0x24 || iscp.masterInput===0x25;
+            Text {                
+                visible: iscp.masterInput===ISCPInputs.isTuner(iscp.masterInput)
                 text: "Freq:" + formatFreq(iscp.masterTunerFreq);
                 function formatFreq(freq) {
                     // AM 535-1605 kHz
