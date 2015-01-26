@@ -643,6 +643,7 @@ private:
             ElapsedTime,
             CurrentTrack,
             PlayStatus,
+            TrackInfo,
             ListInfo,
             DeviceInformation,
             Artwork,

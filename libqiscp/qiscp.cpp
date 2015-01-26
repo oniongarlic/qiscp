@@ -83,6 +83,7 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("NTM", ISCPCommands::ElapsedTime);
     m_commands.insert("NST", ISCPCommands::PlayStatus);
     m_commands.insert("NJA", ISCPCommands::Artwork);
+    m_commands.insert("NTR", ISCPCommands::TrackInfo);
 
     m_commands.insert("NRI", ISCPCommands::DeviceInformation);
 
@@ -696,6 +697,9 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::PlayStatus:
          parsePlayStatus(message->getParamter());
+        break;
+    case ISCPCommands::TrackInfo:
+
         break;
 // Device information
     case ISCPCommands::DeviceInformation:
