@@ -1747,6 +1747,8 @@ switch (m_masterInput) {
 case Inputs::InternetRadio:
 case Inputs::Network:
 case Inputs::MusicServer:
+case Inputs::USBBack:
+case Inputs::USBFront:
     networkCommand(cmd);
     break;
 case Inputs::DVD:
