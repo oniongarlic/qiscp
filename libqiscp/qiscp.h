@@ -24,6 +24,9 @@ class qiscp : public QObject
     Q_ENUMS(ListeningModesQuick)
     Q_ENUMS(NetworkService)
     Q_ENUMS(Inputs)
+    Q_ENUMS(PlayModes)
+    Q_ENUMS(RepeatModes)
+    Q_ENUMS(ShuffleModes)
 
 public:
     explicit qiscp(QObject *parent = 0);
