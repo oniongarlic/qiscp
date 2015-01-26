@@ -236,7 +236,6 @@ void DeviceInforParser::readSelectors() {
             m_xml.skipCurrentElement();
         }
     }
-    qDebug() << "INPUTS: " << m_selectors;
 }
 
 void DeviceInforParser::readPresets() {
