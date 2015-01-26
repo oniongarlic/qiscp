@@ -123,47 +123,47 @@ qiscp::qiscp(QObject *parent) :
 
     // Input ID to Input name mapping
     // Video
-    m_inputs.insert(Inputs::Video1, "Video 1");
-    m_inputs.insert(Inputs::Video2, "Video 2");
-    m_inputs.insert(Inputs::Video3, "Video 3");
-    m_inputs.insert(Inputs::Video4, "Video 4");
-    m_inputs.insert(Inputs::Video5, "Video 5");
-    m_inputs.insert(Inputs::Video6, "Video 6");
-    m_inputs.insert(Inputs::Video7, "Video 7");
+    m_inputs.insert(qiscpInputs::Video1, "Video 1");
+    m_inputs.insert(qiscpInputs::Video2, "Video 2");
+    m_inputs.insert(qiscpInputs::Video3, "Video 3");
+    m_inputs.insert(qiscpInputs::Video4, "Video 4");
+    m_inputs.insert(qiscpInputs::Video5, "Video 5");
+    m_inputs.insert(qiscpInputs::Video6, "Video 6");
+    m_inputs.insert(qiscpInputs::Video7, "Video 7");
 
     // Extras
-    m_inputs.insert(Inputs::Extra1, "Extra 1");
-    m_inputs.insert(Inputs::Extra2, "Extra 2");
-    m_inputs.insert(Inputs::Extra3, "Extra 3");
+    m_inputs.insert(qiscpInputs::Extra1, "Extra 1");
+    m_inputs.insert(qiscpInputs::Extra2, "Extra 2");
+    m_inputs.insert(qiscpInputs::Extra3, "Extra 3");
 
     // DVD
-    m_inputs.insert(Inputs::DVD, "BD/DVD");
+    m_inputs.insert(qiscpInputs::DVD, "BD/DVD");
 
     // Tape
-    m_inputs.insert(Inputs::Tape1, "Tape 1");
-    m_inputs.insert(Inputs::Tape2, "Tape 2");
+    m_inputs.insert(qiscpInputs::Tape1, "Tape 1");
+    m_inputs.insert(qiscpInputs::Tape2, "Tape 2");
 
-    m_inputs.insert(Inputs::CD, "TV/CD");
-    m_inputs.insert(Inputs::Phono, "Phono");
+    m_inputs.insert(qiscpInputs::CD, "TV/CD");
+    m_inputs.insert(qiscpInputs::Phono, "Phono");
 
     // Blueooth
-    m_inputs.insert(Inputs::Bluetooth, "Bluetooth");
+    m_inputs.insert(qiscpInputs::Bluetooth, "Bluetooth");
 
     // Radio
-    m_inputs.insert(Inputs::FM, "FM");
-    m_inputs.insert(Inputs::AM, "AM");
-    m_inputs.insert(Inputs::Tuner, "Tuner");
+    m_inputs.insert(qiscpInputs::FM, "FM");
+    m_inputs.insert(qiscpInputs::AM, "AM");
+    m_inputs.insert(qiscpInputs::Tuner, "Tuner");
 
     // Network
-    m_inputs.insert(Inputs::MusicServer, "Music Server");
-    m_inputs.insert(Inputs::InternetRadio, "Internet Radio");
-    m_inputs.insert(Inputs::USBFront, "USB Front");
-    m_inputs.insert(Inputs::USBBack, "USB Back");
-    m_inputs.insert(Inputs::Network, "Network");
-    m_inputs.insert(Inputs::AirPlay, "AirPlay");
+    m_inputs.insert(qiscpInputs::MusicServer, "Music Server");
+    m_inputs.insert(qiscpInputs::InternetRadio, "Internet Radio");
+    m_inputs.insert(qiscpInputs::USBFront, "USB Front");
+    m_inputs.insert(qiscpInputs::USBBack, "USB Back");
+    m_inputs.insert(qiscpInputs::Network, "Network");
+    m_inputs.insert(qiscpInputs::AirPlay, "AirPlay");
 
     // Zone 1 as source
-    m_inputs.insert(Inputs::Source, "Source");
+    m_inputs.insert(qiscpInputs::Source, "Source");
 
     m_timer.setSingleShot(true);    
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(deviceDiscoveryTimeout()));
@@ -521,16 +521,16 @@ void qiscp::parseMessage(ISCPMsg *message) {
         m_masterInput=message->getIntValue();
         emit masterInputChanged();
         switch (m_masterInput) {
-        case Inputs::FM:
-        case Inputs::AM:
-        case Inputs::Tuner:
+        case qiscpInputs::FM:
+        case qiscpInputs::AM:
+        case qiscpInputs::Tuner:
             writeCommand("TUN", "QSTN");
             break;
-        case Inputs::Network:
-        case Inputs::InternetRadio:
-        case Inputs::MusicServer:
-        case Inputs::USBBack:
-        case Inputs::USBFront:
+        case qiscpInputs::Network:
+        case qiscpInputs::InternetRadio:
+        case qiscpInputs::MusicServer:
+        case qiscpInputs::USBBack:
+        case qiscpInputs::USBFront:
             requestNetworkPlayState();
             break;
         }
@@ -587,16 +587,16 @@ void qiscp::parseMessage(ISCPMsg *message) {
         m_z2Input=message->getIntValue();
         emit zone2InputChanged();
         switch (m_z2Input) {
-        case Inputs::FM:
-        case Inputs::AM:
-        case Inputs::Tuner:
+        case qiscpInputs::FM:
+        case qiscpInputs::AM:
+        case qiscpInputs::Tuner:
             writeCommand("TUZ", "QSTN");
             break;
-        case Inputs::Network:
-        case Inputs::InternetRadio:
-        case Inputs::MusicServer:
-        case Inputs::USBBack:
-        case Inputs::USBFront:
+        case qiscpInputs::Network:
+        case qiscpInputs::InternetRadio:
+        case qiscpInputs::MusicServer:
+        case qiscpInputs::USBBack:
+        case qiscpInputs::USBFront:
             requestNetworkPlayState();
             break;
         }
@@ -629,16 +629,16 @@ void qiscp::parseMessage(ISCPMsg *message) {
         m_z3Input=message->getIntValue();
         emit zone3InputChanged();
         switch (m_z3Input) {
-        case Inputs::FM:
-        case Inputs::AM:
-        case Inputs::Tuner:
+        case qiscpInputs::FM:
+        case qiscpInputs::AM:
+        case qiscpInputs::Tuner:
             writeCommand("TU3", "QSTN");
             break;
-        case Inputs::Network:
-        case Inputs::InternetRadio:
-        case Inputs::MusicServer:
-        case Inputs::USBBack:
-        case Inputs::USBFront:
+        case qiscpInputs::Network:
+        case qiscpInputs::InternetRadio:
+        case qiscpInputs::MusicServer:
+        case qiscpInputs::USBBack:
+        case qiscpInputs::USBFront:
             requestNetworkPlayState();
             break;
         }
@@ -671,16 +671,16 @@ void qiscp::parseMessage(ISCPMsg *message) {
         m_z4Input=message->getIntValue();
         emit zone4InputChanged();
         switch (m_z4Input) {
-        case Inputs::FM:
-        case Inputs::AM:
-        case Inputs::Tuner:
+        case qiscpInputs::FM:
+        case qiscpInputs::AM:
+        case qiscpInputs::Tuner:
             writeCommand("TU4", "QSTN");
             break;
-        case Inputs::Network:
-        case Inputs::InternetRadio:
-        case Inputs::MusicServer:
-        case Inputs::USBBack:
-        case Inputs::USBFront:
+        case qiscpInputs::Network:
+        case qiscpInputs::InternetRadio:
+        case qiscpInputs::MusicServer:
+        case qiscpInputs::USBBack:
+        case qiscpInputs::USBFront:
             requestNetworkPlayState();
             break;
         }
@@ -1179,15 +1179,15 @@ QVariantList qiscp::getPresets() const {
 }
 
 void qiscp::tune(int t, Zones zone) {
-    if (m_masterInput==Inputs::FM) {
+    if (m_masterInput==qiscpInputs::FM) {
         // XXX: Check limits!
         if (t>10800)
             t=10800;
         if (t<8700)
             t=8700;
-    } else if (m_masterInput==Inputs::AM) {
+    } else if (m_masterInput==qiscpInputs::AM) {
         // XXX: Add limit check
-    } else if (m_masterInput==Inputs::Tuner) {
+    } else if (m_masterInput==qiscpInputs::Tuner) {
         // XXX: Add limit check
     } else {
         qWarning("Trying to tune when not radio input");
@@ -1764,14 +1764,14 @@ bool qiscp::bdCommand(Commands cmd) {
  */
 bool qiscp::command(Commands cmd, Zones zone) {
 switch (m_masterInput) {
-case Inputs::InternetRadio:
-case Inputs::Network:
-case Inputs::MusicServer:
-case Inputs::USBBack:
-case Inputs::USBFront:
+case qiscpInputs::InternetRadio:
+case qiscpInputs::Network:
+case qiscpInputs::MusicServer:
+case qiscpInputs::USBBack:
+case qiscpInputs::USBFront:
     networkCommand(cmd);
     break;
-case Inputs::DVD:
+case qiscpInputs::DVD:
     dvdCommand(cmd);
     break;
 }
