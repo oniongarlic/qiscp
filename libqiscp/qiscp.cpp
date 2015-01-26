@@ -707,7 +707,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
 }
 
 void qiscp::parseDeviceInformation(QString data) {
-    m_deviceinfoparser=new DeviceInforParser();
+    m_deviceinfoparser=new DeviceInforParser(data);
 
     if (m_deviceinfoparser->isOk()) {
 
