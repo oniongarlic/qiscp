@@ -79,8 +79,8 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("PR3", ISCPCommands::MasterTunerPreset);
     m_commands.insert("PR4", ISCPCommands::MasterTunerPreset);
 
+    // Levels: Treble/Base, Center and Subwoofer
     m_commands.insert("TFR", ISCPCommands::MasterTone);
-
     m_commands.insert("CTL", ISCPCommands::CenterLevel);
     m_commands.insert("SWL", ISCPCommands::SubwooferLevel);
 
