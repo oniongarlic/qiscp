@@ -268,6 +268,7 @@ public:
 
     Q_PROPERTY (int masterInput READ masterInput WRITE setMasterInput NOTIFY masterInputChanged)
     Q_PROPERTY (int masterTunerFreq READ masterTunerFreq NOTIFY masterTunerFreqChanged)
+    Q_PROPERTY (int masterTunerPreset READ masterTunerPreset NOTIFY masterTunerPresetChanged)
 
     Q_PROPERTY (NetworkService networkService READ networkService WRITE setNetworkService NOTIFY networkServiceChanged)
 
@@ -490,6 +491,11 @@ public:
         return m_sleepTimer;
     }
 
+    int masterTunerPreset() const
+    {
+        return m_masterTunerPreset;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -576,6 +582,8 @@ signals:
 
     void sleepTimerChanged(int arg);
 
+    void masterTunerPresetChanged(int arg);
+
 public slots:
 
     void setDebug(bool arg)
@@ -642,6 +650,7 @@ private:
             MasterMute,
             MasterInput,
             MasterTuner,
+            MasterTunerPreset,
             MasterTone,
             MasterBalance,
             CenterLevel,
@@ -838,6 +847,7 @@ private:
     int m_sleepTimer;
     void setArtwork(QByteArray data);
     void clearArtwork();
+    int m_masterTunerPreset;
 };
 
 #endif // QISCP_H

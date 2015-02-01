@@ -62,13 +62,22 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("AMT", ISCPCommands::MasterMute);
     m_commands.insert("SLI", ISCPCommands::MasterInput);
     m_commands.insert("SLP", ISCPCommands::SleepTimer);
-    m_commands.insert("TUN", ISCPCommands::MasterTuner);
 
-    // Note: Tuner is shared so we don't need to handle it for every zone, but control is still separate so we still
-    // need to handle the zone specific tuner information messages
+    /**
+     * Tuner is a shared resource we don't need to handle it for every zone,
+     * but control is still separate/zone so we still need to handle
+     * the zone specific tuner information messages even if there is only one current
+     * setting. So what we do is just take them as master tuner information
+    */
+    m_commands.insert("TUN", ISCPCommands::MasterTuner);
     m_commands.insert("TUZ", ISCPCommands::MasterTuner);
     m_commands.insert("TU3", ISCPCommands::MasterTuner);
     m_commands.insert("TU4", ISCPCommands::MasterTuner);
+
+    m_commands.insert("PRS", ISCPCommands::MasterTunerPreset);
+    m_commands.insert("PRZ", ISCPCommands::MasterTunerPreset);
+    m_commands.insert("PR3", ISCPCommands::MasterTunerPreset);
+    m_commands.insert("PR4", ISCPCommands::MasterTunerPreset);
 
     m_commands.insert("TFR", ISCPCommands::MasterTone);
 
@@ -538,6 +547,10 @@ void qiscp::parseMessage(ISCPMsg *message) {
     case ISCPCommands::MasterTuner:
         m_masterTunerFreq=message->getTunerValue();
         emit masterTunerFreqChanged();
+        break;
+    case ISCPCommands::MasterTunerPreset:
+        m_masterTunerPreset=message->getIntValue();
+        emit masterTunerPresetChanged(m_masterTunerPreset);
         break;
     case ISCPCommands::Artwork:
         parseArtworkMessage(message);
