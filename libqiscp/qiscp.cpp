@@ -601,7 +601,8 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case qiscpInputs::FM:
         case qiscpInputs::AM:
         case qiscpInputs::Tuner:
-            writeCommand("TUZ", "QSTN");
+            queueCommand("PRZ", "QSTN");
+            queueCommand("TUZ", "QSTN");
             break;
         case qiscpInputs::Network:
         case qiscpInputs::InternetRadio:
@@ -643,7 +644,8 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case qiscpInputs::FM:
         case qiscpInputs::AM:
         case qiscpInputs::Tuner:
-            writeCommand("TU3", "QSTN");
+            queueCommand("PR3", "QSTN");
+            queueCommand("TU3", "QSTN");
             break;
         case qiscpInputs::Network:
         case qiscpInputs::InternetRadio:
@@ -685,7 +687,8 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case qiscpInputs::FM:
         case qiscpInputs::AM:
         case qiscpInputs::Tuner:
-            writeCommand("TU4", "QSTN");
+            queueCommand("PR4", "QSTN");
+            queueCommand("TU4", "QSTN");
             break;
         case qiscpInputs::Network:
         case qiscpInputs::InternetRadio:
