@@ -695,6 +695,10 @@ private:
             MusicOptimizer,
             ListeningMode,
             LateNightMode,
+            // Audyssey
+            Audyssey2EQ,
+            AudysseyDynamicEQ,
+            AudysseyDynamicVolume,
             // Airplay, these are untested but should work as the data format is same as other network
             AirplayCurrentArtist,
             AirplayCurrentAlbum,

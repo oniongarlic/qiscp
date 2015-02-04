@@ -107,9 +107,13 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("CEC", ISCPCommands::CEC);
     m_commands.insert("HAO", ISCPCommands::HDMIAudio);
 
+    // Various audio mode settings
     m_commands.insert("LMD", ISCPCommands::ListeningMode);
     m_commands.insert("LTN", ISCPCommands::LateNightMode);
     m_commands.insert("MOT", ISCPCommands::MusicOptimizer);
+    m_commands.insert("ADY", ISCPCommands::Audyssey2EQ);
+    m_commands.insert("ADQ", ISCPCommands::AudysseyDynamicEQ);
+    m_commands.insert("ADV", ISCPCommands::AudysseyDynamicVolume);
 
     // Zone 2
     m_commands.insert("ZPW", ISCPCommands::Zone2Power);
