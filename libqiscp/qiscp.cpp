@@ -1349,11 +1349,37 @@ void qiscp::presetDown(Zones zone) {
 }
 
 void qiscp::bassLevelUp(Zones zone) {
-    writeCommand("TFR", "BUP");
+    switch (zone) {
+    case Zone1:
+        writeCommand("TFR", "BUP");
+        break;
+    case Zone2:
+        writeCommand("ZTN", "BUP");
+        break;
+    case Zone3:
+        writeCommand("TN3", "BUP");
+        break;
+    case Zone4:
+        qWarning("Zone 4 does not support tone control");
+        break;
+    }
 }
 
 void qiscp::bassLevelDown(Zones zone) {
-    writeCommand("TFR", "BDOWN");
+    switch (zone) {
+    case Zone1:
+        writeCommand("TFR", "BDOWN");
+        break;
+    case Zone2:
+        writeCommand("ZTN", "BDOWN");
+        break;
+    case Zone3:
+        writeCommand("TN3", "BDOWN");
+        break;
+    case Zone4:
+        qWarning("Zone 4 does not support tone control");
+        break;
+    }
 }
 
 void qiscp::trebleLevelUp(Zones zone) {
