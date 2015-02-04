@@ -119,6 +119,9 @@ class qiscp : public QObject
     Q_ENUMS(PlayModes)
     Q_ENUMS(RepeatModes)
     Q_ENUMS(ShuffleModes)
+    Q_ENUMS(Audyssey2EQ)
+    Q_ENUMS(AudysseyDynamicVolume)
+    Q_ENUMS(AudysseyDynamicEQ)
 
 public:
     explicit qiscp(QObject *parent = 0);
@@ -246,6 +249,24 @@ public:
         RepeatFolder,
         RepeatOne,
         RepeatDisabled
+    };
+
+    enum AudysseyDynamicVolume {
+        AudysseyDynamicVolumeOff=0,
+        AudysseyDynamicVolumeLight=1,
+        AudysseyDynamicVolumeMedium=2,
+        AudysseyDynamicVolumeHard=3
+    };
+
+    enum Audyssey2EQ {
+        Audyssey2EQOff=0,
+        Audyssey2EQMovie=1,
+        Audyssey2EQMusic=2
+    };
+
+    enum AudysseyDynamicEQ {
+        AudysseyDynamicEQOff=0,
+        AudysseyDynamicEQOn=1
     };
 
     enum ShuffleModes {
