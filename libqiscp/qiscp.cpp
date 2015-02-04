@@ -256,9 +256,6 @@ void qiscp::discoverHosts() {
     msg.setCommand("ECN", "QSTN", 'x');
     QByteArray packet=msg.bytes();
 
-    qDebug() << "Sending discovery packget:";
-    qDebug() << "Contents: " << packet.toHex();
-
     m_discovering=true;
     emit discoveringChanged();
 
