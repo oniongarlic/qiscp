@@ -1791,7 +1791,11 @@ bool qiscp::tvCommand(Commands cmd) {
         writeCommand(c, "PREV");
         break;
     default:
-        return keyCommand(c, cmd);
+        if (keyCommand(c,cmd))
+            return true;
+        else if (baseCommand(c, cmd))
+            return true;
+        return false;
     }
     return true;
 }
