@@ -329,7 +329,11 @@ public:
 
     Q_PROPERTY (bool hdmiAudio READ hdmiAudio NOTIFY hdmiAudioChanged)
     Q_PROPERTY (bool cec READ cec NOTIFY cecChanged)
+
     Q_PROPERTY (bool musicOptimizer READ musicOptimizer NOTIFY musicOptimizerChanged)
+    Q_PROPERTY (Audyssey2EQ audyssey2EQ READ audyssey2EQ WRITE setAudyssey2EQ NOTIFY audyssey2EQChanged)
+    Q_PROPERTY (AudysseyDynamicEQ audysseyDynamicEQ READ audysseyDynamicEQ WRITE setAudysseyDynamicEQ NOTIFY audysseyDynamicEQChanged)
+    Q_PROPERTY (AudysseyDynamicVolume audysseyDynamicVolume READ audysseyDynamicVolume WRITE setAudysseyDynamicVolume NOTIFY audysseyDynamicVolumeChanged)
 
     Q_PROPERTY (int sleepTimer READ sleepTimer NOTIFY sleepTimerChanged)
 
@@ -518,6 +522,21 @@ public:
     }
 
     bool tuneStorePreset(int ml);
+    Audyssey2EQ audyssey2EQ() const
+    {
+        return m_audyssey2EQ;
+    }
+
+    AudysseyDynamicEQ audysseyDynamicEQ() const
+    {
+        return m_audysseyDynamicEQ;
+    }
+
+    AudysseyDynamicVolume audysseyDynamicVolume() const
+    {
+        return m_audysseyDynamicVolume;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -606,6 +625,12 @@ signals:
 
     void masterTunerPresetChanged(int arg);
 
+    void audyssey2EQChanged(Audyssey2EQ arg);
+
+    void audysseyDynamicEQChanged(AudysseyDynamicEQ arg);
+
+    void audysseyDynamicVolumeChanged(AudysseyDynamicVolume arg);
+
 public slots:
 
     void setDebug(bool arg)
@@ -652,6 +677,12 @@ public slots:
         m_repeatMode = arg;
         emit repeatModeChanged(arg);
     }
+
+    Q_INVOKABLE void setAudyssey2EQ(Audyssey2EQ arg);
+
+    Q_INVOKABLE void setAudysseyDynamicEQ(AudysseyDynamicEQ arg);
+
+    Q_INVOKABLE void setAudysseyDynamicVolume(AudysseyDynamicVolume arg);
 
 private slots:
     void tcpConnected();
@@ -874,6 +905,9 @@ private:
     void setArtwork(QByteArray data);
     void clearArtwork();
     int m_masterTunerPreset;
+    Audyssey2EQ m_audyssey2EQ;
+    AudysseyDynamicEQ m_audysseyDynamicEQ;
+    AudysseyDynamicVolume m_audysseyDynamicVolume;
 };
 
 #endif // QISCP_H

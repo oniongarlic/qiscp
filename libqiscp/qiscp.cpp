@@ -725,6 +725,19 @@ void qiscp::parseMessage(ISCPMsg *message) {
     case ISCPCommands::TrackInfo:
         parseTrackInfo(message->getParamter());
         break;
+// Audyssey
+    case ISCPCommands::Audyssey2EQ:
+        m_audyssey2EQ = (Audyssey2EQ)message->getIntValue();
+        emit audyssey2EQChanged(m_audyssey2EQ);
+        break;
+    case ISCPCommands::AudysseyDynamicEQ:
+        m_audysseyDynamicEQ = (AudysseyDynamicEQ)message->getIntValue();
+        emit audysseyDynamicEQChanged(m_audysseyDynamicEQ);
+        break;
+    case ISCPCommands::AudysseyDynamicVolume:
+        m_audysseyDynamicVolume = (AudysseyDynamicVolume)message->getIntValue();
+        emit audysseyDynamicVolumeChanged(m_audysseyDynamicVolume);
+        break;
 // Device information
     case ISCPCommands::DeviceInformation:
         parseDeviceInformation(message->getParamter());
@@ -1870,4 +1883,19 @@ void qiscp::setNetworkService(qiscp::NetworkService arg)
     p=getHex(m_networkService, 2);
     writeCommand("NSV", p);
     emit networkServiceChanged(arg);
+}
+
+void qiscp::setAudyssey2EQ(qiscp::Audyssey2EQ arg)
+{
+    writeCommand("ADY", getHex(arg));
+}
+
+void qiscp::setAudysseyDynamicEQ(qiscp::AudysseyDynamicEQ arg)
+{
+    writeCommand("ADQ", getHex(arg));
+}
+
+void qiscp::setAudysseyDynamicVolume(qiscp::AudysseyDynamicVolume arg)
+{
+    writeCommand("ADV", getHex(arg));
 }
