@@ -1251,6 +1251,22 @@ void qiscp::tunePreset(int t, Zones zone) {
 }
 
 /**
+ * @brief qiscp::tuneStorePreset
+ * @param ml
+ *
+ * Store currently tuned channel at memory location ml
+ *
+ */
+bool qiscp::tuneStorePreset(int ml) {
+    if (ml<1)
+        return false;
+    if (ml>40) // XXX: Somehow handle devices supporting only 30 locs
+        return false;
+    writeCommand("PRM", getHex(ml));
+    return true;
+}
+
+/**
  * @brief qiscp::tuneUp
  * @param zone
  *

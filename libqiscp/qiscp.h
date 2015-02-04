@@ -496,6 +496,7 @@ public:
         return m_masterTunerPreset;
     }
 
+    bool tuneStorePreset(int ml);
 signals:
     void portChanged();
     void hostChanged();
