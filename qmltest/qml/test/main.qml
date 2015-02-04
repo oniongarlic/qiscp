@@ -95,11 +95,11 @@ Rectangle {
             height: parent.height;
             width: parent.width/5
             model: presetsModel
-            visible: iscp.masterInput==ISCPInputs.Tuner
+            //visible: iscp.masterInput==ISCPInputs.Tuner
             onPresetSelected: {
                 iscp.tunePreset(preset.preset_id);
             }
-            // currentInput: iscp.cu
+            currentPreset: iscp.masterTunerPreset
         }
 
         NetworkServicesList {
@@ -415,36 +415,8 @@ Rectangle {
             }
         }
 
-        Row {
-            id: tvCmds
-            Text {
-                text: "TV/CEC"
-            }
-            Button {
-                title: "Power"
-                enabled: iscp.connected
-                onClicked: { iscp.tvCommand(QISCP.Power) }
-            }
-            Button {
-                title: "Prog+"
-                enabled: iscp.connected
-                onClicked: { iscp.tvCommand(QISCP.ChannelUp) }
-            }
-            Button {
-                title: "Prog-"
-                enabled: iscp.connected
-                onClicked: { iscp.tvCommand(QISCP.ChannelDown) }
-            }
-            Button {
-                title: "Vol+"
-                enabled: iscp.connected
-                onClicked: { iscp.tvCommand(QISCP.VolumeUp) }
-            }
-            Button {
-                title: "Vol-"
-                enabled: iscp.connected
-                onClicked: { iscp.tvCommand(QISCP.VolumeDown) }
-            }
+        TVControls {
+            iscp: iscp
         }
     }
 
@@ -455,6 +427,10 @@ Rectangle {
         onDevicesDiscovered: {
             console.debug("Devices found")
             var devices=iscp.getDevices();
+
+            if (devices.length==0)
+                return;
+
             hostsModel.clear();
             for (var i=0;i<devices.length;i++) {
                 hostsModel.append(devices[i]);

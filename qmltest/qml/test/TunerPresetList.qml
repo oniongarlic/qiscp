@@ -6,12 +6,12 @@ ListView {
     clip: true;
 
     signal presetSelected(variant preset);
-    property int currentInput: -1;
+    property int currentPreset: -1;
 
     Component {
         id: presetDelegate
         Rectangle {
-            color: model.input_id==presets.currentInput ? "#e5ffe5" : "#ffffff";
+            color: model.preset_id==presets.currentPreset ? "#e5ffe5" : "#ffffff";
             width: parent.width;
             height: txt.height;
             MouseArea {
