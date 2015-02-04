@@ -582,7 +582,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
         m_z2Power=message->getIntValue()==1 ? true : false;
         emit powerChanged();
         if (m_z2Power==true) {
-            // requestZone2State();
+            requestZone2State();
         }
         break;
     case ISCPCommands::Zone2Mute:
