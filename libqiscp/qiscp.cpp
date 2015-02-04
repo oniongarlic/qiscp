@@ -1001,9 +1001,9 @@ void qiscp::requestInitialState() {
     // queueCommand("RAS", "QSTN");
 
     // Audyssey
-    // queueCommand("ADY", "QSTN");
-    // queueCommand("ADQ", "QSTN");
-    // queueCommand("ADV", "QSTN");  
+    queueCommand("ADY", "QSTN");
+    queueCommand("ADQ", "QSTN");
+    queueCommand("ADV", "QSTN");
 }
 
 void qiscp::requestZone2State() {
