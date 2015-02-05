@@ -314,7 +314,7 @@ void qiscp::tcpConnected() {
 
 void qiscp::tcpDisconnected() {
     qDebug("DisConnected");
-    clearCurrentTrack();
+    clearAllTrackInformation();
     m_cmdtimer.stop();
     m_cmdqueue.clear();
     m_buffer.clear();
@@ -723,6 +723,9 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::PlayStatus:
          parsePlayStatus(message->getParamter());
+         // XXX: Is this ok?
+         if (m_playMode==Stopped)
+             clearCurrentTrack();
         break;
     case ISCPCommands::TrackInfo:
         parseTrackInfo(message->getParamter());
@@ -890,7 +893,7 @@ void qiscp::parseElapsedTime(QString et) {
 /**
  * @brief qiscp::clearCurrentTrack
  *
- * Clears the current track information
+ * Clears the information of the current track only
  *
  */
 void qiscp::clearCurrentTrack() {
@@ -905,6 +908,15 @@ void qiscp::clearCurrentTrack() {
     emit currentArtistChanged();
     emit currentAlbumChanged();
     clearArtwork();
+}
+
+/**
+ * @brief qiscp::clearCurrentTrack
+ *
+ * Clears the all track information
+ *
+ */
+void qiscp::clearAllTrackInformation() {
     setTracks(0);
     setTrack(0);
     setPlayMode(Stopped);

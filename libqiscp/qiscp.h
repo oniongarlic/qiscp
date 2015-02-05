@@ -921,6 +921,7 @@ private:
     Audyssey2EQ m_audyssey2EQ;
     AudysseyDynamicEQ m_audysseyDynamicEQ;
     AudysseyDynamicVolume m_audysseyDynamicVolume;
+    void clearAllTrackInformation();
 };
 
 #endif // QISCP_H
