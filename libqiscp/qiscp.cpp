@@ -93,8 +93,12 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("NST", ISCPCommands::PlayStatus);
     m_commands.insert("NJA", ISCPCommands::Artwork);
     m_commands.insert("NTR", ISCPCommands::TrackInfo);
-
     m_commands.insert("NRI", ISCPCommands::DeviceInformation);
+    m_commands.insert("NMS", ISCPCommands::MenuStatus);
+    m_commands.insert("NDS", ISCPCommands::DeviceStatus);
+    m_commands.insert("NLS", ISCPCommands::MenuList);
+    m_commands.insert("NLT", ISCPCommands::MenuListTitle);
+    m_commands.insert("NPR", ISCPCommands::NetworkRadioPreset);
 
     // XXX: Needs feedback, but should work
     m_commands.insert("AAL", ISCPCommands::CurrentAlbum);
@@ -729,6 +733,22 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::TrackInfo:
         parseTrackInfo(message->getParamter());
+        break;
+    case ISCPCommands::MenuStatus:
+        qWarning() << "Unhandled: " << message->getParamter();
+        break;
+    case ISCPCommands::MenuList:
+        qWarning() << "Unhandled: " << message->getParamter();
+        break;
+    case ISCPCommands::MenuListTitle:
+        qWarning() << "Unhandled: " << message->getParamter();
+        break;
+    case ISCPCommands::DeviceStatus:
+        qWarning() << "Unhandled: " << message->getParamter();
+        break;
+    case ISCPCommands::NetworkRadioPreset:
+        m_networkRadioPreset=message->getIntValue();
+        emit networkRadioPresetChanged(m_networkRadioPreset);
         break;
 // Audyssey
     case ISCPCommands::Audyssey2EQ:
@@ -1577,6 +1597,61 @@ void qiscp::setListeningMode(ListeningModes m)
 void qiscp::setLateNightMode(LateNightModes m)
 {
     writeCommand("LTN", getHex(m));
+}
+
+void qiscp::toggleAudyssey2EQ()
+{
+    writeCommand("ADY", "UP");
+}
+
+void qiscp::toggleAudysseyDynamicEQ()
+{
+    writeCommand("ADQ", "UP");
+}
+
+void qiscp::toggleAudysseyDynamicVolume()
+{
+    writeCommand("ADV", "UP");
+}
+
+void qiscp::toggleReEQ()
+{
+    writeCommand("RAS", "UP");
+}
+
+void qiscp::toggleCinemaFilter()
+{
+    writeCommand("RAS", "UP"); // Same command as ReEQ, depends on model what happens
+}
+
+void qiscp::toggleLateNightMode()
+{
+    writeCommand("LTN", "UP");
+}
+
+void qiscp::toggleListeningModeUp()
+{
+    writeCommand("LMD", "UP");
+}
+
+void qiscp::toggleListeningModeDown()
+{
+    writeCommand("LMD", "DOWN");
+}
+
+void qiscp::toggleListeningModeMusic()
+{
+    writeCommand("LMD", "MUSIC");
+}
+
+void qiscp::toggleListeningModeMovie()
+{
+    writeCommand("LMD", "MOVIE");
+}
+
+void qiscp::toggleListeningModeGame()
+{
+    writeCommand("LMD", "GAME");
 }
 
 /**

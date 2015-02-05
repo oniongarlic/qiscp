@@ -292,6 +292,7 @@ public:
     Q_PROPERTY (int masterTunerPreset READ masterTunerPreset NOTIFY masterTunerPresetChanged)
 
     Q_PROPERTY (NetworkService networkService READ networkService WRITE setNetworkService NOTIFY networkServiceChanged)
+    Q_PROPERTY (int networkRadioPreset READ networkRadioPreset NOTIFY networkRadioPresetChanged)
 
     Q_PROPERTY (int bassLevel READ bassLevel WRITE setBassLevel NOTIFY bassLevelChanged)
     Q_PROPERTY (int trebleLevel READ trebleLevel WRITE setTrebleLevel NOTIFY trebleLevelChanged)
@@ -394,6 +395,19 @@ public:
     Q_INVOKABLE void setMusicOptimizer(bool m);
     Q_INVOKABLE void setListeningMode(ListeningModes m);
     Q_INVOKABLE void setLateNightMode(LateNightModes m);
+
+    Q_INVOKABLE void toggleAudyssey2EQ();
+    Q_INVOKABLE void toggleAudysseyDynamicEQ();
+    Q_INVOKABLE void toggleAudysseyDynamicVolume();
+
+    Q_INVOKABLE void toggleReEQ();
+    Q_INVOKABLE void toggleCinemaFilter();
+    Q_INVOKABLE void toggleLateNightMode();
+    Q_INVOKABLE void toggleListeningModeUp();
+    Q_INVOKABLE void toggleListeningModeDown();
+    Q_INVOKABLE void toggleListeningModeMusic();
+    Q_INVOKABLE void toggleListeningModeMovie();
+    Q_INVOKABLE void toggleListeningModeGame();
 
     Q_INVOKABLE void setZone2Muted(bool m);
     Q_INVOKABLE void setZone3Muted(bool m);
@@ -540,6 +554,11 @@ public:
         return m_audysseyDynamicVolume;
     }
 
+    int networkRadioPreset() const
+    {
+        return m_networkRadioPreset;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -633,6 +652,8 @@ signals:
     void audysseyDynamicEQChanged(AudysseyDynamicEQ arg);
 
     void audysseyDynamicVolumeChanged(AudysseyDynamicVolume arg);
+
+    void networkRadioPresetChanged(int arg);
 
 public slots:
 
@@ -753,6 +774,11 @@ private:
             ListInfo,
             DeviceInformation,
             Artwork,
+            MenuStatus,
+            DeviceStatus,
+            MenuList,
+            MenuListTitle,
+            NetworkRadioPreset,
             CEC,
             HDMIAudio,
             MusicOptimizer,
@@ -922,6 +948,7 @@ private:
     AudysseyDynamicEQ m_audysseyDynamicEQ;
     AudysseyDynamicVolume m_audysseyDynamicVolume;
     void clearAllTrackInformation();
+    int m_networkRadioPreset;
 };
 
 #endif // QISCP_H
