@@ -410,6 +410,9 @@ public:
     Q_INVOKABLE void setZone3Power(bool p);
     Q_INVOKABLE void setZone4Power(bool p);
 
+    // Debugging and logging
+    Q_INVOKABLE bool debugLog(QString logfile, bool log);
+
     bool connected() const { return m_connected; }
     bool discovering() const { return m_discovering; }
     int port() const { return m_port; }
@@ -693,6 +696,14 @@ private slots:
     void handleCommandQueue();  
     void deviceDiscoveryTimeout();
 
+protected:
+    enum DebugLogDirection {
+        toNetwork,
+        fromNetwork
+    };
+    void debugLogWrite(DebugLogDirection direction, const ISCPMsg *data);
+
+
 private:
     // Commands
     struct ISCPCommands {
@@ -857,7 +868,9 @@ private:
     QTimer m_timer;
     QVariantList m_devices;
 
-    QByteArray m_buffer;
+    QByteArray m_buffer;      
+
+    QFile m_debuglog;
 
     void requestInitialState();
     void requestNetworkPlayState();

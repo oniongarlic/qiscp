@@ -231,6 +231,7 @@ bool qiscp::writeCommand(ISCPMsg *message) {
     qDebug() << "WCMD: [" << message->getCommand() << "]:[" << message->getParamter() << "]";
 
     int r=m_socket->write(message->bytes());
+    debugLogWrite(toNetwork,message);
     return r==-1 ? false : true;
 }
 
@@ -374,6 +375,7 @@ void qiscp::readISCP() {
         ISCPMsg msg;
         if (msg.fromData(&m_buffer)) {
             parseMessage(&msg);
+            debugLogWrite(fromNetwork, &msg);
         } else {
             return;
         }
@@ -1054,6 +1056,39 @@ void qiscp::requestNetworkPlayState() {
     queueCommand("NTI", "QSTN"); // Title
     queueCommand("NTR", "QSTN"); // Track
     queueCommand("NJA", "QSTN"); // Artwork
+}
+
+/*************************************************************/
+
+/**
+ * @brief qiscp::debugLog
+ * @param logfile
+ * @param log
+ * @return
+ */
+bool qiscp::debugLog(QString logfile, bool log)
+{
+    if (m_debuglog.isOpen() && log==false) {
+        m_debuglog.flush();
+        m_debuglog.close();
+        return true;
+    }
+
+    m_debuglog.setFileName(logfile);
+    if (log) {
+        return m_debuglog.open(QIODevice::WriteOnly | QIODevice::Text);
+    }
+}
+
+/**
+ * @brief qiscp::debugLogWrite
+ * @param data
+ */
+void qiscp::debugLogWrite(DebugLogDirection direction, const ISCPMsg *data) {
+    if (m_debuglog.isOpen()) {
+        QTextStream out(&m_debuglog);
+        out << (direction==fromNetwork ? "I>> " : "O<<@") << QTime::currentTime().toString() << "][" << data->getCommand() << "]:[" << data->getParamter() << "]\n";
+    }
 }
 
 /*************************************************************/
