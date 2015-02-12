@@ -188,6 +188,7 @@ qiscp::qiscp(QObject *parent) :
 
 qiscp::~qiscp()
 {
+    close();
     delete m_artwork;
 }
 
