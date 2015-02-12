@@ -340,8 +340,8 @@ public:
 
     Q_PROPERTY (bool discovering READ discovering NOTIFY discoveringChanged)
 
-    Q_INVOKABLE void discoverHosts();
-    Q_INVOKABLE QVariantList getDevices() const;
+    Q_INVOKABLE void discoverHosts(bool clear=true);
+    Q_INVOKABLE QVariantMap getDevices() const;
     Q_INVOKABLE QVariantList getStaticInputs() const;
     Q_INVOKABLE QVariantList getInputs() const;    
     Q_INVOKABLE QVariantList getZones() const;    
@@ -892,7 +892,7 @@ private:
 
     // Device discovery
     QTimer m_timer;
-    QVariantList m_devices;
+    QVariantMap m_devices;
 
     QByteArray m_buffer;      
 
