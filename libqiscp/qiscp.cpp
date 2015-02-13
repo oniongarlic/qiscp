@@ -188,6 +188,7 @@ qiscp::qiscp(QObject *parent) :
 
 qiscp::~qiscp()
 {
+    close();
     delete m_artwork;
 }
 
@@ -257,7 +258,7 @@ void qiscp::handleCommandQueue() {
  * to all broadcast addresses.
  *
  */
-void qiscp::discoverHosts() {
+void qiscp::discoverHosts(bool clear) {
     QList<QNetworkInterface> ifaces = QNetworkInterface::allInterfaces();
 
     // Create the disovery ISCP message, "!xECNQSTN"
@@ -270,7 +271,8 @@ void qiscp::discoverHosts() {
 
     m_timer.setInterval(m_discoveryTimeout);
     m_timer.stop();
-    m_devices.clear();
+    if (clear)
+        m_devices.clear();
     m_timer.start();
 
     for (int i = 0; i < ifaces.size(); i++) {
@@ -425,13 +427,14 @@ void qiscp::readBroadcastDatagram()
         }
 
         QVariantMap device;
+        QString mac=di.at(3).mid(0,12);
         device.insert("ip", sender.toString());
         device.insert("model", di.at(0));
         device.insert("port",  di.at(1).toInt());
         device.insert("destination", di.at(2));
-        device.insert("mac", di.at(3).mid(0,12));
+        device.insert("mac", mac);
 
-        m_devices << device;
+        m_devices.insert(mac, device);
     }
 }
 
@@ -948,7 +951,7 @@ void qiscp::clearAllTrackInformation() {
  * @brief qiscp::getDevices
  * @return a list of discovered devices on the network
  */
-QVariantList qiscp::getDevices() const {
+QVariantMap qiscp::getDevices() const {
     return m_devices;
 }
 
