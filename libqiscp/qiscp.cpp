@@ -33,12 +33,12 @@ qiscp::qiscp(QObject *parent) :
     m_masterMuted(false),
     m_masterVolume(0),
     m_maxvolume(20),
-    m_zonesAvailable(Zone1),   
+    m_zonesAvailable(Zone1),
     m_masterTunerFreq(0),
     m_timeRef(0,0),
     m_hasArtwork(false)
 {
-    m_socket=new QTcpSocket(this);    
+    m_socket=new QTcpSocket(this);
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(readISCP()));
     connect(m_socket, SIGNAL(connected()), this, SLOT(tcpConnected()));
     connect(m_socket, SIGNAL(disconnected()), this, SLOT(tcpDisconnected()));
@@ -182,7 +182,7 @@ qiscp::qiscp(QObject *parent) :
     // Zone 1 as source
     m_inputs.insert(qiscpInputs::Source, "Source");
 
-    m_timer.setSingleShot(true);    
+    m_timer.setSingleShot(true);
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(deviceDiscoveryTimeout()));
 }
 
@@ -443,7 +443,7 @@ void qiscp::parseArtworkMessage(ISCPMsg *message) {
     switch (marker) {
     case 0: // Start marker
         m_artbuffer.clear();
-        m_artbuffer.append(p.mid(2));        
+        m_artbuffer.append(p.mid(2));
         break;
     case 1: // Image data
         m_artbuffer.append(p.mid(2));
