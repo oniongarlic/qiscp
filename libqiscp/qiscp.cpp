@@ -915,8 +915,14 @@ void qiscp::clearAllTrackInformation() {
  * @brief qiscp::getDevices
  * @return a list of discovered devices on the network
  */
-QVariantMap qiscp::getDevices() const {
-    return m_devices;
+QVariantList qiscp::getDevices() const {
+    QVariantList devices;
+    QMapIterator<QString, QVariant> i(m_devices);
+    while (i.hasNext()) {
+        i.next();
+        devices << i.value();
+    }
+    return devices;
 }
 
 /**

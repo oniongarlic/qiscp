@@ -250,7 +250,7 @@ public:
     Q_PROPERTY (bool discovering READ discovering NOTIFY discoveringChanged)
 
     Q_INVOKABLE void discoverHosts(bool clear=true);
-    Q_INVOKABLE QVariantMap getDevices() const;
+    Q_INVOKABLE QVariantList getDevices() const;
     Q_INVOKABLE QVariantList getStaticInputs() const;
     Q_INVOKABLE QVariantList getInputs() const;    
     Q_INVOKABLE QVariantList getZones() const;    
