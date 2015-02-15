@@ -7,8 +7,7 @@
 #include <QUdpSocket>
 #include <QTimer>
 #include <QTime>
-#include <QtXml/QXmlSimpleReader>
-#include <QImage>
+#include <QFile>
 
 #include "iscpmsg.h"
 #include "deviceinforparser.h"
