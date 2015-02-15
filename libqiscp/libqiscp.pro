@@ -27,4 +27,5 @@ HEADERS += \
     iscpmsg.h \
     deviceinforparser.h \
     artworkimageprovider.h \
-    artworkparser.h
+    artworkparser.h \
+    qiscpinputs.h
