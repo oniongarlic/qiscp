@@ -543,25 +543,15 @@ signals:
     void networkServiceChanged(NetworkService arg);
 
     void discoveryTimeoutChanged(int arg);
-
     void hasArtworkChanged(bool arg);
-
     void playModeChanged(PlayModes arg);
-
     void shuffleModeChanged(ShuffleModes arg);
-
     void repeatModeChanged(RepeatModes arg);
-
     void sleepTimerChanged(int arg);
-
     void masterTunerPresetChanged(int arg);
-
     void audyssey2EQChanged(Audyssey2EQ arg);
-
     void audysseyDynamicEQChanged(AudysseyDynamicEQ arg);
-
     void audysseyDynamicVolumeChanged(AudysseyDynamicVolume arg);
-
     void networkRadioPresetChanged(int arg);
 
 public slots:
@@ -575,46 +565,13 @@ public slots:
     }
 
     void setNetworkService(NetworkService arg);
-
-    void setDiscoveryTimeout(int arg)
-    {
-        if (m_discoveryTimeout != arg && arg>=1000) {
-            m_discoveryTimeout = arg;
-            emit discoveryTimeoutChanged(arg);
-        }
-    }
-
-    void setPlayMode(PlayModes arg)
-    {
-        if (m_playMode == arg)
-            return;
-
-        m_playMode = arg;
-        emit playModeChanged(arg);
-    }
-
-    void setShuffleMode(ShuffleModes arg)
-    {
-        if (m_shuffleMode == arg)
-            return;
-
-        m_shuffleMode = arg;
-        emit shuffleModeChanged(arg);
-    }
-
-    void setRepeatMode(RepeatModes arg)
-    {
-        if (m_repeatMode == arg)
-            return;
-
-        m_repeatMode = arg;
-        emit repeatModeChanged(arg);
-    }
+    void setDiscoveryTimeout(int arg);
+    void setPlayMode(PlayModes arg);
+    void setShuffleMode(ShuffleModes arg);
+    void setRepeatMode(RepeatModes arg);
 
     Q_INVOKABLE void setAudyssey2EQ(Audyssey2EQ arg);
-
     Q_INVOKABLE void setAudysseyDynamicEQ(AudysseyDynamicEQ arg);
-
     Q_INVOKABLE void setAudysseyDynamicVolume(AudysseyDynamicVolume arg);
 
 private slots:
@@ -832,22 +789,8 @@ private:
     void parseDeviceInformation(QString data);
     void parsePlayStatus(QString data);
 
-    void setTracks(quint16 tracks)
-    {
-        if (m_tracks == tracks)
-            return;
-
-        m_tracks = tracks;
-        emit currentTracksChanged(tracks);
-    }
-    void setTrack(quint16 track)
-    {
-        if (m_track == track)
-            return;
-
-        m_track = track;
-        emit currentTrackChanged(track);
-    }
+    void setTracks(quint16 tracks);
+    void setTrack(quint16 track);
     void parseTrackInfo(QString data);
     int m_sleepTimer;
     void setArtwork(QByteArray data);

@@ -837,6 +837,24 @@ void qiscp::parsePlayStatus(QString data) {
 
 }
 
+void qiscp::setTracks(quint16 tracks)
+{
+    if (m_tracks == tracks)
+        return;
+
+    m_tracks = tracks;
+    emit currentTracksChanged(tracks);
+}
+
+void qiscp::setTrack(quint16 track)
+{
+    if (m_track == track)
+        return;
+
+    m_track = track;
+    emit currentTrackChanged(track);
+}
+
 void qiscp::parseElapsedTime(QString et) {
     QStringList tmp=et.split("/");
 
@@ -1958,6 +1976,41 @@ void qiscp::setNetworkService(qiscp::NetworkService arg)
     p=getHex(m_networkService, 2);
     writeCommand("NSV", p);
     emit networkServiceChanged(arg);
+}
+
+void qiscp::setDiscoveryTimeout(int arg)
+{
+    if (m_discoveryTimeout != arg && arg>=1000) {
+        m_discoveryTimeout = arg;
+        emit discoveryTimeoutChanged(arg);
+    }
+}
+
+void qiscp::setPlayMode(qiscp::PlayModes arg)
+{
+    if (m_playMode == arg)
+        return;
+
+    m_playMode = arg;
+    emit playModeChanged(arg);
+}
+
+void qiscp::setShuffleMode(qiscp::ShuffleModes arg)
+{
+    if (m_shuffleMode == arg)
+        return;
+
+    m_shuffleMode = arg;
+    emit shuffleModeChanged(arg);
+}
+
+void qiscp::setRepeatMode(qiscp::RepeatModes arg)
+{
+    if (m_repeatMode == arg)
+        return;
+
+    m_repeatMode = arg;
+    emit repeatModeChanged(arg);
 }
 
 void qiscp::setAudyssey2EQ(qiscp::Audyssey2EQ arg)
