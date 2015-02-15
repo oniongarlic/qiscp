@@ -189,8 +189,7 @@ qiscp::~qiscp()
     close();
 }
 
-void qiscp::connectToHost() {
-    qDebug() << "Connecting to: " << m_host << ":" << m_port;
+void qiscp::connectToHost() {    
     if (m_socket->isOpen()) {
         m_socket->abort();
     }
@@ -289,9 +288,7 @@ void qiscp::discoverHosts(bool clear) {
     }
 }
 
-void qiscp::deviceDiscoveryTimeout() {
-    qDebug("Device discovery done");
-    qDebug() << m_devices;
+void qiscp::deviceDiscoveryTimeout() {        
     emit devicesDiscovered();
 
     m_discovering=false;
@@ -306,8 +303,7 @@ bool qiscp::close() {
     return false;
 }
 
-void qiscp::tcpConnected() {
-    qDebug("Connected");
+void qiscp::tcpConnected() {    
     m_buffer.clear();
     m_connected=true;
     emit connectedChanged();
@@ -315,8 +311,7 @@ void qiscp::tcpConnected() {
     requestInitialState();
 }
 
-void qiscp::tcpDisconnected() {
-    qDebug("DisConnected");
+void qiscp::tcpDisconnected() {    
     clearAllTrackInformation();
     m_cmdtimer.stop();
     m_cmdqueue.clear();
@@ -328,8 +323,7 @@ void qiscp::tcpDisconnected() {
 
 void qiscp::tcpError(QAbstractSocket::SocketError se) {
     m_buffer.clear();
-    qWarning() << "TCP Error:" << se;
-    qDebug("Closing connection");
+    qWarning() << "TCP Error:" << se;    
     close();
 }
 
