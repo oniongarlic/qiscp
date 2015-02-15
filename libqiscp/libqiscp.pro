@@ -19,10 +19,12 @@ TEMPLATE = lib
 SOURCES += qiscp.cpp \
     iscpmsg.cpp \
     deviceinforparser.cpp \
-    artworkimageprovider.cpp
+    artworkimageprovider.cpp \
+    artworkparser.cpp
 
 HEADERS += \
     qiscp.h \
     iscpmsg.h \
     deviceinforparser.h \
-    artworkimageprovider.h
+    artworkimageprovider.h \
+    artworkparser.h

@@ -50,8 +50,6 @@ qiscp::qiscp(QObject *parent) :
 
     m_buffer.resize(1024);
 
-    m_artwork=new QImage();
-
     m_cmdtimer.setInterval(100);
     connect(&m_cmdtimer, SIGNAL(timeout()), this, SLOT(handleCommandQueue()));
 
@@ -189,7 +187,6 @@ qiscp::qiscp(QObject *parent) :
 qiscp::~qiscp()
 {
     close();
-    delete m_artwork;
 }
 
 void qiscp::connectToHost() {
@@ -438,55 +435,8 @@ void qiscp::readBroadcastDatagram()
     }
 }
 
-void qiscp::parseArtworkMessage(ISCPMsg *message) {
-    QString p=message->getParamter();
-    int type=p.mid(0,1).toInt(NULL, 10);
-    int marker=p.mid(1,1).toInt(NULL, 10);
-
-    switch (marker) {
-    case 0: // Start marker
-        m_artbuffer.clear();
-        m_artbuffer.append(p.mid(2));
-        break;
-    case 1: // Image data
-        m_artbuffer.append(p.mid(2));
-        break;
-    case 2: // End of image data
-        m_artbuffer.append(p.mid(2));
-        setArtwork(QByteArray::fromHex(m_artbuffer));
-        m_artbuffer.clear();
-        break;
-    }
-}
-
-void qiscp::setArtwork(QByteArray data) {
-    m_artwork=new QImage();
-
-    bool ok=m_artwork->loadFromData(data);
-    if (!ok) {
-        m_hasArtwork=false;
-        qWarning("Failed to load artwork image");
-    } else {
-        m_hasArtwork=true;
-        m_artwork->save("/tmp/artwork.png", "PNG");
-    }
-
-    emit hasArtworkChanged(m_hasArtwork);
-    emit currentArtworkChanged();
-}
-
-void qiscp::clearArtwork() {
-    m_artwork=new QImage();
-    m_hasArtwork=false;
-    emit hasArtworkChanged(m_hasArtwork);
-    emit currentArtworkChanged();
-}
-
 bool qiscp::saveArtwork(QString file) {
-    if (m_artwork->isNull())
-        return false;
-
-    return m_artwork->save(file, "PNG");
+    return m_artworkParser.save(file);
 }
 
 /**
@@ -564,7 +514,10 @@ void qiscp::parseMessage(ISCPMsg *message) {
         emit masterTunerPresetChanged(m_masterTunerPreset);
         break;
     case ISCPCommands::Artwork:
-        parseArtworkMessage(message);
+        if (m_artworkParser.parseMessage(message) && m_artworkParser.complete()) {
+            emit hasArtworkChanged(m_artworkParser.complete());
+            emit currentArtworkChanged();
+        }
         break;
     case ISCPCommands::MusicOptimizer:
         m_musicOptimizer=message->getIntValue()==1 ? true : false;
@@ -929,8 +882,7 @@ void qiscp::clearCurrentTrack() {
     emit currentTrackLengthChanged();
     emit currentTitleChanged();
     emit currentArtistChanged();
-    emit currentAlbumChanged();
-    clearArtwork();
+    emit currentAlbumChanged();    
 }
 
 /**

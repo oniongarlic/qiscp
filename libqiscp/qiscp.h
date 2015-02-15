@@ -12,6 +12,7 @@
 
 #include "iscpmsg.h"
 #include "deviceinforparser.h"
+#include "artworkparser.h"
 
 #define ISCP_PORT 60128
 
@@ -510,7 +511,7 @@ public:
 
     bool hasArtwork() const
     {
-        return m_hasArtwork;
+        return m_artworkParser.complete();
     }
 
     PlayModes playMode() const
@@ -913,9 +914,9 @@ private:
     bool m_debug;
     NetworkService m_networkService;
 
-    void parseArtworkMessage(ISCPMsg *message);
-    QByteArray m_artbuffer;
-    QImage *m_artwork;
+
+    ArtworkParser m_artworkParser;
+
     int m_discoveryTimeout;
     bool m_hasArtwork;
     void parseElapsedTime(QString et);
