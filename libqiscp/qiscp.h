@@ -475,6 +475,7 @@ signals:
     void devicesDiscovered();
 
     void connectedToHost();
+    void connectionError(QAbstractSocket::SocketError error);
     void disconnectedFromHost();
 
     void connectedChanged();

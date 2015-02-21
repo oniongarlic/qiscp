@@ -323,7 +323,8 @@ void qiscp::tcpDisconnected() {
 
 void qiscp::tcpError(QAbstractSocket::SocketError se) {
     m_buffer.clear();
-    qWarning() << "TCP Error:" << se;    
+    qWarning() << "TCP Error:" << se;
+    emit connectionError(se);
     close();
 }
 
