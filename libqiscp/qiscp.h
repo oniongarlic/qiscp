@@ -336,6 +336,13 @@ public:
     // Debugging and logging
     Q_INVOKABLE bool debugLog(QString logfile, bool log);
 
+    Q_INVOKABLE bool networkCommand(Commands cmd);
+    Q_INVOKABLE bool tvCommand(Commands cmd);
+    Q_INVOKABLE bool dvdCommand(Commands cmd);
+    Q_INVOKABLE bool bdCommand(Commands cmd);
+    Q_INVOKABLE bool command(Commands cmd, Zones zone=Zone1);
+    Q_INVOKABLE bool saveArtwork(QString file);
+
     bool connected() const { return m_connected; }
     bool discovering() const { return m_discovering; }
     int port() const { return m_port; }
@@ -410,12 +417,6 @@ public:
         return m_discoveryTimeout;
     }
 
-    Q_INVOKABLE bool networkCommand(Commands cmd);
-    Q_INVOKABLE bool tvCommand(Commands cmd);
-    Q_INVOKABLE bool dvdCommand(Commands cmd);
-    Q_INVOKABLE bool bdCommand(Commands cmd);
-    Q_INVOKABLE bool command(Commands cmd, Zones zone=Zone1);
-    Q_INVOKABLE bool saveArtwork(QString file);
 
     bool hasArtwork() const
     {
