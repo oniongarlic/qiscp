@@ -109,6 +109,10 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("CEC", ISCPCommands::CEC);
     m_commands.insert("HAO", ISCPCommands::HDMIAudio);
 
+    // Information
+    m_commands.insert("IFV", ISCPCommands::VideoInformation);
+    m_commands.insert("IFA", ISCPCommands::AudioInformation);
+
     // Various audio mode settings
     m_commands.insert("LMD", ISCPCommands::ListeningMode);
     m_commands.insert("LTN", ISCPCommands::LateNightMode);
@@ -499,6 +503,7 @@ void qiscp::parseMessage(ISCPMsg *message) {
             requestNetworkPlayState();
             break;
         }
+        requestInformationState();
         break;
     case ISCPCommands::MasterTuner:
         m_masterTunerFreq=message->getTunerValue();
@@ -537,6 +542,13 @@ void qiscp::parseMessage(ISCPMsg *message) {
     case ISCPCommands::SleepTimer:
         m_sleepTimer=message->getIntValue();
         emit sleepTimerChanged(m_sleepTimer);
+        break;
+// Information
+    case ISCPCommands::AudioInformation:
+        qDebug() << "AudioInformation: " << message->getParamter();
+        break;
+    case ISCPCommands::VideoInformation:
+        qDebug() << "VideoInformation: " << message->getParamter();
         break;
 // Zone 2
     case ISCPCommands::Zone2Power:
@@ -1062,6 +1074,11 @@ void qiscp::requestNetworkPlayState() {
     queueCommand("NTI", "QSTN"); // Title
     queueCommand("NTR", "QSTN"); // Track
     queueCommand("NJA", "QSTN"); // Artwork
+}
+
+void qiscp::requestInformationState() {
+    queueCommand("IFA", "QSTN");
+    queueCommand("IFV", "QSTN");
 }
 
 /*************************************************************/

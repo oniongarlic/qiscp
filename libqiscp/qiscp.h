@@ -592,7 +592,6 @@ protected:
     };
     void debugLogWrite(DebugLogDirection direction, const ISCPMsg *data);
 
-
 private:
     // Commands
     struct ISCPCommands {
@@ -609,9 +608,9 @@ private:
             CenterLevel,
             SubwooferLevel,
             SleepTimer,
-            // Info commands
-            InfoAudio,
-            InfoVideo,
+            // Information
+            AudioInformation,
+            VideoInformation,
             // Zone 2
             Zone2Power,
             Zone2Input,
@@ -803,6 +802,7 @@ private:
     AudysseyDynamicVolume m_audysseyDynamicVolume;
     void clearAllTrackInformation();
     int m_networkRadioPreset;
+    void requestInformationState();
 };
 
 #endif // QISCP_H
