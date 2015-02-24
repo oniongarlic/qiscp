@@ -330,10 +330,10 @@ Rectangle {
         }
 
 
-        /* BD/DVD */
+        /* Commands */
         Row {
             Text {
-                text: "BD/DVD"
+                text: "Commands"
             }
             Button {
                 title: "Power"
@@ -385,6 +385,16 @@ Rectangle {
                 enabled: iscp.connected
                 onClicked: { iscp.command(QISCP.TrackUp) }
             }
+            Button {
+                title: "RANDOM: "+iscp.shuffleMode
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.Random) }
+            }
+            Button {
+                title: "REPEAT: "+iscp.repeatMode
+                enabled: iscp.connected
+                onClicked: { iscp.command(QISCP.Repeat) }
+            }
         }
 
         Row {
@@ -424,9 +434,10 @@ Rectangle {
         id: iscp
         discoveryTimeout: 5000
 
-        onDevicesDiscovered: {
-            console.debug("Devices found")
+        onDevicesDiscovered: {            
             var devices=iscp.getDevices();
+
+            console.debug("Devices found: "+devices.length)
 
             if (devices.length==0)
                 return;
@@ -439,13 +450,21 @@ Rectangle {
             // If we find only one device, then just connect to it
             if (devices.length==1) {
                 connectToDevice(devices[0]);
-            }
+            }            
+        }
+
+        onConnectedToHost: {
+            iscp.debugLog("/tmp/iscp.log", true);
 
             inputsModel.clear();
             var inputs=iscp.getStaticInputs();
             for (var i=0;i<inputs.length;i++) {
                 inputsModel.append(inputs[i]);
             }
+        }
+
+        onDisconnectedFromHost: {
+            iscp.debugLog("", false);
         }
 
         onZonesList: {
