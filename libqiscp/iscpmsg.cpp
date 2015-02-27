@@ -1,6 +1,7 @@
 #include <QDataStream>
 #include <QDebug>
 #include <QTime>
+#include <QStringList>
 #include "iscpmsg.h"
 
 #define ISCP_MAGIC "ISCP"
@@ -167,6 +168,15 @@ int ISCPMsg::getIntValue() const {
  */
 bool ISCPMsg::getBooleanValue() const {
     return getIntValue()==1 ? true : false;
+}
+
+QVariantList ISCPMsg::getListValue(QString sep) const {
+    QVariantList ret;
+    QStringList tmp=getParamter().split(sep);
+    foreach(QString s, tmp){
+        ret << s;
+    }
+    return ret;
 }
 
 /**
