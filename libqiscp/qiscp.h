@@ -757,6 +757,10 @@ private:
     QVariantList m_inputsdata;    
     QVariantList m_controls;
 
+    // Audio/Video info
+    QVariantList m_audio_info;
+    QVariantList m_video_info;
+
     // Device discovery
     QTimer m_timer;
     QVariantMap m_devices;

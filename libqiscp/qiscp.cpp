@@ -545,10 +545,12 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
 // Information
     case ISCPCommands::AudioInformation:
-        qDebug() << "AudioInformation: " << message->getParamter();
+        m_audio_info=message->getListValue(",");
+        qDebug() << "AudioInformation: " << m_audio_info;
         break;
-    case ISCPCommands::VideoInformation:
-        qDebug() << "VideoInformation: " << message->getParamter();
+    case ISCPCommands::VideoInformation:        
+        m_video_info=message->getListValue(",");
+        qDebug() << "VideoInformation: " << m_video_info;
         break;
 // Zone 2
     case ISCPCommands::Zone2Power:
