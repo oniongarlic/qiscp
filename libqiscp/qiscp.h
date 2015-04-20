@@ -20,8 +20,8 @@
 class qiscp : public QObject
 {
     Q_OBJECT
-    Q_ENUMS(Commands)
-    Q_ENUMS(Zones)
+    Q_FLAGS(Zone)
+    Q_ENUMS(Commands)    
     Q_ENUMS(LateNightModes)
     Q_ENUMS(ListeningModesQuick)
     Q_ENUMS(NetworkService)
@@ -30,18 +30,19 @@ class qiscp : public QObject
     Q_ENUMS(ShuffleModes)
     Q_ENUMS(Audyssey2EQ)
     Q_ENUMS(AudysseyDynamicVolume)
-    Q_ENUMS(AudysseyDynamicEQ)
+    Q_ENUMS(AudysseyDynamicEQ)    
 
 public:
     explicit qiscp(QObject *parent = 0);
     ~qiscp();
 
     enum Zones {
-        Zone1=0x1,
-        Zone2=0x2,
-        Zone3=0x4,
-        Zone4=0x8
+        Zone1=0x01,
+        Zone2=0x02,
+        Zone3=0x04,
+        Zone4=0x08
     };
+    Q_DECLARE_FLAGS(Zone, Zones)
 
     enum LateNightModes {
         Off=0,
@@ -195,6 +196,8 @@ public:
     Q_PROPERTY (int masterVolume READ masterVolume NOTIFY masterVolumeChanged)
     Q_PROPERTY (int maxDirectVolume READ maxDirectVolume WRITE setMaxDirectVolume NOTIFY maxDirectVolumeChanged)
     Q_PROPERTY (bool masterMuted READ masterMuted WRITE setMasterMuted NOTIFY masterMutedChanged)
+
+    Q_PROPERTY (Zone poweredZones READ poweredZones NOTIFY poweredZonesChanged)
 
     Q_PROPERTY (int masterInput READ masterInput WRITE setMasterInput NOTIFY masterInputChanged)
     Q_PROPERTY (int masterTunerFreq READ masterTunerFreq NOTIFY masterTunerFreqChanged)
@@ -469,6 +472,11 @@ public:
         return m_networkRadioPreset;
     }
 
+    Zone poweredZones() const
+    {
+        return m_poweredZones;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -555,6 +563,8 @@ signals:
     void audysseyDynamicEQChanged(AudysseyDynamicEQ arg);
     void audysseyDynamicVolumeChanged(AudysseyDynamicVolume arg);
     void networkRadioPresetChanged(int arg);
+
+    void poweredZonesChanged(Zone arg);
 
 public slots:
 
@@ -784,7 +794,6 @@ private:
     bool m_debug;
     NetworkService m_networkService;
 
-
     ArtworkParser m_artworkParser;
 
     int m_discoveryTimeout;
@@ -807,6 +816,9 @@ private:
     void clearAllTrackInformation();
     int m_networkRadioPreset;
     void requestInformationState();
+    Zone m_poweredZones;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(qiscp::Zone)
 
 #endif // QISCP_H

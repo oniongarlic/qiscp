@@ -30,6 +30,7 @@ qiscp::qiscp(QObject *parent) :
     m_z2Power(false),
     m_z3Power(false),
     m_z4Power(false),
+    m_poweredZones(0),
     m_masterMuted(false),
     m_masterVolume(0),
     m_maxvolume(20),
@@ -184,6 +185,7 @@ qiscp::qiscp(QObject *parent) :
     // Zone 1 as source
     m_inputs.insert(qiscpInputs::Source, "Source");
 
+    // Setup discovery timeout timer
     m_timer.setSingleShot(true);
     connect(&m_timer, SIGNAL(timeout()), this, SLOT(deviceDiscoveryTimeout()));
 }
@@ -200,6 +202,11 @@ void qiscp::connectToHost() {
     m_socket->connectToHost(m_host, m_port);
 }
 
+/**
+ * @brief qiscp::queueCommand
+ * @param cmd
+ * @param param
+ */
 void qiscp::queueCommand(QString cmd, QString param) {
     ISCPMsg *message=new ISCPMsg();
     message->setCommand(cmd, param);
@@ -458,7 +465,14 @@ void qiscp::parseMessage(ISCPMsg *message) {
     switch (cmdid) {
     case ISCPCommands::MasterPower:
         m_power=message->getBooleanValue();
+        qDebug() << "ZONE1POWERED STATE BEFORE: " << m_poweredZones;
+        if (m_power)
+            m_poweredZones|=Zone1;
+        else
+            m_poweredZones&=!Zone1;
+        qDebug() << "ZONE1POWERED STATE AFTER: " << m_poweredZones;
         emit powerChanged();
+        emit poweredZonesChanged(m_poweredZones);
         break;
     case ISCPCommands::MasterMute:
         m_masterMuted=message->getBooleanValue();
@@ -555,10 +569,19 @@ void qiscp::parseMessage(ISCPMsg *message) {
 // Zone 2
     case ISCPCommands::Zone2Power:
         m_z2Power=message->getBooleanValue();
-        emit powerChanged();
+        emit zone2PowerChanged();
         if (m_z2Power==true) {
             requestZone2State();
         }
+
+        if (m_z2Power)
+            m_poweredZones|=Zone2;
+        else
+            m_poweredZones&=~Zone2;
+
+        emit powerChanged();
+        emit poweredZonesChanged(m_poweredZones);
+
         break;
     case ISCPCommands::Zone2Mute:
         m_z2Muted=message->getBooleanValue();
@@ -599,10 +622,16 @@ void qiscp::parseMessage(ISCPMsg *message) {
 // Zone 3
     case ISCPCommands::Zone3Power:
         m_z3Power=message->getBooleanValue();
-        emit powerChanged();
+
         if (m_z3Power==true) {
             requestZone3State();
         }
+        if (m_z3Power)
+            m_poweredZones|=Zone3;
+        else
+            m_poweredZones&=~Zone3;
+        emit zone3PowerChanged();
+        emit poweredZonesChanged(m_poweredZones);
         break;
     case ISCPCommands::Zone3Mute:
         m_z3Muted=message->getBooleanValue();
@@ -641,11 +670,16 @@ void qiscp::parseMessage(ISCPMsg *message) {
     }
 // Zone 4
     case ISCPCommands::Zone4Power:
-        m_z4Power=message->getBooleanValue();
-        emit zone4PowerChanged();
+        m_z4Power=message->getBooleanValue();        
         if (m_z4Power==true) {
             requestZone4State();
         }
+        if (m_z4Power)
+            m_poweredZones|=Zone4;
+        else
+            m_poweredZones&=~Zone4;
+        emit zone4PowerChanged();
+        emit poweredZonesChanged(m_poweredZones);
         break;
     case ISCPCommands::Zone4Mute:
         m_z4Muted=message->getBooleanValue();
