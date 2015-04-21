@@ -292,8 +292,9 @@ Rectangle {
 
             Button {
                 enabled: iscp.connected
-                title: iscp.zone2power ? "On" : "Off"
+                title: iscp.zone2power ? "Powered on" : "Turned Off"
                 onClicked: {
+                    console.debug("Zone 2 power state is: "+iscp.zone2power)
                     iscp.setZone2Power(!iscp.zone2power)
                 }
             }
@@ -329,6 +330,25 @@ Rectangle {
             }
         }
 
+        Row {
+            width: parent.width
+            spacing: 32
+            Text {
+                text: "Z-Power:"
+            }
+            Text {
+                text: iscp.poweredZones & QISCP.Zone1 ? "Z1-On" : "Z1-Off"
+            }
+            Text {
+                text: iscp.poweredZones & QISCP.Zone2 ? "Z2-On" : "Z2-Off"
+            }
+            Text {
+                text: iscp.poweredZones & QISCP.Zone3 ? "Z3-On" : "Z3-Off"
+            }
+            Text {
+                text: iscp.poweredZones & QISCP.Zone4 ? "Z4-On" : "Z4-Off"
+            }
+        }
 
         /* Commands */
         Row {
@@ -433,6 +453,8 @@ Rectangle {
     QISCP {
         id: iscp
         discoveryTimeout: 5000
+
+        onPoweredZonesChanged: console.debug("*** PZONES: "+poweredZones)
 
         onDevicesDiscovered: {            
             var devices=iscp.getDevices();
