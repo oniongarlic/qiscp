@@ -54,5 +54,74 @@ Row {
         enabled: iscp.connected
         onClicked: { iscp.tvCommand(QISCP.Previous) }
     }
+    Button {
+        title: "1"
+        enabled: iscp.connected
+        onClicked: iscp.command(QISCP.Key1);
+    }
+    Button {
+        title: "2"
+        enabled: iscp.connected
+        onClicked: iscp.command(QISCP.Key2);
+    }
+    Button {
+        title: "3"
+        enabled: iscp.connected
+        onClicked: iscp.command(QISCP.Key3);
+    }
+    Button {
+        title: "4"
+        enabled: iscp.connected
+        onClicked: iscp.command(QISCP.Key4);
+    }
+    Button {
+        title: "5"
+        enabled: iscp.connected
+        onClicked: iscp.tvCommand(QISCP.Key5);
+    }
+    Button {
+        title: "6"
+        enabled: iscp.connected
+        onClicked: iscp.tvCommand(QISCP.Key6);
+    }
+    Button {
+        title: "7"
+        enabled: iscp.connected
+        onClicked: iscp.command(QISCP.Key7);
+    }
+    Button {
+        title: "8"
+        enabled: iscp.connected
+        onClicked: iscp.command(QISCP.Key8);
+    }
+    Button {
+        title: "9"
+        enabled: iscp.connected
+        onClicked: iscp.command(QISCP.Key9);
+    }
+    Button {
+        title: "0"
+        enabled: iscp.connected
+        onClicked: iscp.command(QISCP.Key0);
+    }
+    Button {
+        title: "A"
+        enabled: iscp.connected
+        onClicked: iscp.command(QISCP.KeyA);
+    }
+    Button {
+        title: "B"
+        enabled: iscp.connected
+        onClicked: iscp.command(QISCP.KeyB);
+    }
+    Button {
+        title: "C"
+        enabled: iscp.connected
+        onClicked: iscp.command(QISCP.KeyC);
+    }
+    Button {
+        title: "D"
+        enabled: iscp.connected
+        onClicked: iscp.command(QISCP.KeyD);
+    }
 }
-
