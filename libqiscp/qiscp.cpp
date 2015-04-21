@@ -465,12 +465,10 @@ void qiscp::parseMessage(ISCPMsg *message) {
     switch (cmdid) {
     case ISCPCommands::MasterPower:
         m_power=message->getBooleanValue();
-        qDebug() << "ZONE1POWERED STATE BEFORE: " << m_poweredZones;
         if (m_power)
             m_poweredZones|=Zone1;
         else
             m_poweredZones&=!Zone1;
-        qDebug() << "ZONE1POWERED STATE AFTER: " << m_poweredZones;
         emit powerChanged();
         emit poweredZonesChanged(m_poweredZones);
         break;
