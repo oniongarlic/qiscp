@@ -257,7 +257,6 @@ Rectangle {
                 }
             }
 
-
             Button {
                 title: "Preset+"
                 enabled: iscp.connected
@@ -278,6 +277,13 @@ Rectangle {
                 enabled: iscp.connected
                 onClicked: {
                     iscp.setMusicOptimizer(!iscp.musicOptimizer);
+                }
+            }
+            Button {
+                title: iscp.phaseMatchingBass ? "PMB Off" : "PMB On";
+                enabled: iscp.connected
+                onClicked: {
+                    iscp.setPhaseMatchingBass(!iscp.phaseMatchingBass);
                 }
             }
         }
