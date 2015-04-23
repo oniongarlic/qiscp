@@ -118,6 +118,7 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("LMD", ISCPCommands::ListeningMode);
     m_commands.insert("LTN", ISCPCommands::LateNightMode);
     m_commands.insert("MOT", ISCPCommands::MusicOptimizer);
+    m_commands.insert("PMB", ISCPCommands::PhaseMatchingBass);
     m_commands.insert("ADY", ISCPCommands::Audyssey2EQ);
     m_commands.insert("ADQ", ISCPCommands::AudysseyDynamicEQ);
     m_commands.insert("ADV", ISCPCommands::AudysseyDynamicVolume);
@@ -534,6 +535,10 @@ void qiscp::parseMessage(ISCPMsg *message) {
     case ISCPCommands::MusicOptimizer:
         m_musicOptimizer=message->getBooleanValue();
         emit musicOptimizerChanged();
+        break;
+    case ISCPCommands::PhaseMatchingBass:
+        m_phaseMatchingBass=message->getBooleanValue();
+        emit phaseMatchingBassChanged(m_phaseMatchingBass);
         break;
     case ISCPCommands::CEC:
         m_cec=message->getBooleanValue();
@@ -1060,6 +1065,7 @@ void qiscp::requestInitialState() {
     //
     queueCommand("CEC", "QSTN");
     queueCommand("MOT", "QSTN");
+    queueCommand("PMB", "QSTN");
     queueCommand("LTN", "QSTN");
     queueCommand("LMD", "QSTN");
     queueCommand("HAO", "QSTN");
@@ -1600,6 +1606,14 @@ void qiscp::setMusicOptimizer(bool m)
     writeCommand("MOT", m);
 }
 
+/**
+ * @brief qiscp::setPhaseMatcingBass
+ * @param m
+ */
+void qiscp::setPhaseMatchingBass(bool m)
+{
+    writeCommand("PMB", m);
+}
 /**
  * @brief qiscp::setListeningMode
  * @param m

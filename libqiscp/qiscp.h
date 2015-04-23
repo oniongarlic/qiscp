@@ -244,6 +244,7 @@ public:
     Q_PROPERTY (bool cec READ cec NOTIFY cecChanged)
 
     Q_PROPERTY (bool musicOptimizer READ musicOptimizer NOTIFY musicOptimizerChanged)
+    Q_PROPERTY (bool phaseMatchingBass READ phaseMatchingBass NOTIFY phaseMatchingBassChanged)
     Q_PROPERTY (Audyssey2EQ audyssey2EQ READ audyssey2EQ WRITE setAudyssey2EQ NOTIFY audyssey2EQChanged)
     Q_PROPERTY (AudysseyDynamicEQ audysseyDynamicEQ READ audysseyDynamicEQ WRITE setAudysseyDynamicEQ NOTIFY audysseyDynamicEQChanged)
     Q_PROPERTY (AudysseyDynamicVolume audysseyDynamicVolume READ audysseyDynamicVolume WRITE setAudysseyDynamicVolume NOTIFY audysseyDynamicVolumeChanged)
@@ -305,6 +306,7 @@ public:
     Q_INVOKABLE void setCEC(bool m);
     Q_INVOKABLE void setHDMIAudio(bool m);
     Q_INVOKABLE void setMusicOptimizer(bool m);
+    Q_INVOKABLE void setPhaseMatchingBass(bool m);
     Q_INVOKABLE void setListeningMode(ListeningModes m);
     Q_INVOKABLE void setLateNightMode(LateNightModes m);
 
@@ -477,6 +479,11 @@ public:
         return m_poweredZones;
     }
 
+    bool phaseMatchingBass() const
+    {
+        return m_phaseMatchingBass;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -565,6 +572,8 @@ signals:
     void networkRadioPresetChanged(int arg);
 
     void poweredZonesChanged(Zone arg);
+
+    void phaseMatchingBassChanged(bool arg);
 
 public slots:
 
@@ -659,6 +668,7 @@ private:
             CEC,
             HDMIAudio,
             MusicOptimizer,
+            PhaseMatchingBass,
             ListeningMode,
             LateNightMode,
             // Audyssey
@@ -817,6 +827,7 @@ private:
     int m_networkRadioPreset;
     void requestInformationState();
     Zone m_poweredZones;
+    bool m_phaseMatchingBass;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(qiscp::Zone)
