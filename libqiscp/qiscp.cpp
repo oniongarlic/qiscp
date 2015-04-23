@@ -1211,6 +1211,24 @@ void qiscp::setZoneInput(Zones zone, int t) {
     }
 }
 
+void qiscp::setZoneMuted(Zone zone, bool m)
+{
+    switch (zone) {
+    case Zone1:
+        writeCommand("AMT", m);
+        break;
+    case Zone2:
+        writeCommand("ZMT", m);
+        break;
+    case Zone3:
+        writeCommand("MT3", m);
+        break;
+    case Zone4:
+        writeCommand("MT4", m);
+        break;
+    }
+}
+
 void qiscp::setMasterInput(int t) {
     setZoneInput(Zone1, t);
 }

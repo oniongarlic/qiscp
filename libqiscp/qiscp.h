@@ -323,6 +323,7 @@ public:
     Q_INVOKABLE void toggleListeningModeMovie();
     Q_INVOKABLE void toggleListeningModeGame();
 
+    Q_INVOKABLE void setZoneMuted(Zone zone, bool m);
     Q_INVOKABLE void setZone2Muted(bool m);
     Q_INVOKABLE void setZone3Muted(bool m);
     Q_INVOKABLE void setZone4Muted(bool m);   
