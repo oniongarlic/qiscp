@@ -291,6 +291,7 @@ public:
     Q_INVOKABLE void presetUp(Zones zone=Zone1);
     Q_INVOKABLE void presetDown(Zones zone=Zone1);
     Q_INVOKABLE bool tuneStorePreset(int ml);
+    Q_INVOKABLE void tunerDisplayRDSToggle();
 
     Q_INVOKABLE void bassLevelUp(Zones zone=Zone1);
     Q_INVOKABLE void bassLevelDown(Zones zone=Zone1);

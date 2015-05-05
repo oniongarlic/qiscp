@@ -1326,6 +1326,10 @@ QVariantList qiscp::getPresets() const {
     return m_tunerpresets;
 }
 
+void qiscp::tunerDisplayRDSToggle() {
+    writeCommand("RDS", "UP");
+}
+
 void qiscp::tune(int t, Zones zone) {
     if (m_masterInput==qiscpInputs::FM) {
         // XXX: Check limits!
