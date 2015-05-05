@@ -24,6 +24,7 @@ qiscp::qiscp(QObject *parent) :
     QObject(parent),
     m_port(ISCP_PORT),
     m_discoveryTimeout(2000),
+    m_discovering(false),
     m_connected(false),
     m_debug(false),
     m_power(false),
