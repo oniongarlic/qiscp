@@ -290,6 +290,7 @@ public:
     Q_INVOKABLE QVariantList getPresets() const;
     Q_INVOKABLE void presetUp(Zones zone=Zone1);
     Q_INVOKABLE void presetDown(Zones zone=Zone1);
+    Q_INVOKABLE bool tuneStorePreset(int ml);
 
     Q_INVOKABLE void bassLevelUp(Zones zone=Zone1);
     Q_INVOKABLE void bassLevelDown(Zones zone=Zone1);
@@ -454,7 +455,6 @@ public:
         return m_masterTunerPreset;
     }
 
-    bool tuneStorePreset(int ml);
     Audyssey2EQ audyssey2EQ() const
     {
         return m_audyssey2EQ;
