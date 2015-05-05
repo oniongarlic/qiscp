@@ -26,11 +26,12 @@ class qiscp : public QObject
     Q_ENUMS(ListeningModesQuick)
     Q_ENUMS(NetworkService)
     Q_ENUMS(PlayModes)
+    Q_ENUMS(EcoModes)
     Q_ENUMS(RepeatModes)
     Q_ENUMS(ShuffleModes)
     Q_ENUMS(Audyssey2EQ)
     Q_ENUMS(AudysseyDynamicVolume)
-    Q_ENUMS(AudysseyDynamicEQ)    
+    Q_ENUMS(AudysseyDynamicEQ)
 
 public:
     explicit qiscp(QObject *parent = 0);
@@ -49,6 +50,12 @@ public:
         Low=1,
         High=2,
         Auto=3,
+    };
+
+    enum EcoModes {
+        Eco1dB=1,
+        Eco3dB=3,
+        Eco6dB=6,
     };
 
     enum ListeningModes {
