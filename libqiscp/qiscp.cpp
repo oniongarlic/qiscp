@@ -1606,6 +1606,10 @@ void qiscp::setCEC(bool m) {
     writeCommand("CEC", m);
 }
 
+void qiscp::setECO(EcoMode m) {
+    writeCommand("ECO", m);
+}
+
 /**
  * @brief qiscp::setHDMIAudio
  * @param m

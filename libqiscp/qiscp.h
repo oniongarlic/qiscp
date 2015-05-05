@@ -26,7 +26,7 @@ class qiscp : public QObject
     Q_ENUMS(ListeningModesQuick)
     Q_ENUMS(NetworkService)
     Q_ENUMS(PlayModes)
-    Q_ENUMS(EcoModes)
+    Q_ENUMS(EcoMode)
     Q_ENUMS(RepeatModes)
     Q_ENUMS(ShuffleModes)
     Q_ENUMS(Audyssey2EQ)
@@ -52,7 +52,7 @@ public:
         Auto=3,
     };
 
-    enum EcoModes {
+    enum EcoMode {
         Eco1dB=1,
         Eco3dB=3,
         Eco6dB=6,
@@ -313,6 +313,7 @@ public:
     Q_INVOKABLE void centerLevelDown();
 
     Q_INVOKABLE void setCEC(bool m);
+    Q_INVOKABLE void setECO(EcoMode m);
     Q_INVOKABLE void setHDMIAudio(bool m);
     Q_INVOKABLE void setMusicOptimizer(bool m);
     Q_INVOKABLE void setPhaseMatchingBass(bool m);
