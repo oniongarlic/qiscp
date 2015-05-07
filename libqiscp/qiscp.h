@@ -21,6 +21,7 @@ class qiscp : public QObject
 {
     Q_OBJECT
     Q_FLAGS(Zone)
+    Q_ENUMS(Zones)
     Q_ENUMS(Commands)    
     Q_ENUMS(LateNightModes)
     Q_ENUMS(ListeningModesQuick)
