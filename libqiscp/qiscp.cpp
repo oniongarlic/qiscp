@@ -596,7 +596,6 @@ void qiscp::parseMessage(ISCPMsg *message) {
         emit zone2VolumeChanged();
         break;
     case ISCPCommands::Zone2Input:
-        return;
         m_z2Input=message->getIntValue();
         emit zone2InputChanged();
         switch (m_z2Input) {
