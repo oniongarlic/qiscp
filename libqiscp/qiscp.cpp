@@ -38,7 +38,8 @@ qiscp::qiscp(QObject *parent) :
     m_zonesAvailable(Zone1),
     m_masterTunerFreq(0),
     m_timeRef(0,0),
-    m_hasArtwork(false)
+    m_hasArtwork(false),
+    m_discovered(0)
 {
     m_socket=new QTcpSocket(this);
     connect(m_socket, SIGNAL(readyRead()), this, SLOT(readISCP()));
@@ -275,6 +276,9 @@ void qiscp::discoverHosts(bool clear) {
     msg.setCommand("ECN", "QSTN", 'x');
     QByteArray packet=msg.bytes();
 
+    m_discovered=0;
+    emit discoveredChanged(m_discovered);
+
     m_discovering=true;
     emit discoveringChanged();
 
@@ -299,6 +303,13 @@ void qiscp::discoverHosts(bool clear) {
             m_broadcast->writeDatagram(packet, broadcast, ISCP_PORT);
         }
     }
+}
+
+void qiscp::discoverHostsCancel() {
+    if (m_discovering==false)
+        return;
+    m_timer.stop();
+    deviceDiscoveryTimeout();
 }
 
 void qiscp::deviceDiscoveryTimeout() {        
@@ -401,6 +412,10 @@ void qiscp::readISCP() {
  */
 void qiscp::readBroadcastDatagram()
 {
+    if (m_discovering==false) {
+        qWarning("Got device discovery packet when discovery not active, slow device?");
+        return;
+    }
     while (m_broadcast->hasPendingDatagrams()) {
         QByteArray datagram;
         QHostAddress sender;
@@ -440,6 +455,9 @@ void qiscp::readBroadcastDatagram()
         device.insert("mac", mac);
 
         m_devices.insert(mac, device);
+
+        m_discovered++;
+        emit discoveredChanged(m_discovered);
     }
 }
 

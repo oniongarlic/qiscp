@@ -197,6 +197,7 @@ public:
 
     Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
     Q_PROPERTY (int discoveryTimeout READ discoveryTimeout WRITE setDiscoveryTimeout NOTIFY discoveryTimeoutChanged)
+    Q_PROPERTY (int discovered READ discovered NOTIFY discoveredChanged)
 
     Q_PROPERTY (bool debug READ getDebug WRITE setDebug NOTIFY debugChanged)
 
@@ -222,7 +223,7 @@ public:
 
     Q_PROPERTY (bool zone2power READ zone2Power WRITE setZone2Power NOTIFY zone2PowerChanged)
     Q_PROPERTY (int zone2Volume READ zone2Volume NOTIFY zone2VolumeChanged)
-    Q_PROPERTY (int zone2Input READ zone2Input WRITE setZone2Input NOTIFY zone2InputChanged)
+    Q_PROPERTY (int zone2Input READ zone2Input WRITE setZone2Input NOTIFY zone2InputChanged)    
 
     Q_PROPERTY (bool zone3power READ zone3Power WRITE setZone3Power NOTIFY zone3PowerChanged)
     Q_PROPERTY (int zone3Volume READ zone3Volume NOTIFY zone3VolumeChanged)
@@ -262,6 +263,8 @@ public:
     Q_PROPERTY (bool discovering READ discovering NOTIFY discoveringChanged)
 
     Q_INVOKABLE void discoverHosts(bool clear=true);
+    Q_INVOKABLE void discoverHostsCancel();
+
     Q_INVOKABLE QVariantList getDevices() const;
     Q_INVOKABLE QVariantList getStaticInputs() const;
     Q_INVOKABLE QVariantList getInputs() const;    
@@ -495,6 +498,11 @@ public:
         return m_phaseMatchingBass;
     }
 
+    int discovered() const
+    {
+        return m_discovered;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -585,6 +593,8 @@ signals:
     void poweredZonesChanged(Zone arg);
 
     void phaseMatchingBassChanged(bool arg);
+
+    void discoveredChanged(int arg);
 
 public slots:
 
@@ -839,6 +849,7 @@ private:
     void requestInformationState();
     Zone m_poweredZones;
     bool m_phaseMatchingBass;
+    int m_discovered;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(qiscp::Zone)
