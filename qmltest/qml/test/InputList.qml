@@ -11,7 +11,7 @@ ListView {
     Component {
         id: inputDelegate
         Rectangle {
-            color: model.input_id==inputs.currentInput ? "#e5ffe5" : "#ffffff";
+            color: model.input_id==inputs.currentInput ? "#e5e5e5" : "#ffffff";
             width: parent.width;
             height: txt.height;
             MouseArea {

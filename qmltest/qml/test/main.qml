@@ -30,9 +30,15 @@ Rectangle {
                 height: parent.height/2
                 visible: iscp.discovering
                 Text {
-                    text: "Searching for devices..."
+                    id: t
+                    text: "Searching for devices. Found: "+iscp.discovered;
                     font.pixelSize: 16
                     anchors.centerIn: parent
+                }
+                Button {
+                    title: "Cancel search"
+                    anchors.top: t.bottom
+                    onClicked: iscp.discoverHostsCancel()
                 }
             }
 
@@ -85,7 +91,7 @@ Rectangle {
             clip: true;
             model: inputsModel;
             onInputSelected: {
-                iscp.setMasterInput(input);
+                iscp.setZoneInput(QISCP.Zone1, input);
             }
             currentInput: iscp.masterInput;
         }
