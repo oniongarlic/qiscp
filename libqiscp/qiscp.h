@@ -503,6 +503,8 @@ public:
         return m_discovered;
     }
 
+    void cacheDiscoveredHosts();
+    void loadCachedHosts();
 signals:
     void portChanged();
     void hostChanged();

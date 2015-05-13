@@ -4,6 +4,7 @@
 #include <QtGlobal>
 #include <QNetworkAddressEntry>
 #include <QStringList>
+#include <QSettings>
 
 static QString getPaddedInt(int n, int padding=5) {
     QString s=QString("%1").arg(n, padding, 10, QChar('0')).toUpper();
@@ -317,6 +318,9 @@ void qiscp::deviceDiscoveryTimeout() {
 
     m_discovering=false;
     emit discoveringChanged();
+
+    if (m_discovered>0)
+        cacheDiscoveredHosts();
 }
 
 bool qiscp::close() {
@@ -459,6 +463,31 @@ void qiscp::readBroadcastDatagram()
         m_discovered++;
         emit discoveredChanged(m_discovered);
     }
+}
+
+void qiscp::cacheDiscoveredHosts() {
+    QSettings s;
+    QMapIterator<QString, QVariant> i(m_devices);
+
+    s.beginGroup("Devices");
+    while (i.hasNext()) {
+         i.next();
+
+         s.beginGroup(i.key());
+         QVariantMap device=i.value().toMap();
+         QMapIterator<QString, QVariant> d(device);
+         while (d.hasNext()) {
+             d.next();
+             s.setValue(d.key(), d.value().toString());
+         }
+         s.endGroup();
+    }
+    s.endGroup();
+    s.sync();
+}
+
+void qiscp::loadCachedHosts() {
+
 }
 
 bool qiscp::saveArtwork(QString file) {
