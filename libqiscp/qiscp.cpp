@@ -576,7 +576,8 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::Artwork:
         if (m_artworkParser.parseMessage(message) && m_artworkParser.complete()) {
-            emit hasArtworkChanged(m_artworkParser.complete());
+            m_hasArtwork=m_artworkParser.complete();
+            emit hasArtworkChanged(m_hasArtwork);
             emit currentArtworkChanged();
         }
         break;
@@ -989,6 +990,8 @@ void qiscp::clearCurrentTrack() {
     m_artist.clear();
     m_album.clear();
     m_title.clear();
+    m_hasArtwork=false;
+    emit hasArtworkChanged(m_hasArtwork);
     emit currentTrackPositionChanged();
     emit currentTrackLengthChanged();
     emit currentTitleChanged();
@@ -2110,6 +2113,9 @@ case qiscpInputs::USBFront:
     break;
 case qiscpInputs::DVD:
     dvdCommand(cmd);
+    break;
+case qiscpInputs::CD: // CD/TV ?
+    tvCommand(cmd);
     break;
 }
 }
