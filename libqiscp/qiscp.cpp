@@ -459,6 +459,7 @@ void qiscp::readBroadcastDatagram()
         device.insert("mac", mac);
 
         m_devices.insert(mac, device);
+        emit discoveredHost(mac, device);
 
         m_discovered++;
         emit discoveredChanged(m_discovered);

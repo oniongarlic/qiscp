@@ -509,6 +509,7 @@ signals:
     void portChanged();
     void hostChanged();
     void discoveringChanged();
+    void discoveredHost(QString mac, QVariantMap device);
     void devicesDiscovered();
 
     void connectedToHost();
