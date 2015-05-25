@@ -363,6 +363,16 @@ public:
     Q_INVOKABLE bool command(Commands cmd, Zones zone=Zone1);
     Q_INVOKABLE bool saveArtwork(QString file);
 
+    Q_INVOKABLE void setNetworkService(NetworkService arg);
+    Q_INVOKABLE void setDiscoveryTimeout(int arg);
+    Q_INVOKABLE void setPlayMode(PlayModes arg);
+    Q_INVOKABLE void setShuffleMode(ShuffleModes arg);
+    Q_INVOKABLE void setRepeatMode(RepeatModes arg);
+
+    Q_INVOKABLE void setAudyssey2EQ(Audyssey2EQ arg);
+    Q_INVOKABLE void setAudysseyDynamicEQ(AudysseyDynamicEQ arg);
+    Q_INVOKABLE void setAudysseyDynamicVolume(AudysseyDynamicVolume arg);
+
     bool connected() const { return m_connected; }
     bool discovering() const { return m_discovering; }
     int port() const { return m_port; }
@@ -608,16 +618,6 @@ public slots:
             emit debugChanged();
         }
     }
-
-    void setNetworkService(NetworkService arg);
-    void setDiscoveryTimeout(int arg);
-    void setPlayMode(PlayModes arg);
-    void setShuffleMode(ShuffleModes arg);
-    void setRepeatMode(RepeatModes arg);
-
-    Q_INVOKABLE void setAudyssey2EQ(Audyssey2EQ arg);
-    Q_INVOKABLE void setAudysseyDynamicEQ(AudysseyDynamicEQ arg);
-    Q_INVOKABLE void setAudysseyDynamicVolume(AudysseyDynamicVolume arg);
 
 private slots:
     void tcpConnected();
