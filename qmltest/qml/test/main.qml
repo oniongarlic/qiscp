@@ -3,7 +3,7 @@ import org.tal.qiscp 1.0
 
 Rectangle {
     id: root
-    width: 800
+    width: 1024
     height: 480
 
     Row {
@@ -418,6 +418,22 @@ Rectangle {
                 onClicked: { iscp.command(QISCP.TrackUp) }
             }
             Button {
+                title: "S30"
+                enabled: iscp.connected
+                onClicked: { iscp.seekTo(30); }
+            }
+            Button {
+                title: "S160"
+                enabled: iscp.connected
+                onClicked: { iscp.seekTo(160); }
+            }
+            Button {
+                title: "S830"
+                enabled: iscp.connected
+                onClicked: { iscp.seekTo(830); }
+            }
+
+            Button {
                 title: "RANDOM: "+iscp.shuffleMode
                 enabled: iscp.connected
                 onClicked: { iscp.command(QISCP.Random) }
@@ -487,6 +503,12 @@ Rectangle {
             }            
         }
 
+        onDiscoveredHost: {
+            console.debug("New device: "+mac)
+            console.debug(device.ip)
+            console.debug(device.model)
+        }
+
         onConnectedToHost: {
             iscp.debugLog("/tmp/iscp.log", true);
 
@@ -551,7 +573,9 @@ Rectangle {
         onCurrentArtworkChanged: {
             albumArtwork.source="";
             if (hasArtwork) {
-                albumArtwork.source="/tmp/artwork.png"; // XXX just for testing!!
+                 // XXX just for testing!!
+                iscp.saveArtwork("/tmp/artwork.png")
+                albumArtwork.source="/tmp/artwork.png";
             }
         }
 
