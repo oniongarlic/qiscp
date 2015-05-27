@@ -363,6 +363,8 @@ public:
     Q_INVOKABLE bool command(Commands cmd, Zones zone=Zone1);
     Q_INVOKABLE bool saveArtwork(QString file);
 
+    Q_INVOKABLE void seekTo(int position);
+
     Q_INVOKABLE void setNetworkService(NetworkService arg);
     Q_INVOKABLE void setDiscoveryTimeout(int arg);
     Q_INVOKABLE void setPlayMode(PlayModes arg);
@@ -515,6 +517,7 @@ public:
 
     void cacheDiscoveredHosts();
     void loadCachedHosts();
+    const QString getElapsedTimeString(int seconds) const;
 signals:
     void portChanged();
     void hostChanged();

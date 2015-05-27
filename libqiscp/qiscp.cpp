@@ -980,6 +980,32 @@ void qiscp::parseElapsedTime(QString et) {
 }
 
 /**
+ * @brief qiscp::seekTo
+ * @param position
+ */
+void qiscp::seekTo(int position)
+{
+    // mm limit is 00-99
+    // ss limit is 00-59
+    if (position>99*60+59)
+        return;
+
+    writeCommand("NTS", getElapsedTimeString(position));
+}
+
+/**
+ * @brief qiscp::getElapsedTimeString
+ * @param seconds
+ * @return
+ */
+const QString qiscp::getElapsedTimeString(int seconds) const {
+    int m=seconds/60;
+    int s=seconds-m*60;
+
+    return QString("%1:%2").arg(m,2, 10,  QLatin1Char('0')).arg(s, 2, 10,  QLatin1Char('0'));
+}
+
+/**
  * @brief qiscp::clearCurrentTrack
  *
  * Clears the information of the current track only
