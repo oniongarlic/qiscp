@@ -364,6 +364,7 @@ public:
     Q_INVOKABLE bool saveArtwork(QString file);
 
     Q_INVOKABLE void seekTo(int position);
+    Q_INVOKABLE const QString getElapsedTimeString(int seconds) const;
 
     Q_INVOKABLE void setNetworkService(NetworkService arg);
     Q_INVOKABLE void setDiscoveryTimeout(int arg);
@@ -517,7 +518,6 @@ public:
 
     void cacheDiscoveredHosts();
     void loadCachedHosts();
-    const QString getElapsedTimeString(int seconds) const;
 signals:
     void portChanged();
     void hostChanged();
