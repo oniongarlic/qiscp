@@ -33,6 +33,8 @@ class qiscp : public QObject
     Q_ENUMS(Audyssey2EQ)
     Q_ENUMS(AudysseyDynamicVolume)
     Q_ENUMS(AudysseyDynamicEQ)
+    Q_ENUMS(USBStatus)
+    Q_ENUMS(NetworkConnectionStatus)
 
 public:
     explicit qiscp(QObject *parent = 0);
@@ -72,6 +74,22 @@ public:
         ToggleMovie,
         ToggleMusic,
         ToggleGame
+    };
+
+    enum NetworkConnectionStatus {
+        NoConnection,
+        Ethernet,
+        Wireless
+    };
+
+    enum USBStatus {
+        NoDevice,
+        iPodPhone,
+        Memory,
+        WirelessAdaptor,
+        BluetoothAdaptor,
+        GoogleUSB, // ?
+        Disabled
     };
 
     enum NetworkService {
@@ -547,6 +565,10 @@ signals:
     void controlList();
     void selectorList();
 
+    void networkStatusChanged();
+    void usbFrontStatusChanged();
+    void usbBackStatusChanged();
+
     void masterVolumeChanged();
     void masterMutedChanged();
     void masterInputChanged();
@@ -808,6 +830,11 @@ private:
     QVariantList m_audio_info;
     QVariantList m_video_info;
 
+    // Status info
+    NetworkConnectionStatus m_network_status;
+    USBStatus m_usb_front;
+    USBStatus m_usb_back;
+
     // Device discovery
     QTimer m_timer;
     QVariantMap m_devices;
@@ -839,6 +866,8 @@ private:
     void clearCurrentTrack();
     void parseDeviceInformation(QString data);
     void parsePlayStatus(QString data);
+    void parseDeviceStatus(QString data);
+    USBStatus getUSBStatusEnum(const char u);
 
     void setTracks(quint16 tracks);
     void setTrack(quint16 track);

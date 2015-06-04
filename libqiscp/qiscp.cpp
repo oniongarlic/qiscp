@@ -794,8 +794,8 @@ void qiscp::parseMessage(ISCPMsg *message) {
     case ISCPCommands::MenuListTitle:
         qWarning() << "Unhandled: " << message->getParamter();
         break;
-    case ISCPCommands::DeviceStatus:
-        qWarning() << "Unhandled: " << message->getParamter();
+    case ISCPCommands::DeviceStatus:        
+        parseDeviceStatus(message->getParamter());
         break;
     case ISCPCommands::NetworkRadioPreset:
         m_networkRadioPreset=message->getIntValue();
@@ -867,6 +867,65 @@ void qiscp::parseDeviceInformation(QString data) {
     }
 
     delete m_deviceinfoparser;
+}
+
+void qiscp::parseDeviceStatus(QString data) {
+    if (data.size()<3) {
+        qWarning("Invalid device status");
+        return;
+    }
+
+    const char n=data.at(0).toLatin1();
+    const char f=data.at(1).toLatin1();
+    const char r=data.at(2).toLatin1();
+
+    // Network
+    switch (n) {
+    case '-':
+        m_network_status=NoConnection;
+        break;
+    case 'E':
+        m_network_status=Ethernet;
+        break;
+    case 'W':
+        m_network_status=Wireless;
+        break;
+    }
+    emit networkStatusChanged();
+
+    // Front and Back USB
+    m_usb_front=getUSBStatusEnum(f);
+    emit usbFrontStatusChanged();
+
+    m_usb_back=getUSBStatusEnum(r);
+    emit usbBackStatusChanged();
+}
+
+qiscp::USBStatus qiscp::getUSBStatusEnum(const char u) {
+    switch (u) {
+    case '-':
+        return NoDevice;
+        break;
+    case 'i':
+        return iPodPhone;
+        break;
+    case 'M':
+        return Memory;
+        break;
+    case 'W':
+        return WirelessAdaptor;
+        break;
+    case 'B':
+        return BluetoothAdaptor;
+        break;
+    case 'G':
+        return GoogleUSB;
+        break;
+    default:
+    case 'x':
+        return Disabled;
+        break;
+    }
 }
 
 void qiscp::parsePlayStatus(QString data) {
@@ -1185,12 +1244,13 @@ void qiscp::requestZone4State() {
 
 void qiscp::requestNetworkPlayState() {
     qDebug("*** Requesting Network playback state");
-    queueCommand("NST", "QSTN"); // Status
+    queueCommand("NST", "QSTN"); // Play Status
     queueCommand("NAT", "QSTN"); // Artist
     queueCommand("NAL", "QSTN"); // Album
     queueCommand("NTI", "QSTN"); // Title
     queueCommand("NTR", "QSTN"); // Track
     queueCommand("NJA", "QSTN"); // Artwork
+    queueCommand("NDS", "QSTN"); // Device status
 }
 
 void qiscp::requestInformationState() {
