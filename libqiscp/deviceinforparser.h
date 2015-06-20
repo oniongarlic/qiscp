@@ -17,6 +17,10 @@ public:
     Q_INVOKABLE QVariantMap getDevice() const;
     Q_INVOKABLE QVariantList getPresets() const;
     Q_INVOKABLE QVariantList getNetservices() const;
+    Q_INVOKABLE QVariantList getZones() const;
+    Q_INVOKABLE QVariantList getSelectors() const;
+    Q_INVOKABLE QVariantList getControls() const;
+    Q_INVOKABLE bool isZoneAvailable(int zone_id) const;
 
 signals:
 
@@ -37,6 +41,7 @@ private:
 
     QVariantMap m_device;
     QVariantList m_presets;
+    QMap<int, bool> m_zoneAvailable;
     QVariantList m_zones;
     QVariantList m_controls;
     QVariantList m_selectors;

@@ -1,29 +1,30 @@
 import QtQuick 1.1
 
 ListView {
-    id: hosts
-    delegate: hostDelegate
+    id: services
+    delegate: serviceDelegate
     clip: true;
 
-    signal deviceSelected(variant device);
+    signal serviceSelected(variant service);
+    property int currentService: -1;
 
     Component {
-        id: hostDelegate
+        id: serviceDelegate
         Rectangle {
-            color: "#f0f0ff";
+            color: model.service_id==services.currentService ? "#a5ffef" : "#ffffff";
             width: parent.width;
             height: txt.height;
             MouseArea {
                 anchors.fill: parent;
                 Text {
                     id: txt
-                    text: model.model+" / "+model.mac
+                    text: model.name
                     anchors.margins: 8;
                     font.pointSize: 12
                 }
                 onClicked: {
-                    hosts.currentIndex=index;
-                    hosts.deviceSelected(model);
+                    services.currentIndex=index;
+                    services.serviceSelected(model);
                 }
             }
         }

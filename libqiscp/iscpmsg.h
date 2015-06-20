@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QByteArray>
+#include <QVariantList>
 
 #define ISCP_HEADER_SIZE (16)
 
@@ -27,6 +28,8 @@ public:
 
     QByteArray getData(void) const;
 
+    bool getBooleanValue() const;
+    QVariantList getListValue(QString sep) const;
 signals:
 
 public slots:

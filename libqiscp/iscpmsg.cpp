@@ -1,9 +1,14 @@
 #include <QDataStream>
 #include <QDebug>
 #include <QTime>
+#include <QStringList>
 #include "iscpmsg.h"
 
 #define ISCP_MAGIC "ISCP"
+
+// Define for more ISCP debug output
+#define ISCP_DEBUG_PARSED 1
+#define ISCP_DEBUG_MESSAGE 1
 
 ISCPMsg::ISCPMsg(QObject *parent) :
     QObject(parent),
@@ -53,8 +58,6 @@ bool ISCPMsg::fromData(QByteArray *data) {
         qWarning("Invalid packet, signature is missing");
         return false;
     }
-
-    qDebug() << "Parsing ISCP message from data: " << data->toHex();
 
     QDataStream ds(data, QIODevice::ReadOnly);
     ds.setByteOrder(QDataStream::BigEndian);
@@ -109,21 +112,32 @@ bool ISCPMsg::fromData(QByteArray *data) {
 
     // Get the message command part into m_cmd
     QString msg=QString::fromUtf8(m_data.data(), dsize);
+
+#if ISCP_DEBUG_MESSAGE
+    qDebug() << "ISCP: " << msg;
+#endif
+
     m_cmd=msg.mid(2,3);
 
     // The rest depends on the command, read it into param, higher up can then decide what to do
     int eofidx=msg.indexOf(0x1A, 5);
-    qDebug() << "EOF at: " << eofidx;
-    m_param=msg.mid(5,eofidx-5);
+    if (eofidx>=5) {
+        m_param=msg.mid(5,eofidx-5);
+    } else if (eofidx==-1) {
+        // Special case, discover response packet does not follow the other commands format
+        m_param=msg.mid(5);
+    } else {
+        qWarning() << "EOF marker at invalid position:" << eofidx;
+        m_param="";
+    }
 
-    qDebug() << QTime::currentTime();
-    qDebug() << "Datamsg sz: " << msg.size();
-    qDebug() << "Command sz: " << dsize;
-    qDebug() << "Command is: " << m_cmd;
-    qDebug() << "Command pa: " << m_param;
-    qDebug("-------------------------------------------------------");
-    qDebug() << "Full ISCP Message is: " << msg;
-    qDebug("-------------------------------------------------------");
+#if ISCP_DEBUG_PARSED
+    qDebug() << QTime::currentTime() << " [" << "MSZ: " << msg.size() << " : CSZ: " << dsize << "]";
+    qDebug() << "[ " << m_cmd << "]:[" << m_param << "]";
+#endif
+
+    // Remove the data we used.
+    data->remove(0, ISCP_HEADER_SIZE+dsize);
 
     return true;
 }
@@ -142,10 +156,27 @@ QString ISCPMsg::getParamter() const {
 
 /**
  * @brief ISCPMsg::getIntValue
- * @return Command paramter hex value converted to int
+ * @return Command parameter hex value converted to int
  */
 int ISCPMsg::getIntValue() const {
     return getParamter().mid(0,2).toInt(NULL, 16);
+}
+
+/**
+ * @brief ISCPMsg::getBooleanValue
+ * @return True if parameter value is 1, false otherwise
+ */
+bool ISCPMsg::getBooleanValue() const {
+    return getIntValue()==1 ? true : false;
+}
+
+QVariantList ISCPMsg::getListValue(QString sep) const {
+    QVariantList ret;
+    QStringList tmp=getParamter().split(sep);
+    foreach(QString s, tmp){
+        ret << s;
+    }
+    return ret;
 }
 
 /**

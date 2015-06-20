@@ -3,16 +3,23 @@
 #include <QDeclarativeComponent>
 #include <QDeclarativeEngine>
 #include <QDeclarativeContext>
+#include "artworkimageprovider.h"
 
 #include "qiscp.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-
     QtQuick1ApplicationViewer viewer;
 
+
     qmlRegisterType<qiscp>("org.tal.qiscp", 1, 0, "QISCP");
+    // qmlRegisterUncreatableType<qiscpInputs>("org.tal.qiscp", 1, 0, "ISCPInputs", "ISCPInputs can not be created");
+
+    QDeclarativeContext *context = viewer.rootContext();
+    context->setContextProperty("ISCPInputs", new qiscpInputs());
+
+    viewer.engine()->addImageProvider(QLatin1String("artwork"), new ArtworkImageProvider());
 
     viewer.addImportPath(QLatin1String("modules"));
     viewer.setOrientation(QtQuick1ApplicationViewer::ScreenOrientationAuto);

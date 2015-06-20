@@ -1,29 +1,30 @@
 import QtQuick 1.1
 
 ListView {
-    id: hosts
-    delegate: hostDelegate
+    id: inputs
+    delegate: inputDelegate
     clip: true;
 
-    signal deviceSelected(variant device);
+    signal inputSelected(variant input);
+    property int currentInput: -1;
 
     Component {
-        id: hostDelegate
+        id: inputDelegate
         Rectangle {
-            color: "#f0f0ff";
+            color: model.input_id==inputs.currentInput ? "#e5e5e5" : "#ffffff";
             width: parent.width;
             height: txt.height;
             MouseArea {
                 anchors.fill: parent;
                 Text {
                     id: txt
-                    text: model.model+" / "+model.mac
+                    text: model.name;
                     anchors.margins: 8;
                     font.pointSize: 12
                 }
                 onClicked: {
-                    hosts.currentIndex=index;
-                    hosts.deviceSelected(model);
+                    console.debug("Input ID: "+model.input_id);
+                    inputs.inputSelected(model.input_id);                    
                 }
             }
         }
