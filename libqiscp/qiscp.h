@@ -226,6 +226,9 @@ public:
 
     Q_PROPERTY (Zone poweredZones READ poweredZones NOTIFY poweredZonesChanged)
 
+    Q_PROPERTY(QVariant videoInfo READ videoInfo NOTIFY videoInfoChanged)
+    Q_PROPERTY(QVariant audioInfo READ audioInfo NOTIFY audioInfoChanged)
+
     Q_PROPERTY (int masterInput READ masterInput WRITE setMasterInput NOTIFY masterInputChanged)
     Q_PROPERTY (int masterTunerFreq READ masterTunerFreq NOTIFY masterTunerFreqChanged)
     Q_PROPERTY (int masterTunerPreset READ masterTunerPreset NOTIFY masterTunerPresetChanged)
@@ -321,6 +324,7 @@ public:
     Q_INVOKABLE void presetDown(Zones zone=Zone1);
     Q_INVOKABLE bool tuneStorePreset(int ml);
     Q_INVOKABLE void tunerDisplayRDSToggle();
+    Q_INVOKABLE void presetRefresh();
 
     Q_INVOKABLE void bassLevelUp(Zones zone=Zone1);
     Q_INVOKABLE void bassLevelDown(Zones zone=Zone1);
@@ -536,6 +540,10 @@ public:
 
     void cacheDiscoveredHosts();
     void loadCachedHosts();
+    QVariant videoInfo() const;
+
+    QVariant audioInfo() const;
+
 signals:
     void portChanged();
     void hostChanged();
@@ -633,6 +641,10 @@ signals:
     void phaseMatchingBassChanged(bool arg);
 
     void discoveredChanged(int arg);
+
+    void videoInfoChanged(QVariant arg);
+
+    void audioInfoChanged(QVariant arg);
 
 public slots:
 

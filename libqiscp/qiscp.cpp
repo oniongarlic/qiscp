@@ -491,6 +491,16 @@ void qiscp::loadCachedHosts() {
 
 }
 
+QVariant qiscp::videoInfo() const
+{
+    return m_video_info;
+}
+
+QVariant qiscp::audioInfo() const
+{
+    return m_audio_info;
+}
+
 bool qiscp::saveArtwork(QString file) {
     return m_artworkParser.save(file);
 }
@@ -614,10 +624,12 @@ void qiscp::parseMessage(ISCPMsg *message) {
     case ISCPCommands::AudioInformation:
         m_audio_info=message->getListValue(",");
         qDebug() << "AudioInformation: " << m_audio_info;
+        emit audioInfoChanged(m_audio_info);
         break;
     case ISCPCommands::VideoInformation:        
         m_video_info=message->getListValue(",");
         qDebug() << "VideoInformation: " << m_video_info;
+        emit videoInfoChanged(m_video_info);
         break;
 // Zone 2
     case ISCPCommands::Zone2Power:
@@ -1464,6 +1476,11 @@ QVariantList qiscp::getPresets() const {
 
 void qiscp::tunerDisplayRDSToggle() {
     writeCommand("RDS", "UP");
+}
+
+void qiscp::presetRefresh()
+{
+    writeCommand("NRI", "QSTN");
 }
 
 void qiscp::tune(int t, Zones zone) {
