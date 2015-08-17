@@ -897,6 +897,10 @@ private:
     Zone m_poweredZones;
     bool m_phaseMatchingBass;
     int m_discovered;
+
+    void parseMenuItem(QString data);
+    int m_menucursor;
+    QVariantMap m_menuitems;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(qiscp::Zone)

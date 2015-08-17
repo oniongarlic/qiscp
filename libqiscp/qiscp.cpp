@@ -96,11 +96,14 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("NJA", ISCPCommands::Artwork);
     m_commands.insert("NTR", ISCPCommands::TrackInfo);
     m_commands.insert("NRI", ISCPCommands::DeviceInformation);
-    m_commands.insert("NMS", ISCPCommands::MenuStatus);
     m_commands.insert("NDS", ISCPCommands::DeviceStatus);
+    m_commands.insert("NPR", ISCPCommands::NetworkRadioPreset);
+
+    // Menu
+    m_commands.insert("NMS", ISCPCommands::MenuStatus);    
     m_commands.insert("NLS", ISCPCommands::MenuList);
     m_commands.insert("NLT", ISCPCommands::MenuListTitle);
-    m_commands.insert("NPR", ISCPCommands::NetworkRadioPreset);
+
 
     // XXX: Needs feedback, but should work
     m_commands.insert("AAL", ISCPCommands::CurrentAlbum);
@@ -798,13 +801,13 @@ void qiscp::parseMessage(ISCPMsg *message) {
         parseTrackInfo(message->getParamter());
         break;
     case ISCPCommands::MenuStatus:
-        qWarning() << "Unhandled: " << message->getParamter();
+        qWarning() << "Unhandled MS : " << message->getParamter();
         break;
     case ISCPCommands::MenuList:
-        qWarning() << "Unhandled: " << message->getParamter();
+        parseMenuItem(message->getParamter());
         break;
     case ISCPCommands::MenuListTitle:
-        qWarning() << "Unhandled: " << message->getParamter();
+        qWarning() << "Unhandled MLT: " << message->getParamter();
         break;
     case ISCPCommands::DeviceStatus:        
         parseDeviceStatus(message->getParamter());
@@ -847,6 +850,34 @@ void qiscp::parseTrackInfo(QString data) {
 
     setTracks(tis.at(1).toInt(NULL, 10));
     setTrack(tis.at(0).toInt(NULL, 10));
+}
+
+void qiscp::parseMenuItem(QString data) {
+    QChar type=data.at(0);
+    QChar line=data.at(1);
+    QChar param=data.at(2);
+    QString msg=data.mid(3);
+
+    qDebug() << "MI T:" << type << " L:" << line << " P:" << param;
+    qDebug() << "MI D:" << msg;
+
+    switch (type.toLatin1()) {
+    case 'A':
+    case 'U':
+        m_menuitems.insert(line, msg);
+        break;
+    case 'C':
+        if (param=='C') {
+            m_menucursor=line.digitValue();
+            qDebug() << "Curosor is at: " << m_menucursor;
+        } else if (param=='P') {
+            m_menuitems.clear();
+        }
+        break;
+    default:
+        qWarning("Unknown menu info type");
+        break;
+    }
 }
 
 void qiscp::parseDeviceInformation(QString data) {
