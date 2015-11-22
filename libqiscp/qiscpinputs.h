@@ -79,7 +79,7 @@ public:
     };
 
     Q_INVOKABLE static bool isTuner(Input i) {
-        return (i==FM || i==AM || i==Tuner);
+        return (i==FM || i==AM || i==Tuner || i==DAB || i==Xm1 || i==Sirius);
     }
     Q_INVOKABLE static bool isNetworkOrUSB(Input i) {
         return (i==MusicServer || i==Network || i==USBBack || i==USBFront);
