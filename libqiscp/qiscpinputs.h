@@ -82,7 +82,7 @@ public:
         return (i==FM || i==AM || i==Tuner || i==DAB || i==Xm1 || i==Sirius);
     }
     Q_INVOKABLE static bool isNetworkOrUSB(Input i) {
-        return (i==MusicServer || i==Network || i==USBBack || i==USBFront);
+        return (isNetwork(i) || i==USBBack || i==USBFront);
     }
     Q_INVOKABLE static bool isNetwork(Input i) {
         return (i==MusicServer || i==Network || i==InternetRadio);
