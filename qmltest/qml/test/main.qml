@@ -101,7 +101,7 @@ Rectangle {
             height: parent.height;
             width: parent.width/5
             model: presetsModel
-            //visible: iscp.masterInput==ISCPInputs.Tuner
+            visible: ISCPInputs.isTuner(iscp.masterInput)
             onPresetSelected: {
                 iscp.tunePreset(preset.preset_id);
             }
@@ -198,7 +198,7 @@ Rectangle {
             }           
 
             Text {                
-                visible: iscp.masterInput===ISCPInputs.isTuner(iscp.masterInput)
+                visible: ISCPInputs.isTuner(iscp.masterInput)
                 text: "Freq:" + formatFreq(iscp.masterTunerFreq);
                 function formatFreq(freq) {
                     // AM 535-1605 kHz
@@ -478,6 +478,15 @@ Rectangle {
         }
     }
 
+    Row {
+        Text {
+            id: audioInfo
+        }
+        Text {
+            id: videInfo
+        }
+    }
+
     QISCP {
         id: iscp
         discoveryTimeout: 5000
@@ -521,6 +530,26 @@ Rectangle {
 
         onDisconnectedFromHost: {
             iscp.debugLog("", false);
+        }
+
+        onVideoInfoChanged: {
+            console.debug("Got Video info:")
+            console.debug(arg[0])
+            console.debug(arg[1])
+            console.debug(arg[2])
+            console.debug(arg[3])
+            console.debug(arg[4])
+            console.debug(arg[5])
+        }
+
+        onAudioInfoChanged: {
+            console.debug("Got audio info:")
+            console.debug(arg[0])
+            console.debug(arg[1])
+            console.debug(arg[2])
+            console.debug(arg[3])
+            console.debug(arg[4])
+            console.debug(arg[5])
         }
 
         onZonesList: {
