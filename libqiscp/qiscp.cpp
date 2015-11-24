@@ -214,7 +214,7 @@ void qiscp::connectToHost() {
  * @param cmd
  * @param param
  */
-void qiscp::queueCommand(QString cmd, QString param) {
+void qiscp::queueCommand(const QString &cmd, const QString &param) {
     ISCPMsg *message=new ISCPMsg();
     message->setCommand(cmd, param);
     m_cmdqueue.append(message);
@@ -222,21 +222,21 @@ void qiscp::queueCommand(QString cmd, QString param) {
         m_cmdtimer.start();
 }
 
-bool qiscp::writeCommand(QString cmd, QString param) {
+bool qiscp::writeCommand(const QString &cmd, const QString &param) {
     ISCPMsg message;
     message.setCommand(cmd, param);
 
     return writeCommand(&message);
 }
 
-bool qiscp::writeCommand(QString cmd, const char *param)
+bool qiscp::writeCommand(const QString &cmd, const char *param)
 {
     QString tmp(param);
 
     return writeCommand(cmd, tmp);
 }
 
-bool qiscp::writeCommand(QString cmd, bool param)
+bool qiscp::writeCommand(const QString &cmd, bool param)
 {
     return writeCommand(cmd, param ? "01" : "00");
 }

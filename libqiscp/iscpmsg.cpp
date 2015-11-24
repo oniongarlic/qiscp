@@ -17,7 +17,7 @@ ISCPMsg::ISCPMsg(QObject *parent) :
 {
 }
 
-bool ISCPMsg::setCommand(QString cmd, QString param, char destination) {
+bool ISCPMsg::setCommand(const QString &cmd, const QString &param, char destination) {
     if (cmd.size()>3)
         return false;
     m_cmd=cmd;
@@ -27,7 +27,7 @@ bool ISCPMsg::setCommand(QString cmd, QString param, char destination) {
     return true;
 }
 
-void ISCPMsg::setParameter(QString param) {
+void ISCPMsg::setParameter(const QString &param) {
     m_param=param;
 }
 
@@ -170,7 +170,7 @@ bool ISCPMsg::getBooleanValue() const {
     return getIntValue()==1 ? true : false;
 }
 
-QVariantList ISCPMsg::getListValue(QString sep) const {
+QVariantList ISCPMsg::getListValue(const QString &sep) const {
     QVariantList ret;
     QStringList tmp=getParamter().split(sep);
     foreach(QString s, tmp){

@@ -11,7 +11,7 @@ class DeviceInforParser : public QObject
 {
     Q_OBJECT
 public:
-    explicit DeviceInforParser(QString xml, QObject *parent = 0);
+    explicit DeviceInforParser(const QString &xml, QObject *parent = 0);
 
     Q_INVOKABLE bool isOk();
     Q_INVOKABLE QVariantMap getDevice() const;

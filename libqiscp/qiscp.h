@@ -301,9 +301,9 @@ public:
     Q_INVOKABLE void setPort(int port) { m_port=port; emit portChanged(); }
     Q_INVOKABLE bool close();
 
-    Q_INVOKABLE bool writeCommand(QString cmd, QString param);
-    Q_INVOKABLE bool writeCommand(QString cmd, bool param);
-    Q_INVOKABLE void queueCommand(QString cmd, QString param);
+    Q_INVOKABLE bool writeCommand(const QString &cmd, const QString &param);
+    Q_INVOKABLE bool writeCommand(const QString &cmd, bool param);
+    Q_INVOKABLE void queueCommand(const QString &cmd, const QString &param);
 
     Q_INVOKABLE void volumeUp(Zones zone=Zone1);
     Q_INVOKABLE void volumeDown(Zones zone=Zone1);
@@ -862,7 +862,7 @@ private:
     void requestZone4State();
 
     bool writeCommand(ISCPMsg *message);    
-    bool writeCommand(QString cmd, const char *param);
+    bool writeCommand(const QString &cmd, const char *param);
     void parseMessage(ISCPMsg *message);
 
     bool keyCommand(QString c, Commands cmd);
