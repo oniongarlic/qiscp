@@ -1442,6 +1442,26 @@ void qiscp::setMasterVolume(quint8 vol) {
     writeCommand("MVL", getHex(vol));
 }
 
+void qiscp::setZoneVolume(Zones zone, quint8 vol) {
+    // Make sure we don't try to set a too large volume directly
+    if (vol>m_maxvolume)
+        vol=m_maxvolume;
+    switch (zone) {
+    case Zone1:
+        writeCommand("MVL", getHex(vol));
+    break;
+    case Zone2:
+        writeCommand("ZVL", getHex(vol));
+        break;
+    case Zone3:
+        writeCommand("VL3", getHex(vol));
+        break;
+    case Zone4:
+        writeCommand("VL4", getHex(vol));
+        break;
+    }
+}
+
 void qiscp::setMaxDirectVolume(quint8 maxvol) {
     if (maxvol<1)
         maxvol=1;

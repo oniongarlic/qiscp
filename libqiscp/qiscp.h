@@ -305,6 +305,7 @@ public:
     Q_INVOKABLE bool writeCommand(const QString &cmd, bool param);
     Q_INVOKABLE void queueCommand(const QString &cmd, const QString &param);
 
+    Q_INVOKABLE void setZoneVolume(Zones zone, quint8 vol);
     Q_INVOKABLE void volumeUp(Zones zone=Zone1);
     Q_INVOKABLE void volumeDown(Zones zone=Zone1);
     Q_INVOKABLE void setMasterMuted(bool m);
