@@ -115,6 +115,12 @@ qiscp::qiscp(QObject *parent) :
     // Misc
     m_commands.insert("CEC", ISCPCommands::CEC);
     m_commands.insert("HAO", ISCPCommands::HDMIAudio);
+    m_commands.insert("HAS", ISCPCommands::HDMISubAudio);
+
+    // Triggers
+    m_commands.insert("TGA", ISCPCommands::TriggerA);
+    m_commands.insert("TGB", ISCPCommands::TriggerB);
+    m_commands.insert("TGC", ISCPCommands::TriggerC);
 
     // Information
     m_commands.insert("IFV", ISCPCommands::VideoInformation);
@@ -1823,6 +1829,10 @@ void qiscp::setECO(EcoMode m) {
  */
 void qiscp::setHDMIAudio(bool m) {
     writeCommand("HAO", m);
+}
+
+void qiscp::setHDMISubAudio(bool m) {
+    writeCommand("HAS", m);
 }
 
 /**

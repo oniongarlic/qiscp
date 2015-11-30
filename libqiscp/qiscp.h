@@ -348,6 +348,7 @@ public:
     Q_INVOKABLE void setCEC(bool m);
     Q_INVOKABLE void setECO(EcoMode m);
     Q_INVOKABLE void setHDMIAudio(bool m);
+    Q_INVOKABLE void setHDMISubAudio(bool m);
     Q_INVOKABLE void setMusicOptimizer(bool m);
     Q_INVOKABLE void setPhaseMatchingBass(bool m);
     Q_INVOKABLE void setListeningMode(ListeningModes m);
@@ -735,6 +736,7 @@ private:
             NetworkRadioPreset,
             CEC,
             HDMIAudio,
+            HDMISubAudio,
             MusicOptimizer,
             PhaseMatchingBass,
             ListeningMode,
@@ -748,7 +750,10 @@ private:
             AirplayCurrentAlbum,
             AirplayCurrentTitle,
             AirplayElapsedTime,
-            //
+            // Triggers
+            TriggerA,
+            TriggerB,
+            TriggerC,
             EndCommands // Marker
         };
     };
@@ -833,7 +838,10 @@ private:
 
     bool m_cec;
     bool m_hdmiAudio;
+    bool m_hdmiAudioSub;
     bool m_musicOptimizer;
+
+    quint8 m_audioSelector;
 
     quint8 m_listeningmode;
     quint8 m_latenight;
