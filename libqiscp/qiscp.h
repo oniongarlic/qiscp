@@ -61,6 +61,12 @@ public:
         Eco6dB=6,
     };
 
+    enum Trigger12V {
+        TriggerA,
+        TriggerB,
+        TriggerC
+    };
+
     enum ListeningModes {
         Stereo=0,
         Direct,
