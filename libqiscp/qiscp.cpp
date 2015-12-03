@@ -617,6 +617,10 @@ void qiscp::parseMessage(ISCPMsg *message) {
         m_hdmiAudio=message->getBooleanValue();
         emit hdmiAudioChanged();
         break;
+    case ISCPCommands::HDMISubAudio:
+        m_hdmiSubAudio=message->getBooleanValue();
+        emit hdmiSubAudioChanged();
+        break;
     case ISCPCommands::ListeningMode:
         m_listeningmode=message->getIntValue();
         emit listeningModeChanged();

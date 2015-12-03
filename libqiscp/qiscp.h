@@ -277,6 +277,7 @@ public:
     Q_PROPERTY(RepeatModes repeatMode READ repeatMode WRITE setRepeatMode NOTIFY repeatModeChanged)
 
     Q_PROPERTY (bool hdmiAudio READ hdmiAudio NOTIFY hdmiAudioChanged)
+    Q_PROPERTY (bool hdmiSubAudio READ hdmiSubAudio NOTIFY hdmiSubAudioChanged)
     Q_PROPERTY (bool cec READ cec NOTIFY cecChanged)
 
     Q_PROPERTY (bool musicOptimizer READ musicOptimizer NOTIFY musicOptimizerChanged)
@@ -462,6 +463,7 @@ public:
     int currentTracks() const { return m_tracks; }
 
     bool hdmiAudio() const { return m_hdmiAudio; }
+    bool hdmiSubAudio() const { return m_hdmiSubAudio; }
     bool cec() const { return m_cec; }
     bool musicOptimizer() const { return m_musicOptimizer; }
 
@@ -568,6 +570,7 @@ signals:
     void powerChanged();
 
     void hdmiAudioChanged();
+    void hdmiSubAudioChanged();
     void cecChanged();
     void musicOptimizerChanged();
     void listeningModeChanged();
@@ -838,7 +841,7 @@ private:
 
     bool m_cec;
     bool m_hdmiAudio;
-    bool m_hdmiAudioSub;
+    bool m_hdmiSubAudio;
     bool m_musicOptimizer;
 
     quint8 m_audioSelector;
