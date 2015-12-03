@@ -33,7 +33,11 @@ qiscp::qiscp(QObject *parent) :
     m_z3Power(false),
     m_z4Power(false),
     m_poweredZones(0),
+    m_mutedZones(0),
     m_masterMuted(false),
+    m_z2Muted(false),
+    m_z3Muted(false),
+    m_z4Muted(false),
     m_masterVolume(0),
     m_maxvolume(20),
     m_zonesAvailable(Zone1),
@@ -543,6 +547,12 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::MasterMute:
         m_masterMuted=message->getBooleanValue();
+        if (m_masterMuted) {
+            m_mutedZones|=Zone1;
+        } else {
+            m_mutedZones&=!Zone1;
+        }
+        emit mutedZonesChanged(m_mutedZones);
         emit masterMutedChanged();
         break;
     case ISCPCommands::MasterVolume:
@@ -663,6 +673,12 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::Zone2Mute:
         m_z2Muted=message->getBooleanValue();
+        if (m_z2Muted) {
+            m_mutedZones|=Zone2;
+        } else {
+            m_mutedZones&=!Zone2;
+        }
+        emit mutedZonesChanged(m_mutedZones);
         emit zone2MutedChanged();
         break;
     case ISCPCommands::Zone2Volume:
@@ -712,6 +728,11 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::Zone3Mute:
         m_z3Muted=message->getBooleanValue();
+        if (m_z3Muted) {
+            m_mutedZones|=Zone3;
+        } else {
+            m_mutedZones&=!Zone3;
+        }
         emit zone3MutedChanged();
         break;
     case ISCPCommands::Zone3Volume:
@@ -760,6 +781,11 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::Zone4Mute:
         m_z4Muted=message->getBooleanValue();
+        if (m_z4Muted) {
+            m_mutedZones|=Zone4;
+        } else {
+            m_mutedZones&=!Zone4;
+        }
         emit zone4MutedChanged();
         break;
     case ISCPCommands::Zone4Volume:

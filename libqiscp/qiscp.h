@@ -231,6 +231,7 @@ public:
     Q_PROPERTY (bool masterMuted READ masterMuted WRITE setMasterMuted NOTIFY masterMutedChanged)
 
     Q_PROPERTY (Zone poweredZones READ poweredZones NOTIFY poweredZonesChanged)
+    Q_PROPERTY (Zone mutedZones READ mutedZones NOTIFY mutedZonesChanged)
 
     Q_PROPERTY(QVariant videoInfo READ videoInfo NOTIFY videoInfoChanged)
     Q_PROPERTY(QVariant audioInfo READ audioInfo NOTIFY audioInfoChanged)
@@ -554,6 +555,11 @@ public:
 
     QVariant audioInfo() const;
 
+    Zone mutedZones() const
+    {
+        return m_mutedZones;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -656,6 +662,8 @@ signals:
     void videoInfoChanged(QVariant arg);
 
     void audioInfoChanged(QVariant arg);
+
+    void mutedZonesChanged(Zone mutedZones);
 
 public slots:
 
@@ -919,6 +927,7 @@ private:
     void parseMenuItem(QString data);
     int m_menucursor;
     QVariantMap m_menuitems;
+    Zone m_mutedZones;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(qiscp::Zone)
