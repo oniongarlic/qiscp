@@ -781,12 +781,16 @@ private:
     QTimer m_cmdtimer;
     QList<ISCPMsg *> m_cmdqueue;
 
+    bool m_debug;
+
     QTcpSocket *m_socket;
     QUdpSocket *m_broadcast;
     QString m_host;
-    quint16 m_port;    
-    bool m_discovering;
+    quint16 m_port;
+
     bool m_connected;
+    bool m_discovering;
+    int m_discoveryTimeout;
 
     bool m_power;
     bool m_masterMuted;
@@ -830,6 +834,9 @@ private:
     quint8 m_z4Input;
     bool m_z4Muted;
     quint8 m_z4Volume;
+
+    Zone m_poweredZones;
+    Zone m_mutedZones;
 
     // Album/Artist/Title (if known)
     QString m_artist;
@@ -877,9 +884,19 @@ private:
     QTimer m_timer;
     QVariantMap m_devices;
 
-    QByteArray m_buffer;      
-
+    QByteArray m_buffer;
     QFile m_debuglog;
+
+    bool m_hasArtwork;
+
+    int m_sleepTimer;
+    int m_masterTunerPreset;
+
+    int m_networkRadioPreset;
+    bool m_phaseMatchingBass;
+    int m_discovered;
+    int m_menucursor;
+    QVariantMap m_menuitems;
 
     void requestInitialState();
     void requestNetworkPlayState();
@@ -893,13 +910,6 @@ private:
 
     bool keyCommand(QString c, Commands cmd);
     bool baseCommand(QString c, Commands cmd);
-    bool m_debug;
-    NetworkService m_networkService;
-
-    ArtworkParser m_artworkParser;
-
-    int m_discoveryTimeout;
-    bool m_hasArtwork;
     void parseElapsedTime(QString et);
     void clearCurrentTrack();
     void parseDeviceInformation(QString data);
@@ -907,27 +917,21 @@ private:
     void parseDeviceStatus(QString data);
     USBStatus getUSBStatusEnum(const char u);
 
+    NetworkService m_networkService;
+    ArtworkParser m_artworkParser;
+
     void setTracks(quint16 tracks);
     void setTrack(quint16 track);
     void parseTrackInfo(QString data);
-    int m_sleepTimer;
     void setArtwork(QByteArray data);
     void clearArtwork();
-    int m_masterTunerPreset;
+
     Audyssey2EQ m_audyssey2EQ;
     AudysseyDynamicEQ m_audysseyDynamicEQ;
     AudysseyDynamicVolume m_audysseyDynamicVolume;
     void clearAllTrackInformation();
-    int m_networkRadioPreset;
     void requestInformationState();
-    Zone m_poweredZones;
-    bool m_phaseMatchingBass;
-    int m_discovered;
-
     void parseMenuItem(QString data);
-    int m_menucursor;
-    QVariantMap m_menuitems;
-    Zone m_mutedZones;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(qiscp::Zone)
