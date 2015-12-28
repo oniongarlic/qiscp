@@ -1357,6 +1357,8 @@ bool qiscp::debugLog(QString logfile, bool log)
     if (log) {
         return m_debuglog.open(QIODevice::WriteOnly | QIODevice::Text);
     }
+
+    return false;
 }
 
 /**
@@ -2298,21 +2300,23 @@ bool qiscp::bdCommand(Commands cmd) {
  *
  */
 bool qiscp::command(Commands cmd, Zones zone) {
-switch (m_masterInput) {
-case qiscpInputs::InternetRadio:
-case qiscpInputs::Network:
-case qiscpInputs::MusicServer:
-case qiscpInputs::USBBack:
-case qiscpInputs::USBFront:
-    networkCommand(cmd);
-    break;
-case qiscpInputs::DVD:
-    dvdCommand(cmd);
-    break;
-case qiscpInputs::CD: // CD/TV ?
-    tvCommand(cmd);
-    break;
-}
+    switch (m_masterInput) {
+    case qiscpInputs::InternetRadio:
+    case qiscpInputs::Network:
+    case qiscpInputs::MusicServer:
+    case qiscpInputs::USBBack:
+    case qiscpInputs::USBFront:
+        return networkCommand(cmd);
+        break;
+    case qiscpInputs::DVD:
+        return dvdCommand(cmd);
+        break;
+    case qiscpInputs::CD: // CD/TV ?
+        return tvCommand(cmd);
+        break;
+    default:
+        return false;
+    }
 }
 
 void qiscp::setNetworkService(qiscp::NetworkService arg)
