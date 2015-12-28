@@ -591,6 +591,9 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case qiscpInputs::FM:
         case qiscpInputs::AM:
         case qiscpInputs::Tuner:
+        case qiscpInputs::DAB:
+        case qiscpInputs::Xm1:
+        case qiscpInputs::Sirius:
             queueCommand("PRS", "QSTN");
             queueCommand("TUN", "QSTN");
             break;
