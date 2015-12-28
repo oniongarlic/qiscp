@@ -564,11 +564,11 @@ signals:
     void portChanged();
     void hostChanged();
     void discoveringChanged();
-    void discoveredHost(QString mac, QVariantMap device);
+    void discoveredHost(const QString mac, const QVariantMap device);
     void devicesDiscovered();
 
     void connectedToHost();
-    void connectionError(QAbstractSocket::SocketError error);
+    void connectionError(const QAbstractSocket::SocketError error);
     void disconnectedFromHost();
 
     void connectedChanged();
@@ -635,35 +635,35 @@ signals:
 
     void currentTrackPositionChanged();
     void currentTrackLengthChanged();
-    void currentTrackChanged(quint16 track);
-    void currentTracksChanged(quint16 tracks);
+    void currentTrackChanged(const quint16 track);
+    void currentTracksChanged(const quint16 tracks);
     void currentArtworkChanged();
 
-    void networkServiceChanged(NetworkService arg);
+    void networkServiceChanged(const NetworkService arg);
 
-    void discoveryTimeoutChanged(int arg);
-    void hasArtworkChanged(bool arg);
-    void playModeChanged(PlayModes arg);
-    void shuffleModeChanged(ShuffleModes arg);
-    void repeatModeChanged(RepeatModes arg);
-    void sleepTimerChanged(int arg);
-    void masterTunerPresetChanged(int arg);
-    void audyssey2EQChanged(Audyssey2EQ arg);
-    void audysseyDynamicEQChanged(AudysseyDynamicEQ arg);
-    void audysseyDynamicVolumeChanged(AudysseyDynamicVolume arg);
-    void networkRadioPresetChanged(int arg);
+    void discoveryTimeoutChanged(const int arg);
+    void hasArtworkChanged(const bool arg);
+    void playModeChanged(const PlayModes arg);
+    void shuffleModeChanged(const ShuffleModes arg);
+    void repeatModeChanged(const RepeatModes arg);
+    void sleepTimerChanged(const int arg);
+    void masterTunerPresetChanged(const int arg);
+    void audyssey2EQChanged(const Audyssey2EQ arg);
+    void audysseyDynamicEQChanged(const AudysseyDynamicEQ arg);
+    void audysseyDynamicVolumeChanged(const AudysseyDynamicVolume arg);
+    void networkRadioPresetChanged(const int arg);
 
-    void poweredZonesChanged(Zone arg);
+    void poweredZonesChanged(const Zone arg);
 
-    void phaseMatchingBassChanged(bool arg);
+    void phaseMatchingBassChanged(const bool arg);
 
-    void discoveredChanged(int arg);
+    void discoveredChanged(const int arg);
 
-    void videoInfoChanged(QVariant arg);
+    void videoInfoChanged(const QVariant arg);
 
-    void audioInfoChanged(QVariant arg);
+    void audioInfoChanged(const QVariant arg);
 
-    void mutedZonesChanged(Zone mutedZones);
+    void mutedZonesChanged(const Zone mutedZones);
 
 public slots:
 
