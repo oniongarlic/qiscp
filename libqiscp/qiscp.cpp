@@ -561,11 +561,19 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::MasterTone: {
         QString p=message->getParamter();
-        m_bassLevel=p.mid(1,2).toInt(NULL, 16);
-        m_trebleLevel=p.mid(4,2).toInt(NULL, 16);
+        qint8 tmp;
 
-        emit bassLevelChanged();
-        emit trebleLevelChanged();
+        tmp=p.mid(1,2).toInt(NULL, 16);
+        if (tmp!=m_bassLevel) {
+            m_bassLevel=tmp;
+            emit bassLevelChanged();
+        }
+
+        tmp=p.mid(4,2).toInt(NULL, 16);
+        if (tmp!=m_trebleLevel) {
+            m_trebleLevel=tmp;
+            emit trebleLevelChanged();
+        }
     }
         break;
     case ISCPCommands::CenterLevel:
