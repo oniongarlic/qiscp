@@ -67,6 +67,15 @@ public:
         TriggerC
     };
 
+    enum HDMIOutput {
+        OutputOff=0,
+        OutputMain=1,
+        OutputSub=2,
+        OutputBoth=3,
+        OutputBothMain=4,
+        OutputBothSub=5
+    };
+
     enum ListeningModes {
         Stereo=0,
         Direct,
