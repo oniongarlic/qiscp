@@ -23,25 +23,25 @@ static QString getHexWithPrefix(int n) {
 
 qiscp::qiscp(QObject *parent) :
     QObject(parent),
-    m_port(ISCP_PORT),
-    m_discoveryTimeout(2000),
-    m_discovering(false),
-    m_connected(false),
     m_debug(false),
+    m_port(ISCP_PORT),
+    m_connected(false),
+    m_discovering(false),
+    m_discoveryTimeout(2000),
     m_power(false),
-    m_z2Power(false),
-    m_z3Power(false),
-    m_z4Power(false),
-    m_poweredZones(0),
-    m_mutedZones(0),
     m_masterMuted(false),
-    m_z2Muted(false),
-    m_z3Muted(false),
-    m_z4Muted(false),
     m_masterVolume(0),
+    m_masterTunerFreq(0),
     m_maxvolume(20),
     m_zonesAvailable(Zone1),
-    m_masterTunerFreq(0),
+    m_z2Power(false),
+    m_z2Muted(false),
+    m_z3Power(false),
+    m_z3Muted(false),
+    m_z4Power(false),
+    m_z4Muted(false),
+    m_poweredZones(0),
+    m_mutedZones(0),
     m_timeRef(0,0),
     m_hasArtwork(false),
     m_discovered(0)
@@ -561,11 +561,19 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::MasterTone: {
         QString p=message->getParamter();
-        m_bassLevel=p.mid(1,2).toInt(NULL, 16);
-        m_trebleLevel=p.mid(4,2).toInt(NULL, 16);
+        qint8 tmp;
 
-        emit bassLevelChanged();
-        emit trebleLevelChanged();
+        tmp=p.mid(1,2).toInt(NULL, 16);
+        if (tmp!=m_bassLevel) {
+            m_bassLevel=tmp;
+            emit bassLevelChanged();
+        }
+
+        tmp=p.mid(4,2).toInt(NULL, 16);
+        if (tmp!=m_trebleLevel) {
+            m_trebleLevel=tmp;
+            emit trebleLevelChanged();
+        }
     }
         break;
     case ISCPCommands::CenterLevel:
@@ -583,6 +591,9 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case qiscpInputs::FM:
         case qiscpInputs::AM:
         case qiscpInputs::Tuner:
+        case qiscpInputs::DAB:
+        case qiscpInputs::Xm1:
+        case qiscpInputs::Sirius:
             queueCommand("PRS", "QSTN");
             queueCommand("TUN", "QSTN");
             break;
@@ -692,6 +703,9 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case qiscpInputs::FM:
         case qiscpInputs::AM:
         case qiscpInputs::Tuner:
+        case qiscpInputs::DAB:
+        case qiscpInputs::Xm1:
+        case qiscpInputs::Sirius:
             queueCommand("PRZ", "QSTN");
             queueCommand("TUZ", "QSTN");
             break;
@@ -746,6 +760,9 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case qiscpInputs::FM:
         case qiscpInputs::AM:
         case qiscpInputs::Tuner:
+        case qiscpInputs::DAB:
+        case qiscpInputs::Xm1:
+        case qiscpInputs::Sirius:
             queueCommand("PR3", "QSTN");
             queueCommand("TU3", "QSTN");
             break;
@@ -799,6 +816,9 @@ void qiscp::parseMessage(ISCPMsg *message) {
         case qiscpInputs::FM:
         case qiscpInputs::AM:
         case qiscpInputs::Tuner:
+        case qiscpInputs::DAB:
+        case qiscpInputs::Xm1:
+        case qiscpInputs::Sirius:
             queueCommand("PR4", "QSTN");
             queueCommand("TU4", "QSTN");
             break;
@@ -1357,6 +1377,8 @@ bool qiscp::debugLog(QString logfile, bool log)
     if (log) {
         return m_debuglog.open(QIODevice::WriteOnly | QIODevice::Text);
     }
+
+    return false;
 }
 
 /**
@@ -2298,21 +2320,23 @@ bool qiscp::bdCommand(Commands cmd) {
  *
  */
 bool qiscp::command(Commands cmd, Zones zone) {
-switch (m_masterInput) {
-case qiscpInputs::InternetRadio:
-case qiscpInputs::Network:
-case qiscpInputs::MusicServer:
-case qiscpInputs::USBBack:
-case qiscpInputs::USBFront:
-    networkCommand(cmd);
-    break;
-case qiscpInputs::DVD:
-    dvdCommand(cmd);
-    break;
-case qiscpInputs::CD: // CD/TV ?
-    tvCommand(cmd);
-    break;
-}
+    switch (m_masterInput) {
+    case qiscpInputs::InternetRadio:
+    case qiscpInputs::Network:
+    case qiscpInputs::MusicServer:
+    case qiscpInputs::USBBack:
+    case qiscpInputs::USBFront:
+        return networkCommand(cmd);
+        break;
+    case qiscpInputs::DVD:
+        return dvdCommand(cmd);
+        break;
+    case qiscpInputs::CD: // CD/TV ?
+        return tvCommand(cmd);
+        break;
+    default:
+        return false;
+    }
 }
 
 void qiscp::setNetworkService(qiscp::NetworkService arg)
