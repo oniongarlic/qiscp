@@ -87,8 +87,15 @@ qiscp::qiscp(QObject *parent) :
 
     // Levels: Treble/Base, Center and Subwoofer
     m_commands.insert("TFR", ISCPCommands::MasterTone);
+    m_commands.insert("TFW", ISCPCommands::MasterToneFrontWide);
+    m_commands.insert("TFH", ISCPCommands::MasterToneFrontHigh);
+    m_commands.insert("TCT", ISCPCommands::MasterToneCenter);
+    m_commands.insert("TSR", ISCPCommands::MasterToneSurround);
+    m_commands.insert("TSB", ISCPCommands::MasterToneBackSurround);
+    m_commands.insert("TSW", ISCPCommands::MasterToneSubwoofer);
     m_commands.insert("CTL", ISCPCommands::CenterLevel);
     m_commands.insert("SWL", ISCPCommands::SubwooferLevel);
+    m_commands.insert("TFR", ISCPCommands::MasterTone);
 
     // USB/Network
     m_commands.insert("NAL", ISCPCommands::CurrentAlbum);
@@ -145,12 +152,15 @@ qiscp::qiscp(QObject *parent) :
     m_commands.insert("ZMT", ISCPCommands::Zone2Mute);
     m_commands.insert("SLZ", ISCPCommands::Zone2Input);
     m_commands.insert("ZTN", ISCPCommands::Zone2Tone);
+    m_commands.insert("ZBL", ISCPCommands::Zone2Balance);
 
     // Zone 3
     m_commands.insert("PW3", ISCPCommands::Zone3Power);
     m_commands.insert("VL3", ISCPCommands::Zone3Volume);
     m_commands.insert("MT3", ISCPCommands::Zone3Mute);
     m_commands.insert("SL3", ISCPCommands::Zone3Input);
+    m_commands.insert("TN3", ISCPCommands::Zone3Tone);
+    m_commands.insert("BL3", ISCPCommands::Zone3Balance);
 
     // Zone 4
     m_commands.insert("PW4", ISCPCommands::Zone4Power);
@@ -1336,8 +1346,8 @@ void qiscp::requestZone4State() {
     qDebug("*** Requesting Zone 4 state");
     queueCommand("VL4", "QSTN");
     queueCommand("MT4", "QSTN");
-    queueCommand("TN4", "QSTN");
-    queueCommand("BL4", "QSTN");
+    // queueCommand("TN4", "QSTN");
+    // queueCommand("BL4", "QSTN");
     queueCommand("SL4", "QSTN");
 }
 
