@@ -360,6 +360,21 @@ Rectangle {
             Text {
                 text: iscp.poweredZones & QISCP.Zone4 ? "Z4-On" : "Z4-Off"
             }
+            Text {
+                text: "Z-Muted:"
+            }
+            Text {
+                text: iscp.mutedZones & QISCP.Zone1 ? "Z1" : "-"
+            }
+            Text {
+                text: iscp.mutedZones & QISCP.Zone2 ? "Z2" : "-"
+            }
+            Text {
+                text: iscp.mutedZones & QISCP.Zone3 ? "Z3" : "-"
+            }
+            Text {
+                text: iscp.mutedZones & QISCP.Zone4 ? "Z4" : "-"
+            }
         }
 
         /* Commands */
