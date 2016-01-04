@@ -237,7 +237,7 @@ Rectangle {
                 enabled: iscp.connected
                 title: "DisCon"
                 onClicked: {
-                    iscp.close();
+                    iscp.disconnectFromHost();
                 }
             }
             Button {
