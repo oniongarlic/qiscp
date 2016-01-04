@@ -573,6 +573,16 @@ public:
         return m_mutedZones;
     }
 
+    int zone3Balance() const
+    {
+        return m_zone3Balance;
+    }
+
+    int zone2Balance() const
+    {
+        return m_zone2Balance;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -678,6 +688,10 @@ signals:
 
     void mutedZonesChanged(const Zone mutedZones);
 
+    void zone3BalanceChanged(int zone3Balance);
+
+    void zone2BalanceChanged(int zone2Balance);
+
 public slots:
 
     void setDebug(bool arg)
@@ -687,6 +701,10 @@ public slots:
             emit debugChanged();
         }
     }
+
+    void setZone3Balance(int zone3Balance);
+
+    void setZone2Balance(int zone2Balance);
 
 private slots:
     void tcpConnected();
@@ -951,6 +969,9 @@ private:
     void clearAllTrackInformation();
     void requestInformationState();
     void parseMenuItem(QString data);
+
+    int m_zone2Balance;
+    int m_zone3Balance;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(qiscp::Zone)

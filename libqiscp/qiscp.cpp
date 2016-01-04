@@ -2438,3 +2438,14 @@ void qiscp::setAudysseyDynamicVolume(qiscp::AudysseyDynamicVolume arg)
 {
     writeCommand("ADV", getHex(arg));
 }
+
+void qiscp::setZone2Balance(int zone2Balance)
+{
+    writeCommand("ZBL", getHex(zone2Balance));
+}
+
+void qiscp::setZone3Balance(int zone3Balance)
+{
+    writeCommand("BL3", getHex(zone3Balance));
+}
+
