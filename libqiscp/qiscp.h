@@ -260,11 +260,13 @@ public:
 
     Q_PROPERTY (bool zone2power READ zone2Power WRITE setZone2Power NOTIFY zone2PowerChanged)
     Q_PROPERTY (int zone2Volume READ zone2Volume NOTIFY zone2VolumeChanged)
-    Q_PROPERTY (int zone2Input READ zone2Input WRITE setZone2Input NOTIFY zone2InputChanged)    
+    Q_PROPERTY (int zone2Input READ zone2Input WRITE setZone2Input NOTIFY zone2InputChanged)
+    Q_PROPERTY (int zone2Balance READ zone2Balance WRITE setZone2Balance NOTIFY zone2BalanceChanged)
 
     Q_PROPERTY (bool zone3power READ zone3Power WRITE setZone3Power NOTIFY zone3PowerChanged)
     Q_PROPERTY (int zone3Volume READ zone3Volume NOTIFY zone3VolumeChanged)
     Q_PROPERTY (int zone3Input READ zone3Input WRITE setZone3Input NOTIFY zone3InputChanged)
+    Q_PROPERTY (int zone3Balance READ zone3Balance WRITE setZone3Balance NOTIFY zone3BalanceChanged)
 
     Q_PROPERTY (bool zone4power READ zone4Power WRITE setZone4Power NOTIFY zone4PowerChanged)
     Q_PROPERTY (int zone4Volume READ zone4Volume NOTIFY zone4VolumeChanged)

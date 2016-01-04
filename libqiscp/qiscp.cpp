@@ -750,7 +750,8 @@ void qiscp::parseMessage(ISCPMsg *message) {
     }
         break;
     case ISCPCommands::Zone2Balance: {
-
+        m_zone2Balance=message->getIntValue();
+        emit zone2BalanceChanged(m_zone2Balance);
     }
 // Zone 3
     case ISCPCommands::Zone3Power:
@@ -819,7 +820,8 @@ void qiscp::parseMessage(ISCPMsg *message) {
     }
         break;
     case ISCPCommands::Zone3Balance: {
-
+        m_zone3Balance=message->getIntValue();
+        emit zone3BalanceChanged(m_zone3Balance);
     }
         break;
 // Zone 4
