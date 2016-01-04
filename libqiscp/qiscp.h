@@ -260,11 +260,13 @@ public:
 
     Q_PROPERTY (bool zone2power READ zone2Power WRITE setZone2Power NOTIFY zone2PowerChanged)
     Q_PROPERTY (int zone2Volume READ zone2Volume NOTIFY zone2VolumeChanged)
-    Q_PROPERTY (int zone2Input READ zone2Input WRITE setZone2Input NOTIFY zone2InputChanged)    
+    Q_PROPERTY (int zone2Input READ zone2Input WRITE setZone2Input NOTIFY zone2InputChanged)
+    Q_PROPERTY (int zone2Balance READ zone2Balance WRITE setZone2Balance NOTIFY zone2BalanceChanged)
 
     Q_PROPERTY (bool zone3power READ zone3Power WRITE setZone3Power NOTIFY zone3PowerChanged)
     Q_PROPERTY (int zone3Volume READ zone3Volume NOTIFY zone3VolumeChanged)
     Q_PROPERTY (int zone3Input READ zone3Input WRITE setZone3Input NOTIFY zone3InputChanged)
+    Q_PROPERTY (int zone3Balance READ zone3Balance WRITE setZone3Balance NOTIFY zone3BalanceChanged)
 
     Q_PROPERTY (bool zone4power READ zone4Power WRITE setZone4Power NOTIFY zone4PowerChanged)
     Q_PROPERTY (int zone4Volume READ zone4Volume NOTIFY zone4VolumeChanged)
@@ -314,9 +316,11 @@ public:
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
 
     Q_INVOKABLE void connectToHost();
-    Q_INVOKABLE void setHost(QString host) { m_host=host; emit hostChanged(); }
-    Q_INVOKABLE void setPort(int port) { m_port=port; emit portChanged(); }
+    Q_INVOKABLE bool disconnectFromHost();
     Q_INVOKABLE bool close();
+
+    Q_INVOKABLE void setHost(QString host) { m_host=host; emit hostChanged(); }
+    Q_INVOKABLE void setPort(int port) { m_port=port; emit portChanged(); }        
 
     Q_INVOKABLE bool writeCommand(const QString &cmd, const QString &param);
     Q_INVOKABLE bool writeCommand(const QString &cmd, bool param);
@@ -569,6 +573,16 @@ public:
         return m_mutedZones;
     }
 
+    int zone3Balance() const
+    {
+        return m_zone3Balance;
+    }
+
+    int zone2Balance() const
+    {
+        return m_zone2Balance;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -674,6 +688,10 @@ signals:
 
     void mutedZonesChanged(const Zone mutedZones);
 
+    void zone3BalanceChanged(int zone3Balance);
+
+    void zone2BalanceChanged(int zone2Balance);
+
 public slots:
 
     void setDebug(bool arg)
@@ -683,6 +701,10 @@ public slots:
             emit debugChanged();
         }
     }
+
+    void setZone3Balance(int zone3Balance);
+
+    void setZone2Balance(int zone2Balance);
 
 private slots:
     void tcpConnected();
@@ -947,6 +969,9 @@ private:
     void clearAllTrackInformation();
     void requestInformationState();
     void parseMenuItem(QString data);
+
+    int m_zone2Balance;
+    int m_zone3Balance;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(qiscp::Zone)

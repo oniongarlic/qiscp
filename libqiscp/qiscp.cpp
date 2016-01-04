@@ -219,7 +219,7 @@ qiscp::qiscp(QObject *parent) :
 
 qiscp::~qiscp()
 {
-    close();
+    disconnectFromHost();
 }
 
 void qiscp::connectToHost() {    
@@ -227,6 +227,43 @@ void qiscp::connectToHost() {
         m_socket->abort();
     }
     m_socket->connectToHost(m_host, m_port);
+}
+
+bool qiscp::close() {
+    disconnectFromHost();
+}
+
+bool qiscp::disconnectFromHost() {
+    if (m_socket->isOpen()) {
+        m_socket->disconnectFromHost();
+        return true;
+    }
+    return false;
+}
+
+void qiscp::tcpConnected() {
+    m_buffer.clear();
+    m_connected=true;
+    emit connectedChanged();
+    emit connectedToHost();
+    requestInitialState();
+}
+
+void qiscp::tcpDisconnected() {
+    clearAllTrackInformation();
+    m_cmdtimer.stop();
+    m_cmdqueue.clear();
+    m_buffer.clear();
+    m_connected=false;
+    emit connectedChanged();
+    emit disconnectedFromHost();
+}
+
+void qiscp::tcpError(QAbstractSocket::SocketError se) {
+    m_buffer.clear();
+    qWarning() << "TCP Error:" << se;
+    emit connectionError(se);
+    close();
 }
 
 /**
@@ -344,39 +381,6 @@ void qiscp::deviceDiscoveryTimeout() {
 
     if (m_discovered>0)
         cacheDiscoveredHosts();
-}
-
-bool qiscp::close() {
-    if (m_socket->isOpen()) {
-        m_socket->disconnectFromHost();
-        return true;
-    }
-    return false;
-}
-
-void qiscp::tcpConnected() {    
-    m_buffer.clear();
-    m_connected=true;
-    emit connectedChanged();
-    emit connectedToHost();
-    requestInitialState();
-}
-
-void qiscp::tcpDisconnected() {    
-    clearAllTrackInformation();
-    m_cmdtimer.stop();
-    m_cmdqueue.clear();
-    m_buffer.clear();
-    m_connected=false;
-    emit connectedChanged();
-    emit disconnectedFromHost();
-}
-
-void qiscp::tcpError(QAbstractSocket::SocketError se) {
-    m_buffer.clear();
-    qWarning() << "TCP Error:" << se;
-    emit connectionError(se);
-    close();
 }
 
 void qiscp::readISCP() {
@@ -730,11 +734,24 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::Zone2Tone: {
         QString p=message->getParamter();
-        m_z2Bass=p.mid(1,2).toInt(NULL, 16);
-        m_z2Treble=p.mid(4,2).toInt(NULL, 16);
+        qint8 tmp;
 
-        emit zone2BassLevelChanged();
-        emit zone2TrebleLevelChanged();
+        tmp=p.mid(1,2).toInt(NULL, 16);
+        if (tmp!=m_z2Bass) {
+            m_z2Bass=tmp;
+            emit zone2BassLevelChanged();
+        }
+
+        tmp=p.mid(4,2).toInt(NULL, 16);
+        if (tmp!=m_z2Treble) {
+            m_z2Treble=tmp;
+            emit zone2TrebleLevelChanged();
+        }
+    }
+        break;
+    case ISCPCommands::Zone2Balance: {
+        m_zone2Balance=message->getIntValue();
+        emit zone2BalanceChanged(m_zone2Balance);
     }
 // Zone 3
     case ISCPCommands::Zone3Power:
@@ -787,12 +804,26 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::Zone3Tone: {
         QString p=message->getParamter();
-        m_z3Bass=p.mid(1,2).toInt(NULL, 16);
-        m_z3Treble=p.mid(4,2).toInt(NULL, 16);
+        qint8 tmp;
 
-        emit zone3BassLevelChanged();
-        emit zone3TrebleLevelChanged();
+        tmp=p.mid(1,2).toInt(NULL, 16);
+        if (tmp!=m_z3Bass) {
+            m_z3Bass=tmp;
+            emit zone3BassLevelChanged();
+        }
+
+        tmp=p.mid(4,2).toInt(NULL, 16);
+        if (tmp!=m_z3Treble) {
+            m_z3Treble=tmp;
+            emit zone3TrebleLevelChanged();
+        }
     }
+        break;
+    case ISCPCommands::Zone3Balance: {
+        m_zone3Balance=message->getIntValue();
+        emit zone3BalanceChanged(m_zone3Balance);
+    }
+        break;
 // Zone 4
     case ISCPCommands::Zone4Power:
         m_z4Power=message->getBooleanValue();        
@@ -2407,3 +2438,14 @@ void qiscp::setAudysseyDynamicVolume(qiscp::AudysseyDynamicVolume arg)
 {
     writeCommand("ADV", getHex(arg));
 }
+
+void qiscp::setZone2Balance(int zone2Balance)
+{
+    writeCommand("ZBL", getHex(zone2Balance));
+}
+
+void qiscp::setZone3Balance(int zone3Balance)
+{
+    writeCommand("BL3", getHex(zone3Balance));
+}
+
