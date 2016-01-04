@@ -734,11 +734,23 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::Zone2Tone: {
         QString p=message->getParamter();
-        m_z2Bass=p.mid(1,2).toInt(NULL, 16);
-        m_z2Treble=p.mid(4,2).toInt(NULL, 16);
+        qint8 tmp;
 
-        emit zone2BassLevelChanged();
-        emit zone2TrebleLevelChanged();
+        tmp=p.mid(1,2).toInt(NULL, 16);
+        if (tmp!=m_z2Bass) {
+            m_z2Bass=tmp;
+            emit zone2BassLevelChanged();
+        }
+
+        tmp=p.mid(4,2).toInt(NULL, 16);
+        if (tmp!=m_z2Treble) {
+            m_z2Treble=tmp;
+            emit zone2TrebleLevelChanged();
+        }
+    }
+        break;
+    case ISCPCommands::Zone2Balance: {
+
     }
 // Zone 3
     case ISCPCommands::Zone3Power:
@@ -791,12 +803,25 @@ void qiscp::parseMessage(ISCPMsg *message) {
         break;
     case ISCPCommands::Zone3Tone: {
         QString p=message->getParamter();
-        m_z3Bass=p.mid(1,2).toInt(NULL, 16);
-        m_z3Treble=p.mid(4,2).toInt(NULL, 16);
+        qint8 tmp;
 
-        emit zone3BassLevelChanged();
-        emit zone3TrebleLevelChanged();
+        tmp=p.mid(1,2).toInt(NULL, 16);
+        if (tmp!=m_z3Bass) {
+            m_z3Bass=tmp;
+            emit zone3BassLevelChanged();
+        }
+
+        tmp=p.mid(4,2).toInt(NULL, 16);
+        if (tmp!=m_z3Treble) {
+            m_z3Treble=tmp;
+            emit zone3TrebleLevelChanged();
+        }
     }
+        break;
+    case ISCPCommands::Zone3Balance: {
+
+    }
+        break;
 // Zone 4
     case ISCPCommands::Zone4Power:
         m_z4Power=message->getBooleanValue();        
