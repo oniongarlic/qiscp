@@ -305,9 +305,11 @@ public:
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
 
     Q_INVOKABLE void connectToHost();
-    Q_INVOKABLE void setHost(QString host) { m_host=host; emit hostChanged(); }
-    Q_INVOKABLE void setPort(int port) { m_port=port; emit portChanged(); }
+    Q_INVOKABLE bool disconnectFromHost();
     Q_INVOKABLE bool close();
+
+    Q_INVOKABLE void setHost(QString host) { m_host=host; emit hostChanged(); }
+    Q_INVOKABLE void setPort(int port) { m_port=port; emit portChanged(); }        
 
     Q_INVOKABLE bool writeCommand(const QString &cmd, const QString &param);
     Q_INVOKABLE bool writeCommand(const QString &cmd, bool param);

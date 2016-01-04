@@ -209,7 +209,7 @@ qiscp::qiscp(QObject *parent) :
 
 qiscp::~qiscp()
 {
-    close();
+    disconnectFromHost();
 }
 
 void qiscp::connectToHost() {    
@@ -217,6 +217,43 @@ void qiscp::connectToHost() {
         m_socket->abort();
     }
     m_socket->connectToHost(m_host, m_port);
+}
+
+bool qiscp::close() {
+    disconnectFromHost();
+}
+
+bool qiscp::disconnectFromHost() {
+    if (m_socket->isOpen()) {
+        m_socket->disconnectFromHost();
+        return true;
+    }
+    return false;
+}
+
+void qiscp::tcpConnected() {
+    m_buffer.clear();
+    m_connected=true;
+    emit connectedChanged();
+    emit connectedToHost();
+    requestInitialState();
+}
+
+void qiscp::tcpDisconnected() {
+    clearAllTrackInformation();
+    m_cmdtimer.stop();
+    m_cmdqueue.clear();
+    m_buffer.clear();
+    m_connected=false;
+    emit connectedChanged();
+    emit disconnectedFromHost();
+}
+
+void qiscp::tcpError(QAbstractSocket::SocketError se) {
+    m_buffer.clear();
+    qWarning() << "TCP Error:" << se;
+    emit connectionError(se);
+    close();
 }
 
 /**
@@ -334,39 +371,6 @@ void qiscp::deviceDiscoveryTimeout() {
 
     if (m_discovered>0)
         cacheDiscoveredHosts();
-}
-
-bool qiscp::close() {
-    if (m_socket->isOpen()) {
-        m_socket->disconnectFromHost();
-        return true;
-    }
-    return false;
-}
-
-void qiscp::tcpConnected() {    
-    m_buffer.clear();
-    m_connected=true;
-    emit connectedChanged();
-    emit connectedToHost();
-    requestInitialState();
-}
-
-void qiscp::tcpDisconnected() {    
-    clearAllTrackInformation();
-    m_cmdtimer.stop();
-    m_cmdqueue.clear();
-    m_buffer.clear();
-    m_connected=false;
-    emit connectedChanged();
-    emit disconnectedFromHost();
-}
-
-void qiscp::tcpError(QAbstractSocket::SocketError se) {
-    m_buffer.clear();
-    qWarning() << "TCP Error:" << se;
-    emit connectionError(se);
-    close();
 }
 
 void qiscp::readISCP() {
