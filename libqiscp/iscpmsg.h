@@ -15,8 +15,8 @@ public:
     // explicit ISCPMsg(QString cmd, QString param, QObject *parent = 0);
     QString toString() const;
 
-    bool setCommand(QString cmd, QString param, char destination='1');
-    void setParameter(QString param);
+    bool setCommand(const QString &cmd, const QString &param, char destination='1');
+    void setParameter(const QString &param);
 
     QString getCommand() const;
     QString getParamter() const;
@@ -29,7 +29,7 @@ public:
     QByteArray getData(void) const;
 
     bool getBooleanValue() const;
-    QVariantList getListValue(QString sep) const;
+    QVariantList getListValue(const QString &sep) const;
 signals:
 
 public slots:

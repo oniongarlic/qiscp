@@ -21,7 +21,7 @@
  *
  */
 
-DeviceInforParser::DeviceInforParser(QString xml, QObject *parent) :
+DeviceInforParser::DeviceInforParser(const QString &xml, QObject *parent) :
     QObject(parent)
 {
     m_xml.addData(xml);    

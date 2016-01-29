@@ -61,6 +61,21 @@ public:
         Eco6dB=6,
     };
 
+    enum Trigger12V {
+        TriggerA,
+        TriggerB,
+        TriggerC
+    };
+
+    enum HDMIOutput {
+        OutputOff=0,
+        OutputMain=1,
+        OutputSub=2,
+        OutputBoth=3,
+        OutputBothMain=4,
+        OutputBothSub=5
+    };
+
     enum ListeningModes {
         Stereo=0,
         Direct,
@@ -225,6 +240,10 @@ public:
     Q_PROPERTY (bool masterMuted READ masterMuted WRITE setMasterMuted NOTIFY masterMutedChanged)
 
     Q_PROPERTY (Zone poweredZones READ poweredZones NOTIFY poweredZonesChanged)
+    Q_PROPERTY (Zone mutedZones READ mutedZones NOTIFY mutedZonesChanged)
+
+    Q_PROPERTY(QVariant videoInfo READ videoInfo NOTIFY videoInfoChanged)
+    Q_PROPERTY(QVariant audioInfo READ audioInfo NOTIFY audioInfoChanged)
 
     Q_PROPERTY (int masterInput READ masterInput WRITE setMasterInput NOTIFY masterInputChanged)
     Q_PROPERTY (int masterTunerFreq READ masterTunerFreq NOTIFY masterTunerFreqChanged)
@@ -241,11 +260,13 @@ public:
 
     Q_PROPERTY (bool zone2power READ zone2Power WRITE setZone2Power NOTIFY zone2PowerChanged)
     Q_PROPERTY (int zone2Volume READ zone2Volume NOTIFY zone2VolumeChanged)
-    Q_PROPERTY (int zone2Input READ zone2Input WRITE setZone2Input NOTIFY zone2InputChanged)    
+    Q_PROPERTY (int zone2Input READ zone2Input WRITE setZone2Input NOTIFY zone2InputChanged)
+    Q_PROPERTY (int zone2Balance READ zone2Balance WRITE setZone2Balance NOTIFY zone2BalanceChanged)
 
     Q_PROPERTY (bool zone3power READ zone3Power WRITE setZone3Power NOTIFY zone3PowerChanged)
     Q_PROPERTY (int zone3Volume READ zone3Volume NOTIFY zone3VolumeChanged)
     Q_PROPERTY (int zone3Input READ zone3Input WRITE setZone3Input NOTIFY zone3InputChanged)
+    Q_PROPERTY (int zone3Balance READ zone3Balance WRITE setZone3Balance NOTIFY zone3BalanceChanged)
 
     Q_PROPERTY (bool zone4power READ zone4Power WRITE setZone4Power NOTIFY zone4PowerChanged)
     Q_PROPERTY (int zone4Volume READ zone4Volume NOTIFY zone4VolumeChanged)
@@ -268,6 +289,7 @@ public:
     Q_PROPERTY(RepeatModes repeatMode READ repeatMode WRITE setRepeatMode NOTIFY repeatModeChanged)
 
     Q_PROPERTY (bool hdmiAudio READ hdmiAudio NOTIFY hdmiAudioChanged)
+    Q_PROPERTY (bool hdmiSubAudio READ hdmiSubAudio NOTIFY hdmiSubAudioChanged)
     Q_PROPERTY (bool cec READ cec NOTIFY cecChanged)
 
     Q_PROPERTY (bool musicOptimizer READ musicOptimizer NOTIFY musicOptimizerChanged)
@@ -294,14 +316,17 @@ public:
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
 
     Q_INVOKABLE void connectToHost();
-    Q_INVOKABLE void setHost(QString host) { m_host=host; emit hostChanged(); }
-    Q_INVOKABLE void setPort(int port) { m_port=port; emit portChanged(); }
+    Q_INVOKABLE bool disconnectFromHost();
     Q_INVOKABLE bool close();
 
-    Q_INVOKABLE bool writeCommand(QString cmd, QString param);
-    Q_INVOKABLE bool writeCommand(QString cmd, bool param);
-    Q_INVOKABLE void queueCommand(QString cmd, QString param);
+    Q_INVOKABLE void setHost(QString host) { m_host=host; emit hostChanged(); }
+    Q_INVOKABLE void setPort(int port) { m_port=port; emit portChanged(); }        
 
+    Q_INVOKABLE bool writeCommand(const QString &cmd, const QString &param);
+    Q_INVOKABLE bool writeCommand(const QString &cmd, bool param);
+    Q_INVOKABLE void queueCommand(const QString &cmd, const QString &param);
+
+    Q_INVOKABLE void setZoneVolume(Zones zone, quint8 vol);
     Q_INVOKABLE void volumeUp(Zones zone=Zone1);
     Q_INVOKABLE void volumeDown(Zones zone=Zone1);
     Q_INVOKABLE void setMasterMuted(bool m);
@@ -321,6 +346,7 @@ public:
     Q_INVOKABLE void presetDown(Zones zone=Zone1);
     Q_INVOKABLE bool tuneStorePreset(int ml);
     Q_INVOKABLE void tunerDisplayRDSToggle();
+    Q_INVOKABLE void presetRefresh();
 
     Q_INVOKABLE void bassLevelUp(Zones zone=Zone1);
     Q_INVOKABLE void bassLevelDown(Zones zone=Zone1);
@@ -337,6 +363,7 @@ public:
     Q_INVOKABLE void setCEC(bool m);
     Q_INVOKABLE void setECO(EcoMode m);
     Q_INVOKABLE void setHDMIAudio(bool m);
+    Q_INVOKABLE void setHDMISubAudio(bool m);
     Q_INVOKABLE void setMusicOptimizer(bool m);
     Q_INVOKABLE void setPhaseMatchingBass(bool m);
     Q_INVOKABLE void setListeningMode(ListeningModes m);
@@ -450,6 +477,7 @@ public:
     int currentTracks() const { return m_tracks; }
 
     bool hdmiAudio() const { return m_hdmiAudio; }
+    bool hdmiSubAudio() const { return m_hdmiSubAudio; }
     bool cec() const { return m_cec; }
     bool musicOptimizer() const { return m_musicOptimizer; }
 
@@ -536,15 +564,34 @@ public:
 
     void cacheDiscoveredHosts();
     void loadCachedHosts();
+    QVariant videoInfo() const;
+
+    QVariant audioInfo() const;
+
+    Zone mutedZones() const
+    {
+        return m_mutedZones;
+    }
+
+    int zone3Balance() const
+    {
+        return m_zone3Balance;
+    }
+
+    int zone2Balance() const
+    {
+        return m_zone2Balance;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
     void discoveringChanged();
-    void discoveredHost(QString mac, QVariantMap device);
+    void discoveredHost(const QString mac, const QVariantMap device);
     void devicesDiscovered();
 
     void connectedToHost();
-    void connectionError(QAbstractSocket::SocketError error);
+    void connectionError(const QAbstractSocket::SocketError error);
     void disconnectedFromHost();
 
     void connectedChanged();
@@ -552,6 +599,7 @@ signals:
     void powerChanged();
 
     void hdmiAudioChanged();
+    void hdmiSubAudioChanged();
     void cecChanged();
     void musicOptimizerChanged();
     void listeningModeChanged();
@@ -610,29 +658,39 @@ signals:
 
     void currentTrackPositionChanged();
     void currentTrackLengthChanged();
-    void currentTrackChanged(quint16 track);
-    void currentTracksChanged(quint16 tracks);
+    void currentTrackChanged(const quint16 track);
+    void currentTracksChanged(const quint16 tracks);
     void currentArtworkChanged();
 
-    void networkServiceChanged(NetworkService arg);
+    void networkServiceChanged(const NetworkService arg);
 
-    void discoveryTimeoutChanged(int arg);
-    void hasArtworkChanged(bool arg);
-    void playModeChanged(PlayModes arg);
-    void shuffleModeChanged(ShuffleModes arg);
-    void repeatModeChanged(RepeatModes arg);
-    void sleepTimerChanged(int arg);
-    void masterTunerPresetChanged(int arg);
-    void audyssey2EQChanged(Audyssey2EQ arg);
-    void audysseyDynamicEQChanged(AudysseyDynamicEQ arg);
-    void audysseyDynamicVolumeChanged(AudysseyDynamicVolume arg);
-    void networkRadioPresetChanged(int arg);
+    void discoveryTimeoutChanged(const int arg);
+    void hasArtworkChanged(const bool arg);
+    void playModeChanged(const PlayModes arg);
+    void shuffleModeChanged(const ShuffleModes arg);
+    void repeatModeChanged(const RepeatModes arg);
+    void sleepTimerChanged(const int arg);
+    void masterTunerPresetChanged(const int arg);
+    void audyssey2EQChanged(const Audyssey2EQ arg);
+    void audysseyDynamicEQChanged(const AudysseyDynamicEQ arg);
+    void audysseyDynamicVolumeChanged(const AudysseyDynamicVolume arg);
+    void networkRadioPresetChanged(const int arg);
 
-    void poweredZonesChanged(Zone arg);
+    void poweredZonesChanged(const Zone arg);
 
-    void phaseMatchingBassChanged(bool arg);
+    void phaseMatchingBassChanged(const bool arg);
 
-    void discoveredChanged(int arg);
+    void discoveredChanged(const int arg);
+
+    void videoInfoChanged(const QVariant arg);
+
+    void audioInfoChanged(const QVariant arg);
+
+    void mutedZonesChanged(const Zone mutedZones);
+
+    void zone3BalanceChanged(int zone3Balance);
+
+    void zone2BalanceChanged(int zone2Balance);
 
 public slots:
 
@@ -643,6 +701,10 @@ public slots:
             emit debugChanged();
         }
     }
+
+    void setZone3Balance(int zone3Balance);
+
+    void setZone2Balance(int zone2Balance);
 
 private slots:
     void tcpConnected();
@@ -672,6 +734,12 @@ private:
             MasterTuner,
             MasterTunerPreset,
             MasterTone,
+            MasterToneFrontWide,
+            MasterToneFrontHigh,
+            MasterToneCenter,
+            MasterToneSurround,
+            MasterToneBackSurround,
+            MasterToneSubwoofer,
             MasterBalance,
             CenterLevel,
             SubwooferLevel,
@@ -716,6 +784,7 @@ private:
             NetworkRadioPreset,
             CEC,
             HDMIAudio,
+            HDMISubAudio,
             MusicOptimizer,
             PhaseMatchingBass,
             ListeningMode,
@@ -729,7 +798,10 @@ private:
             AirplayCurrentAlbum,
             AirplayCurrentTitle,
             AirplayElapsedTime,
-            //
+            // Triggers
+            TriggerA,
+            TriggerB,
+            TriggerC,
             EndCommands // Marker
         };
     };
@@ -746,12 +818,16 @@ private:
     QTimer m_cmdtimer;
     QList<ISCPMsg *> m_cmdqueue;
 
+    bool m_debug;
+
     QTcpSocket *m_socket;
     QUdpSocket *m_broadcast;
     QString m_host;
-    quint16 m_port;    
-    bool m_discovering;
+    quint16 m_port;
+
     bool m_connected;
+    bool m_discovering;
+    int m_discoveryTimeout;
 
     bool m_power;
     bool m_masterMuted;
@@ -796,6 +872,9 @@ private:
     bool m_z4Muted;
     quint8 m_z4Volume;
 
+    Zone m_poweredZones;
+    Zone m_mutedZones;
+
     // Album/Artist/Title (if known)
     QString m_artist;
     QString m_album;
@@ -814,7 +893,10 @@ private:
 
     bool m_cec;
     bool m_hdmiAudio;
+    bool m_hdmiSubAudio;
     bool m_musicOptimizer;
+
+    quint8 m_audioSelector;
 
     quint8 m_listeningmode;
     quint8 m_latenight;
@@ -839,9 +921,19 @@ private:
     QTimer m_timer;
     QVariantMap m_devices;
 
-    QByteArray m_buffer;      
-
+    QByteArray m_buffer;
     QFile m_debuglog;
+
+    bool m_hasArtwork;
+
+    int m_sleepTimer;
+    int m_masterTunerPreset;
+
+    int m_networkRadioPreset;
+    bool m_phaseMatchingBass;
+    int m_discovered;
+    int m_menucursor;
+    QVariantMap m_menuitems;
 
     void requestInitialState();
     void requestNetworkPlayState();
@@ -850,18 +942,11 @@ private:
     void requestZone4State();
 
     bool writeCommand(ISCPMsg *message);    
-    bool writeCommand(QString cmd, const char *param);
+    bool writeCommand(const QString &cmd, const char *param);
     void parseMessage(ISCPMsg *message);
 
     bool keyCommand(QString c, Commands cmd);
     bool baseCommand(QString c, Commands cmd);
-    bool m_debug;
-    NetworkService m_networkService;
-
-    ArtworkParser m_artworkParser;
-
-    int m_discoveryTimeout;
-    bool m_hasArtwork;
     void parseElapsedTime(QString et);
     void clearCurrentTrack();
     void parseDeviceInformation(QString data);
@@ -869,22 +954,24 @@ private:
     void parseDeviceStatus(QString data);
     USBStatus getUSBStatusEnum(const char u);
 
+    NetworkService m_networkService;
+    ArtworkParser m_artworkParser;
+
     void setTracks(quint16 tracks);
     void setTrack(quint16 track);
     void parseTrackInfo(QString data);
-    int m_sleepTimer;
     void setArtwork(QByteArray data);
     void clearArtwork();
-    int m_masterTunerPreset;
+
     Audyssey2EQ m_audyssey2EQ;
     AudysseyDynamicEQ m_audysseyDynamicEQ;
     AudysseyDynamicVolume m_audysseyDynamicVolume;
     void clearAllTrackInformation();
-    int m_networkRadioPreset;
     void requestInformationState();
-    Zone m_poweredZones;
-    bool m_phaseMatchingBass;
-    int m_discovered;
+    void parseMenuItem(QString data);
+
+    int m_zone2Balance;
+    int m_zone3Balance;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(qiscp::Zone)
