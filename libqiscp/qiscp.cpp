@@ -32,7 +32,7 @@ qiscp::qiscp(QObject *parent) :
     m_masterMuted(false),
     m_masterVolume(0),
     m_masterTunerFreq(0),
-    m_maxvolume(20),
+    m_maxvolume(0x50),
     m_zonesAvailable(Zone1),
     m_z2Power(false),
     m_z2Muted(false),
@@ -1564,8 +1564,8 @@ void qiscp::setZoneVolume(Zones zone, quint8 vol) {
 void qiscp::setMaxDirectVolume(quint8 maxvol) {
     if (maxvol<1)
         maxvol=1;
-    else if (maxvol>20)
-        maxvol=20;
+    else if (maxvol>0x50) // XXX: sigh, model specific but whatever
+        maxvol=0x50;
 
     if (m_maxvolume!=maxvol) {
         m_maxvolume=maxvol;
