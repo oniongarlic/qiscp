@@ -2375,6 +2375,15 @@ bool qiscp::command(Commands cmd, Zones zone) {
     case qiscpInputs::CD: // CD/TV ?
         return tvCommand(cmd);
         break;
+    case qiscpInputs::Tuner:
+    case qiscpInputs::AM:
+    case qiscpInputs::FM:
+    case qiscpInputs::DAB:
+    case qiscpInputs::Sirius:
+    case qiscpInputs::Xm1:
+        // XXX: Map to tuner controls
+        return false;
+        break;
     default:
         return false;
     }
