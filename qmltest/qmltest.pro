@@ -16,6 +16,9 @@ unix:!macx: LIBS += -L$$OUT_PWD/../libqiscp/ -lqiscp
 INCLUDEPATH += $$PWD/../libqiscp
 DEPENDPATH += $$PWD/../libqiscp
 
+OTHER_FILES += \
+    bar-descriptor.xml
+
 # Installation path
 # target.path =
 
