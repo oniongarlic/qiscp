@@ -231,7 +231,7 @@ void qiscp::connectToHost()
 }
 
 bool qiscp::close() {
-    disconnectFromHost();
+    return disconnectFromHost();
 }
 
 bool qiscp::disconnectFromHost()
@@ -998,35 +998,35 @@ void qiscp::parseMenuItem(QString data)
 
 void qiscp::parseDeviceInformation(QString data)
 {
-    m_deviceinfoparser=new DeviceInforParser(data);
+    DeviceInforParser deviceinfoparser(data);
 
-    if (m_deviceinfoparser->isOk()) {
+    if (deviceinfoparser.isOk()) {
 
-        if (m_deviceinfoparser->isZoneAvailable(2))
+        if (deviceinfoparser.isZoneAvailable(2))
             m_zonesAvailable|=Zone2;
-        if (m_deviceinfoparser->isZoneAvailable(3))
+        if (deviceinfoparser.isZoneAvailable(3))
             m_zonesAvailable|=Zone3;
-        if (m_deviceinfoparser->isZoneAvailable(4))
+        if (deviceinfoparser.isZoneAvailable(4))
             m_zonesAvailable|=Zone4;
 
-        qDebug() << "*** Zones: " << m_zonesAvailable;
+        m_device=deviceinfoparser.getDevice();
+        emit deviceInfo(true);
 
-        m_tunerpresets=m_deviceinfoparser->getPresets();
+        m_tunerpresets=deviceinfoparser.getPresets();
         emit presetsList();
 
-        m_networkservices=m_deviceinfoparser->getNetservices();
+        m_networkservices=deviceinfoparser.getNetservices();
         emit networkList();
 
-        m_zonesdata=m_deviceinfoparser->getZones();
+        m_zonesdata=deviceinfoparser.getZones();
         emit zonesList();
 
-        m_inputsdata=m_deviceinfoparser->getSelectors();
+        m_inputsdata=deviceinfoparser.getSelectors();
         emit inputsList();
     } else {
         // XXX: signal that NRI wasn't available
+        emit deviceInfo(false);
     }
-
-    delete m_deviceinfoparser;
 }
 
 void qiscp::parseDeviceStatus(QString data)
@@ -1332,6 +1332,15 @@ QVariantList qiscp::getInputs() const
 QVariantList qiscp::getNetworkSources() const
 {
     return m_networkservices;
+}
+
+/**
+ * @brief qiscp::getDevice
+ * @return
+ */
+QVariantMap qiscp::getDevice() const
+{
+    return m_device;
 }
 
 /**

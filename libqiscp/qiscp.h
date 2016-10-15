@@ -311,6 +311,7 @@ public:
     Q_INVOKABLE QVariantList getZones() const;    
     Q_INVOKABLE QVariantList getControls() const;
     Q_INVOKABLE QVariantList getNetworkSources() const;
+    Q_INVOKABLE QVariantMap getDevice() const;
 
     Q_PROPERTY(QString host READ host WRITE setHost NOTIFY hostChanged)
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
@@ -605,7 +606,7 @@ signals:
     void listeningModeChanged();
     void lateNightModeChanged();
 
-    void deviceInfo();
+    void deviceInfo(bool valid);
     void presetsList();
     void networkList();
     void zonesList();
@@ -907,6 +908,7 @@ private:
     QVariantList m_zonesdata;
     QVariantList m_inputsdata;    
     QVariantList m_controls;
+    QVariantMap m_device;
 
     // Audio/Video info
     QVariantList m_audio_info;
