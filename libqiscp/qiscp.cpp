@@ -2037,7 +2037,20 @@ void qiscp::toggleListeningModeGame()
  */
 void qiscp::setBassLevel(qint8 level, Zones zone) {
     int l=qBound(-0xA, (int)level, 0xA);
-    writeCommand("TFR", "B"+getHexWithPrefix(l));
+    switch (zone) {
+    case Zone1:
+        writeCommand("TFR", "B"+getHexWithPrefix(l));
+        break;
+    case Zone2:
+        writeCommand("ZTN", "B"+getHexWithPrefix(l));
+        break;
+    case Zone3:
+        writeCommand("TN3", "B"+getHexWithPrefix(l));
+        break;
+    default:
+        break;
+    }
+
 }
 
 /**
@@ -2050,7 +2063,20 @@ void qiscp::setBassLevel(qint8 level, Zones zone) {
  */
 void qiscp::setTrebleLevel(qint8 level, Zones zone) {
     int l=qBound(-0xA, (int)level, 0xA);
-    writeCommand("TFR", "T"+getHexWithPrefix(l));
+    switch (zone) {
+    case Zone1:
+        writeCommand("TFR", "T"+getHexWithPrefix(l));
+        break;
+    case Zone2:
+        writeCommand("ZTN", "T"+getHexWithPrefix(l));
+        break;
+    case Zone3:
+        writeCommand("TN3", "T"+getHexWithPrefix(l));
+        break;
+    default:
+        break;
+    }
+
 }
 
 /**
