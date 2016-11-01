@@ -2037,7 +2037,7 @@ void qiscp::toggleListeningModeGame()
  */
 void qiscp::setBassLevel(qint8 level, Zones zone) {
     int l=qBound(-0xA, (int)level, 0xA);
-    writeCommand("TFR", getHex(l));
+    writeCommand("TFR", "B"+getHexWithPrefix(l));
 }
 
 /**
@@ -2050,14 +2050,22 @@ void qiscp::setBassLevel(qint8 level, Zones zone) {
  */
 void qiscp::setTrebleLevel(qint8 level, Zones zone) {
     int l=qBound(-0xA, (int)level, 0xA);
-    writeCommand("TFR", getHex(l));
+    writeCommand("TFR", "T"+getHexWithPrefix(l));
 }
 
+/**
+ * @brief qiscp::setCenterLevel
+ * @param level
+ */
 void qiscp::setCenterLevel(qint8 level) {
     int l=qBound(-0xC, (int)level, 0xC);
     writeCommand("CTL", getHex(l));
 }
 
+/**
+ * @brief qiscp::setSubwooferLevel
+ * @param level
+ */
 void qiscp::setSubwooferLevel(qint8 level) {
     int l=qBound(-0xF, (int)level, 0xC);
     writeCommand("SWL", getHex(l));
