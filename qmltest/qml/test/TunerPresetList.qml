@@ -29,4 +29,11 @@ ListView {
             }
         }
     }
+
+    Rectangle {
+        anchors.fill: parent
+        visible: true
+        color: "transparent"
+        border.color: "green"
+    }
 }

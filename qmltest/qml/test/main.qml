@@ -4,7 +4,7 @@ import org.tal.qiscp 1.0
 Rectangle {
     id: root
     width: 1024
-    height: 480
+    height: 600
 
     Row {
         width: parent.width
@@ -83,11 +83,13 @@ Rectangle {
             }
         }
 
+
         InputList {
             id: inputs
             enabled: iscp.connected
             height: parent.height;
             width: parent.width/5
+            anchors.margins: 2
             clip: true;
             model: inputsModel;
             onInputSelected: {
@@ -95,6 +97,7 @@ Rectangle {
             }
             currentInput: iscp.masterInput;
         }
+
 
         TunerPresetList {
             id: presets
@@ -119,7 +122,7 @@ Rectangle {
                 iscp.setNetworkService(service.service_id);
             }
         }
-    }   
+    }
 
     ListModel {
         id: presetsModel
@@ -178,7 +181,7 @@ Rectangle {
             spacing: 8
 
             Text {
-                text: "VOL:" + iscp.masterVolume                
+                text: "VOL:" + iscp.masterVolume
             }
 
             Text {
@@ -195,9 +198,9 @@ Rectangle {
 
             Text {
                 text: "S:" + iscp.subwooferLevel;
-            }           
+            }
 
-            Text {                
+            Text {
                 visible: ISCPInputs.isTuner(iscp.masterInput)
                 text: "Freq:" + formatFreq(iscp.masterTunerFreq);
                 function formatFreq(freq) {
@@ -211,7 +214,7 @@ Rectangle {
                 }
             }
             Text {
-               text: "ST: "+iscp.sleepTimer
+                text: "ST: "+iscp.sleepTimer
             }
         }
 
@@ -508,7 +511,7 @@ Rectangle {
 
         onPoweredZonesChanged: console.debug("*** PZONES: "+poweredZones)
 
-        onDevicesDiscovered: {            
+        onDevicesDiscovered: {
             var devices=iscp.getDevices();
 
             console.debug("Devices found: "+devices.length)
@@ -524,7 +527,7 @@ Rectangle {
             // If we find only one device, then just connect to it
             if (devices.length==1) {
                 connectToDevice(devices[0]);
-            }            
+            }
         }
 
         onDiscoveredHost: {
@@ -617,7 +620,7 @@ Rectangle {
         onCurrentArtworkChanged: {
             albumArtwork.source="";
             if (hasArtwork) {
-                 // XXX just for testing!!
+                // XXX just for testing!!
                 iscp.saveArtwork("/tmp/artwork.png")
                 albumArtwork.source="/tmp/artwork.png";
             }

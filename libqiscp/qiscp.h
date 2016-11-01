@@ -318,6 +318,7 @@ public:
     Q_INVOKABLE QVariantList getZones() const;    
     Q_INVOKABLE QVariantList getControls() const;
     Q_INVOKABLE QVariantList getNetworkSources() const;
+    Q_INVOKABLE QVariantMap getDevice() const;
 
     Q_INVOKABLE void connectToHost();
     Q_INVOKABLE bool disconnectFromHost();
@@ -609,7 +610,7 @@ signals:
     void listeningModeChanged();
     void lateNightModeChanged();
 
-    void deviceInfo();
+    void deviceInfo(bool valid);
     void presetsList();
     void networkList();
     void zonesList();
@@ -911,6 +912,7 @@ private:
     QVariantList m_zonesdata;
     QVariantList m_inputsdata;    
     QVariantList m_controls;
+    QVariantMap m_device;
 
     // Audio/Video info
     QVariantList m_audio_info;
