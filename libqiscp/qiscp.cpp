@@ -230,7 +230,7 @@ void qiscp::connectToHost() {
 }
 
 bool qiscp::close() {
-    disconnectFromHost();
+    return disconnectFromHost();
 }
 
 bool qiscp::disconnectFromHost() {
