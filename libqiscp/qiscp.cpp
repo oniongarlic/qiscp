@@ -665,6 +665,18 @@ void qiscp::parseMessage(ISCPMsg *message)
         m_cec=message->getBooleanValue();
         emit cecChanged();
         break;
+    case ISCPCommands::TriggerA:
+        m_triggerA=message->getBooleanValue();
+        emit triggerAChanged(m_triggerA);
+        break;
+    case ISCPCommands::TriggerB:
+        m_triggerB=message->getBooleanValue();
+        emit triggerBChanged(m_triggerB);
+        break;
+    case ISCPCommands::TriggerC:
+        m_triggerC=message->getBooleanValue();
+        emit triggerCChanged(m_triggerC);
+        break;
     case ISCPCommands::HDMIAudio:
         m_hdmiAudio=message->getBooleanValue();
         emit hdmiAudioChanged();
@@ -1502,6 +1514,23 @@ void qiscp::setZone3Power(bool p)
 void qiscp::setZone4Power(bool p)
 {
     writeCommand("PW4", p);
+}
+
+void qiscp::setTrigger(qiscp::Trigger12V t, bool p)
+{
+    switch (t) {
+    case TriggerA:
+        writeCommand("TGA", p);
+        break;
+    case TriggerB:
+        writeCommand("TGB", p);
+        break;
+    case TriggerC:
+        writeCommand("TGC", p);
+        break;
+    default:
+        break;
+    }
 }
 
 void qiscp::setMasterMuted(bool m)

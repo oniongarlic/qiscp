@@ -113,6 +113,13 @@ class qiscp : public QObject
     Q_PROPERTY(QString host READ host WRITE setHost NOTIFY hostChanged)
     Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
 
+    // 12V Triggers
+    Q_PROPERTY(bool triggerA READ triggerA NOTIFY triggerAChanged)
+    Q_PROPERTY(bool triggerB READ triggerB NOTIFY triggerBChanged)
+    Q_PROPERTY(bool triggerC READ triggerC NOTIFY triggerCChanged)
+
+    // Q_PROPERTY(bool hasTriggers READ triggerA NOTIFY triggerAChanged)
+
 public:
     explicit qiscp(QObject *parent = 0);
     ~qiscp();
@@ -305,10 +312,6 @@ public:
         ShuffleDisabled
     };
 
-
-
-
-
     Q_INVOKABLE void discoverHosts(bool clear=true);
     Q_INVOKABLE void discoverHostsCancel();
 
@@ -402,6 +405,8 @@ public:
     Q_INVOKABLE void setZone2Power(bool p);
     Q_INVOKABLE void setZone3Power(bool p);
     Q_INVOKABLE void setZone4Power(bool p);
+
+    Q_INVOKABLE void setTrigger(Trigger12V t, bool p);
 
     // Debugging and logging
     Q_INVOKABLE bool debugLog(QString logfile, bool log);
@@ -588,6 +593,21 @@ public:
         return m_zone2Balance;
     }
 
+    bool triggerA() const
+    {
+        return m_triggerA;
+    }
+
+    bool triggerB() const
+    {
+        return m_triggerB;
+    }
+
+    bool triggerC() const
+    {
+        return m_triggerC;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -696,6 +716,12 @@ signals:
     void zone3BalanceChanged(int zone3Balance);
 
     void zone2BalanceChanged(int zone2Balance);
+
+    void triggerAChanged(bool triggerA);
+
+    void triggerBChanged(bool triggerB);
+
+    void triggerCChanged(bool triggerC);
 
 public slots:
 
@@ -895,6 +921,10 @@ private:
 
     quint16 m_track;
     quint16 m_tracks;
+
+    bool m_triggerA;
+    bool m_triggerB;
+    bool m_triggerC;
 
     bool m_cec;
     bool m_hdmiAudio;
