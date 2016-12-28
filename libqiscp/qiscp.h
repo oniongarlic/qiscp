@@ -1004,6 +1004,7 @@ private:
     AudysseyDynamicVolume m_audysseyDynamicVolume;
     void clearAllTrackInformation();
     void requestInformationState();
+    void requestTriggerState();
     void parseMenuItem(QString data);
 
     int m_zone2Balance;

@@ -1458,6 +1458,13 @@ void qiscp::requestInformationState()
     queueCommand("IFV", "QSTN");
 }
 
+void qiscp::requestTriggerState()
+{
+    queueCommand("TGA", "QSTN");
+    queueCommand("TGB", "QSTN");
+    queueCommand("TGC", "QSTN");
+}
+
 /*************************************************************/
 
 /**
