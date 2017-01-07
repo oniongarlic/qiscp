@@ -17,6 +17,9 @@ win32: LIBS += -L$$OUT_PWD/../libqiscp/release/ -lqiscp
 INCLUDEPATH += $$PWD/../libqiscp
 DEPENDPATH += $$PWD/../libqiscp
 
+OTHER_FILES += \
+    bar-descriptor.xml
+
 # Installation path
 # target.path =
 

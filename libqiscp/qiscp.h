@@ -36,6 +36,90 @@ class qiscp : public QObject
     Q_ENUMS(USBStatus)
     Q_ENUMS(NetworkConnectionStatus)
 
+    Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
+    Q_PROPERTY (int discoveryTimeout READ discoveryTimeout WRITE setDiscoveryTimeout NOTIFY discoveryTimeoutChanged)
+    Q_PROPERTY (int discovered READ discovered NOTIFY discoveredChanged)
+
+    Q_PROPERTY (bool debug READ getDebug WRITE setDebug NOTIFY debugChanged)
+
+    Q_PROPERTY (bool power READ power WRITE setPower NOTIFY powerChanged)
+    Q_PROPERTY (int masterVolume READ masterVolume NOTIFY masterVolumeChanged)
+    Q_PROPERTY (int maxDirectVolume READ maxDirectVolume WRITE setMaxDirectVolume NOTIFY maxDirectVolumeChanged)
+    Q_PROPERTY (bool masterMuted READ masterMuted WRITE setMasterMuted NOTIFY masterMutedChanged)
+
+    Q_PROPERTY (Zone poweredZones READ poweredZones NOTIFY poweredZonesChanged)
+    Q_PROPERTY (Zone mutedZones READ mutedZones NOTIFY mutedZonesChanged)
+
+    Q_PROPERTY(QVariant videoInfo READ videoInfo NOTIFY videoInfoChanged)
+    Q_PROPERTY(QVariant audioInfo READ audioInfo NOTIFY audioInfoChanged)
+
+    Q_PROPERTY (int masterInput READ masterInput WRITE setMasterInput NOTIFY masterInputChanged)
+    Q_PROPERTY (int masterTunerFreq READ masterTunerFreq NOTIFY masterTunerFreqChanged)
+    Q_PROPERTY (int masterTunerPreset READ masterTunerPreset NOTIFY masterTunerPresetChanged)
+
+    Q_PROPERTY (NetworkService networkService READ networkService WRITE setNetworkService NOTIFY networkServiceChanged)
+    Q_PROPERTY (int networkRadioPreset READ networkRadioPreset NOTIFY networkRadioPresetChanged)
+
+    Q_PROPERTY (int bassLevel READ bassLevel WRITE setBassLevel NOTIFY bassLevelChanged)
+    Q_PROPERTY (int trebleLevel READ trebleLevel WRITE setTrebleLevel NOTIFY trebleLevelChanged)
+
+    Q_PROPERTY (int centerLevel READ centerLevel WRITE setCenterLevel NOTIFY centerLevelChanged)
+    Q_PROPERTY (int subwooferLevel READ subwooferLevel WRITE setSubwooferLevel NOTIFY subwooferLevelChanged)
+
+    Q_PROPERTY (bool zone2power READ zone2Power WRITE setZone2Power NOTIFY zone2PowerChanged)
+    Q_PROPERTY (int zone2Volume READ zone2Volume NOTIFY zone2VolumeChanged)
+    Q_PROPERTY (int zone2Input READ zone2Input WRITE setZone2Input NOTIFY zone2InputChanged)
+    Q_PROPERTY (int zone2Balance READ zone2Balance WRITE setZone2Balance NOTIFY zone2BalanceChanged)
+
+    Q_PROPERTY (bool zone3power READ zone3Power WRITE setZone3Power NOTIFY zone3PowerChanged)
+    Q_PROPERTY (int zone3Volume READ zone3Volume NOTIFY zone3VolumeChanged)
+    Q_PROPERTY (int zone3Input READ zone3Input WRITE setZone3Input NOTIFY zone3InputChanged)
+    Q_PROPERTY (int zone3Balance READ zone3Balance WRITE setZone3Balance NOTIFY zone3BalanceChanged)
+
+    Q_PROPERTY (bool zone4power READ zone4Power WRITE setZone4Power NOTIFY zone4PowerChanged)
+    Q_PROPERTY (int zone4Volume READ zone4Volume NOTIFY zone4VolumeChanged)
+    Q_PROPERTY (int zone4Input READ zone4Input WRITE setZone4Input NOTIFY zone4InputChanged)
+
+    Q_PROPERTY (QString currentArtist READ currentArtist NOTIFY currentArtistChanged)
+    Q_PROPERTY (QString currentAlbum READ currentAlbum NOTIFY currentAlbumChanged)
+    Q_PROPERTY (QString currentTitle READ currentTitle NOTIFY currentTitleChanged)
+    Q_PROPERTY (bool hasArtwork READ hasArtwork NOTIFY hasArtworkChanged)
+
+    // In Seconds
+    Q_PROPERTY (int currentTrackPosition READ currentTrackPosition NOTIFY currentTrackPositionChanged)
+    Q_PROPERTY (int currentTrackLength READ currentTrackLength NOTIFY currentTrackLengthChanged)
+
+    Q_PROPERTY (int currentTrack READ currentTrack NOTIFY currentTrackChanged)
+    Q_PROPERTY (int currentTracks READ currentTracks NOTIFY currentTracksChanged)
+
+    Q_PROPERTY(PlayModes playMode READ playMode WRITE setPlayMode NOTIFY playModeChanged)
+    Q_PROPERTY(ShuffleModes shuffleMode READ shuffleMode WRITE setShuffleMode NOTIFY shuffleModeChanged)
+    Q_PROPERTY(RepeatModes repeatMode READ repeatMode WRITE setRepeatMode NOTIFY repeatModeChanged)
+
+    Q_PROPERTY (bool hdmiAudio READ hdmiAudio NOTIFY hdmiAudioChanged)
+    Q_PROPERTY (bool hdmiSubAudio READ hdmiSubAudio NOTIFY hdmiSubAudioChanged)
+    Q_PROPERTY (bool cec READ cec NOTIFY cecChanged)
+
+    Q_PROPERTY (bool musicOptimizer READ musicOptimizer NOTIFY musicOptimizerChanged)
+    Q_PROPERTY (bool phaseMatchingBass READ phaseMatchingBass NOTIFY phaseMatchingBassChanged)
+    Q_PROPERTY (Audyssey2EQ audyssey2EQ READ audyssey2EQ WRITE setAudyssey2EQ NOTIFY audyssey2EQChanged)
+    Q_PROPERTY (AudysseyDynamicEQ audysseyDynamicEQ READ audysseyDynamicEQ WRITE setAudysseyDynamicEQ NOTIFY audysseyDynamicEQChanged)
+    Q_PROPERTY (AudysseyDynamicVolume audysseyDynamicVolume READ audysseyDynamicVolume WRITE setAudysseyDynamicVolume NOTIFY audysseyDynamicVolumeChanged)
+
+    Q_PROPERTY (int sleepTimer READ sleepTimer NOTIFY sleepTimerChanged)
+
+    Q_PROPERTY (bool discovering READ discovering NOTIFY discoveringChanged)
+
+    Q_PROPERTY(QString host READ host WRITE setHost NOTIFY hostChanged)
+    Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
+
+    // 12V Triggers
+    Q_PROPERTY(bool triggerA READ triggerA NOTIFY triggerAChanged)
+    Q_PROPERTY(bool triggerB READ triggerB NOTIFY triggerBChanged)
+    Q_PROPERTY(bool triggerC READ triggerC NOTIFY triggerCChanged)
+
+    // Q_PROPERTY(bool hasTriggers READ triggerA NOTIFY triggerAChanged)
+
 public:
     explicit qiscp(QObject *parent = 0);
     ~qiscp();
@@ -228,80 +312,6 @@ public:
         ShuffleDisabled
     };
 
-    Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
-    Q_PROPERTY (int discoveryTimeout READ discoveryTimeout WRITE setDiscoveryTimeout NOTIFY discoveryTimeoutChanged)
-    Q_PROPERTY (int discovered READ discovered NOTIFY discoveredChanged)
-
-    Q_PROPERTY (bool debug READ getDebug WRITE setDebug NOTIFY debugChanged)
-
-    Q_PROPERTY (bool power READ power WRITE setPower NOTIFY powerChanged)
-    Q_PROPERTY (int masterVolume READ masterVolume NOTIFY masterVolumeChanged)
-    Q_PROPERTY (int maxDirectVolume READ maxDirectVolume WRITE setMaxDirectVolume NOTIFY maxDirectVolumeChanged)
-    Q_PROPERTY (bool masterMuted READ masterMuted WRITE setMasterMuted NOTIFY masterMutedChanged)
-
-    Q_PROPERTY (Zone poweredZones READ poweredZones NOTIFY poweredZonesChanged)
-    Q_PROPERTY (Zone mutedZones READ mutedZones NOTIFY mutedZonesChanged)
-
-    Q_PROPERTY(QVariant videoInfo READ videoInfo NOTIFY videoInfoChanged)
-    Q_PROPERTY(QVariant audioInfo READ audioInfo NOTIFY audioInfoChanged)
-
-    Q_PROPERTY (int masterInput READ masterInput WRITE setMasterInput NOTIFY masterInputChanged)
-    Q_PROPERTY (int masterTunerFreq READ masterTunerFreq NOTIFY masterTunerFreqChanged)
-    Q_PROPERTY (int masterTunerPreset READ masterTunerPreset NOTIFY masterTunerPresetChanged)
-
-    Q_PROPERTY (NetworkService networkService READ networkService WRITE setNetworkService NOTIFY networkServiceChanged)
-    Q_PROPERTY (int networkRadioPreset READ networkRadioPreset NOTIFY networkRadioPresetChanged)
-
-    Q_PROPERTY (int bassLevel READ bassLevel WRITE setBassLevel NOTIFY bassLevelChanged)
-    Q_PROPERTY (int trebleLevel READ trebleLevel WRITE setTrebleLevel NOTIFY trebleLevelChanged)
-
-    Q_PROPERTY (int centerLevel READ centerLevel WRITE setCenterLevel NOTIFY centerLevelChanged)
-    Q_PROPERTY (int subwooferLevel READ subwooferLevel WRITE setSubwooferLevel NOTIFY subwooferLevelChanged)
-
-    Q_PROPERTY (bool zone2power READ zone2Power WRITE setZone2Power NOTIFY zone2PowerChanged)
-    Q_PROPERTY (int zone2Volume READ zone2Volume NOTIFY zone2VolumeChanged)
-    Q_PROPERTY (int zone2Input READ zone2Input WRITE setZone2Input NOTIFY zone2InputChanged)
-    Q_PROPERTY (int zone2Balance READ zone2Balance WRITE setZone2Balance NOTIFY zone2BalanceChanged)
-
-    Q_PROPERTY (bool zone3power READ zone3Power WRITE setZone3Power NOTIFY zone3PowerChanged)
-    Q_PROPERTY (int zone3Volume READ zone3Volume NOTIFY zone3VolumeChanged)
-    Q_PROPERTY (int zone3Input READ zone3Input WRITE setZone3Input NOTIFY zone3InputChanged)
-    Q_PROPERTY (int zone3Balance READ zone3Balance WRITE setZone3Balance NOTIFY zone3BalanceChanged)
-
-    Q_PROPERTY (bool zone4power READ zone4Power WRITE setZone4Power NOTIFY zone4PowerChanged)
-    Q_PROPERTY (int zone4Volume READ zone4Volume NOTIFY zone4VolumeChanged)
-    Q_PROPERTY (int zone4Input READ zone4Input WRITE setZone4Input NOTIFY zone4InputChanged)
-
-    Q_PROPERTY (QString currentArtist READ currentArtist NOTIFY currentArtistChanged)
-    Q_PROPERTY (QString currentAlbum READ currentAlbum NOTIFY currentAlbumChanged)
-    Q_PROPERTY (QString currentTitle READ currentTitle NOTIFY currentTitleChanged)
-    Q_PROPERTY (bool hasArtwork READ hasArtwork NOTIFY hasArtworkChanged)
-
-    // In Seconds
-    Q_PROPERTY (int currentTrackPosition READ currentTrackPosition NOTIFY currentTrackPositionChanged)
-    Q_PROPERTY (int currentTrackLength READ currentTrackLength NOTIFY currentTrackLengthChanged)
-
-    Q_PROPERTY (int currentTrack READ currentTrack NOTIFY currentTrackChanged)
-    Q_PROPERTY (int currentTracks READ currentTracks NOTIFY currentTracksChanged)
-
-    Q_PROPERTY(PlayModes playMode READ playMode WRITE setPlayMode NOTIFY playModeChanged)
-    Q_PROPERTY(ShuffleModes shuffleMode READ shuffleMode WRITE setShuffleMode NOTIFY shuffleModeChanged)
-    Q_PROPERTY(RepeatModes repeatMode READ repeatMode WRITE setRepeatMode NOTIFY repeatModeChanged)
-
-    Q_PROPERTY (bool hdmiAudio READ hdmiAudio NOTIFY hdmiAudioChanged)
-    Q_PROPERTY (bool hdmiSubAudio READ hdmiSubAudio NOTIFY hdmiSubAudioChanged)
-    Q_PROPERTY (bool cec READ cec NOTIFY cecChanged)
-
-    Q_PROPERTY (bool musicOptimizer READ musicOptimizer NOTIFY musicOptimizerChanged)
-    Q_PROPERTY (bool phaseMatchingBass READ phaseMatchingBass NOTIFY phaseMatchingBassChanged)
-    Q_PROPERTY (Audyssey2EQ audyssey2EQ READ audyssey2EQ WRITE setAudyssey2EQ NOTIFY audyssey2EQChanged)
-    Q_PROPERTY (AudysseyDynamicEQ audysseyDynamicEQ READ audysseyDynamicEQ WRITE setAudysseyDynamicEQ NOTIFY audysseyDynamicEQChanged)
-    Q_PROPERTY (AudysseyDynamicVolume audysseyDynamicVolume READ audysseyDynamicVolume WRITE setAudysseyDynamicVolume NOTIFY audysseyDynamicVolumeChanged)
-
-    Q_PROPERTY (int sleepTimer READ sleepTimer NOTIFY sleepTimerChanged)
-
-    Q_PROPERTY (bool discovering READ discovering NOTIFY discoveringChanged)
-
     Q_INVOKABLE void discoverHosts(bool clear=true);
     Q_INVOKABLE void discoverHostsCancel();
 
@@ -311,9 +321,7 @@ public:
     Q_INVOKABLE QVariantList getZones() const;    
     Q_INVOKABLE QVariantList getControls() const;
     Q_INVOKABLE QVariantList getNetworkSources() const;
-
-    Q_PROPERTY(QString host READ host WRITE setHost NOTIFY hostChanged)
-    Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
+    Q_INVOKABLE QVariantMap getDevice() const;
 
     Q_INVOKABLE void connectToHost();
     Q_INVOKABLE bool disconnectFromHost();
@@ -397,6 +405,8 @@ public:
     Q_INVOKABLE void setZone2Power(bool p);
     Q_INVOKABLE void setZone3Power(bool p);
     Q_INVOKABLE void setZone4Power(bool p);
+
+    Q_INVOKABLE void setTrigger(Trigger12V t, bool p);
 
     // Debugging and logging
     Q_INVOKABLE bool debugLog(QString logfile, bool log);
@@ -583,6 +593,21 @@ public:
         return m_zone2Balance;
     }
 
+    bool triggerA() const
+    {
+        return m_triggerA;
+    }
+
+    bool triggerB() const
+    {
+        return m_triggerB;
+    }
+
+    bool triggerC() const
+    {
+        return m_triggerC;
+    }
+
 signals:
     void portChanged();
     void hostChanged();
@@ -605,7 +630,7 @@ signals:
     void listeningModeChanged();
     void lateNightModeChanged();
 
-    void deviceInfo();
+    void deviceInfo(bool valid);
     void presetsList();
     void networkList();
     void zonesList();
@@ -691,6 +716,12 @@ signals:
     void zone3BalanceChanged(int zone3Balance);
 
     void zone2BalanceChanged(int zone2Balance);
+
+    void triggerAChanged(bool triggerA);
+
+    void triggerBChanged(bool triggerB);
+
+    void triggerCChanged(bool triggerC);
 
 public slots:
 
@@ -891,6 +922,10 @@ private:
     quint16 m_track;
     quint16 m_tracks;
 
+    bool m_triggerA;
+    bool m_triggerB;
+    bool m_triggerC;
+
     bool m_cec;
     bool m_hdmiAudio;
     bool m_hdmiSubAudio;
@@ -907,6 +942,7 @@ private:
     QVariantList m_zonesdata;
     QVariantList m_inputsdata;    
     QVariantList m_controls;
+    QVariantMap m_device;
 
     // Audio/Video info
     QVariantList m_audio_info;

@@ -222,7 +222,8 @@ qiscp::~qiscp()
     disconnectFromHost();
 }
 
-void qiscp::connectToHost() {    
+void qiscp::connectToHost()
+{
     if (m_socket->isOpen()) {
         m_socket->abort();
     }
@@ -230,10 +231,11 @@ void qiscp::connectToHost() {
 }
 
 bool qiscp::close() {
-    disconnectFromHost();
+    return disconnectFromHost();
 }
 
-bool qiscp::disconnectFromHost() {
+bool qiscp::disconnectFromHost()
+{
     if (m_socket->isOpen()) {
         m_socket->disconnectFromHost();
         return true;
@@ -241,7 +243,8 @@ bool qiscp::disconnectFromHost() {
     return false;
 }
 
-void qiscp::tcpConnected() {
+void qiscp::tcpConnected()
+{
     m_buffer.clear();
     m_connected=true;
     emit connectedChanged();
@@ -249,7 +252,8 @@ void qiscp::tcpConnected() {
     requestInitialState();
 }
 
-void qiscp::tcpDisconnected() {
+void qiscp::tcpDisconnected()
+{
     clearAllTrackInformation();
     m_cmdtimer.stop();
     m_cmdqueue.clear();
@@ -259,7 +263,8 @@ void qiscp::tcpDisconnected() {
     emit disconnectedFromHost();
 }
 
-void qiscp::tcpError(QAbstractSocket::SocketError se) {
+void qiscp::tcpError(QAbstractSocket::SocketError se)
+{
     m_buffer.clear();
     qWarning() << "TCP Error:" << se;
     emit connectionError(se);
@@ -271,7 +276,8 @@ void qiscp::tcpError(QAbstractSocket::SocketError se) {
  * @param cmd
  * @param param
  */
-void qiscp::queueCommand(const QString &cmd, const QString &param) {
+void qiscp::queueCommand(const QString &cmd, const QString &param)
+{
     ISCPMsg *message=new ISCPMsg();
     message->setCommand(cmd, param);
     m_cmdqueue.append(message);
@@ -279,7 +285,8 @@ void qiscp::queueCommand(const QString &cmd, const QString &param) {
         m_cmdtimer.start();
 }
 
-bool qiscp::writeCommand(const QString &cmd, const QString &param) {
+bool qiscp::writeCommand(const QString &cmd, const QString &param)
+{
     ISCPMsg message;
     message.setCommand(cmd, param);
 
@@ -298,7 +305,8 @@ bool qiscp::writeCommand(const QString &cmd, bool param)
     return writeCommand(cmd, param ? "01" : "00");
 }
 
-bool qiscp::writeCommand(ISCPMsg *message) {
+bool qiscp::writeCommand(ISCPMsg *message)
+{
     if (!m_socket->isOpen()) {
         qWarning("Not connected");
         return false;
@@ -311,7 +319,8 @@ bool qiscp::writeCommand(ISCPMsg *message) {
     return r==-1 ? false : true;
 }
 
-void qiscp::handleCommandQueue() {
+void qiscp::handleCommandQueue()
+{
     if (m_cmdqueue.isEmpty()) {
         m_cmdtimer.stop();
         return;
@@ -329,7 +338,8 @@ void qiscp::handleCommandQueue() {
  * to all broadcast addresses.
  *
  */
-void qiscp::discoverHosts(bool clear) {
+void qiscp::discoverHosts(bool clear)
+{
     QList<QNetworkInterface> ifaces = QNetworkInterface::allInterfaces();
 
     // Create the disovery ISCP message, "!xECNQSTN"
@@ -366,14 +376,16 @@ void qiscp::discoverHosts(bool clear) {
     }
 }
 
-void qiscp::discoverHostsCancel() {
+void qiscp::discoverHostsCancel()
+{
     if (m_discovering==false)
         return;
     m_timer.stop();
     deviceDiscoveryTimeout();
 }
 
-void qiscp::deviceDiscoveryTimeout() {        
+void qiscp::deviceDiscoveryTimeout()
+{
     emit devicesDiscovered();
 
     m_discovering=false;
@@ -383,7 +395,8 @@ void qiscp::deviceDiscoveryTimeout() {
         cacheDiscoveredHosts();
 }
 
-void qiscp::readISCP() {
+void qiscp::readISCP()
+{
     QByteArray tmp;
     QDataStream ds(m_socket);
     int ba;
@@ -493,7 +506,8 @@ void qiscp::readBroadcastDatagram()
     }
 }
 
-void qiscp::cacheDiscoveredHosts() {
+void qiscp::cacheDiscoveredHosts()
+{
     QSettings s;
     QMapIterator<QString, QVariant> i(m_devices);
 
@@ -514,7 +528,8 @@ void qiscp::cacheDiscoveredHosts() {
     s.sync();
 }
 
-void qiscp::loadCachedHosts() {
+void qiscp::loadCachedHosts()
+{
 
 }
 
@@ -528,7 +543,8 @@ QVariant qiscp::audioInfo() const
     return m_audio_info;
 }
 
-bool qiscp::saveArtwork(QString file) {
+bool qiscp::saveArtwork(QString file)
+{
     return m_artworkParser.save(file);
 }
 
@@ -539,7 +555,8 @@ bool qiscp::saveArtwork(QString file) {
  * Analyzes the given ISCPMsg commands and parameter and decodes/parses into appropriate structures
  *
  */
-void qiscp::parseMessage(ISCPMsg *message) {
+void qiscp::parseMessage(ISCPMsg *message)
+{
     QString cmd=message->getCommand();
 
     if (!m_commands.contains(cmd)) {
@@ -647,6 +664,18 @@ void qiscp::parseMessage(ISCPMsg *message) {
     case ISCPCommands::CEC:
         m_cec=message->getBooleanValue();
         emit cecChanged();
+        break;
+    case ISCPCommands::TriggerA:
+        m_triggerA=message->getBooleanValue();
+        emit triggerAChanged(m_triggerA);
+        break;
+    case ISCPCommands::TriggerB:
+        m_triggerB=message->getBooleanValue();
+        emit triggerBChanged(m_triggerB);
+        break;
+    case ISCPCommands::TriggerC:
+        m_triggerC=message->getBooleanValue();
+        emit triggerCChanged(m_triggerC);
         break;
     case ISCPCommands::HDMIAudio:
         m_hdmiAudio=message->getBooleanValue();
@@ -935,7 +964,8 @@ void qiscp::parseMessage(ISCPMsg *message) {
     }
 }
 
-void qiscp::parseTrackInfo(QString data) {
+void qiscp::parseTrackInfo(QString data)
+{
     QStringList tis=data.split("/");
 
     if (tis.size()<2) {
@@ -949,7 +979,8 @@ void qiscp::parseTrackInfo(QString data) {
     setTrack(tis.at(0).toInt(NULL, 10));
 }
 
-void qiscp::parseMenuItem(QString data) {
+void qiscp::parseMenuItem(QString data)
+{
     QChar type=data.at(0);
     QChar line=data.at(1);
     QChar param=data.at(2);
@@ -977,39 +1008,41 @@ void qiscp::parseMenuItem(QString data) {
     }
 }
 
-void qiscp::parseDeviceInformation(QString data) {
-    m_deviceinfoparser=new DeviceInforParser(data);
+void qiscp::parseDeviceInformation(QString data)
+{
+    DeviceInforParser deviceinfoparser(data);
 
-    if (m_deviceinfoparser->isOk()) {
+    if (deviceinfoparser.isOk()) {
 
-        if (m_deviceinfoparser->isZoneAvailable(2))
+        if (deviceinfoparser.isZoneAvailable(2))
             m_zonesAvailable|=Zone2;
-        if (m_deviceinfoparser->isZoneAvailable(3))
+        if (deviceinfoparser.isZoneAvailable(3))
             m_zonesAvailable|=Zone3;
-        if (m_deviceinfoparser->isZoneAvailable(4))
+        if (deviceinfoparser.isZoneAvailable(4))
             m_zonesAvailable|=Zone4;
 
-        qDebug() << "*** Zones: " << m_zonesAvailable;
+        m_device=deviceinfoparser.getDevice();
+        emit deviceInfo(true);
 
-        m_tunerpresets=m_deviceinfoparser->getPresets();
+        m_tunerpresets=deviceinfoparser.getPresets();
         emit presetsList();
 
-        m_networkservices=m_deviceinfoparser->getNetservices();
+        m_networkservices=deviceinfoparser.getNetservices();
         emit networkList();
 
-        m_zonesdata=m_deviceinfoparser->getZones();
+        m_zonesdata=deviceinfoparser.getZones();
         emit zonesList();
 
-        m_inputsdata=m_deviceinfoparser->getSelectors();
+        m_inputsdata=deviceinfoparser.getSelectors();
         emit inputsList();
     } else {
         // XXX: signal that NRI wasn't available
+        emit deviceInfo(false);
     }
-
-    delete m_deviceinfoparser;
 }
 
-void qiscp::parseDeviceStatus(QString data) {
+void qiscp::parseDeviceStatus(QString data)
+{
     if (data.size()<3) {
         qWarning("Invalid device status");
         return;
@@ -1041,7 +1074,8 @@ void qiscp::parseDeviceStatus(QString data) {
     emit usbBackStatusChanged();
 }
 
-qiscp::USBStatus qiscp::getUSBStatusEnum(const char u) {
+qiscp::USBStatus qiscp::getUSBStatusEnum(const char u)
+{
     switch (u) {
     case '-':
         return NoDevice;
@@ -1068,7 +1102,8 @@ qiscp::USBStatus qiscp::getUSBStatusEnum(const char u) {
     }
 }
 
-void qiscp::parsePlayStatus(QString data) {
+void qiscp::parsePlayStatus(QString data)
+{
     if (data.size()<3) {
         qWarning("Invalid play status");
         return;
@@ -1155,7 +1190,8 @@ void qiscp::setTrack(quint16 track)
     emit currentTrackChanged(track);
 }
 
-void qiscp::parseElapsedTime(QString et) {
+void qiscp::parseElapsedTime(QString et)
+{
     QStringList tmp=et.split("/");
 
     if (tmp.size()!=2) {
@@ -1197,7 +1233,8 @@ void qiscp::seekTo(int position)
  * @param seconds
  * @return
  */
-const QString qiscp::getElapsedTimeString(int seconds) const {
+const QString qiscp::getElapsedTimeString(int seconds) const
+{
     int m=seconds/60;
     int s=seconds-m*60;
 
@@ -1210,7 +1247,8 @@ const QString qiscp::getElapsedTimeString(int seconds) const {
  * Clears the information of the current track only
  *
  */
-void qiscp::clearCurrentTrack() {
+void qiscp::clearCurrentTrack()
+{
     m_position=QTime();
     m_length=QTime();
     m_artist.clear();
@@ -1231,7 +1269,8 @@ void qiscp::clearCurrentTrack() {
  * Clears the all track information
  *
  */
-void qiscp::clearAllTrackInformation() {
+void qiscp::clearAllTrackInformation()
+{
     setTracks(0);
     setTrack(0);
     setPlayMode(Stopped);
@@ -1243,7 +1282,8 @@ void qiscp::clearAllTrackInformation() {
  * @brief qiscp::getDevices
  * @return a list of discovered devices on the network
  */
-QVariantList qiscp::getDevices() const {
+QVariantList qiscp::getDevices() const
+{
     QVariantList devices;
     QMapIterator<QString, QVariant> i(m_devices);
     while (i.hasNext()) {
@@ -1257,7 +1297,8 @@ QVariantList qiscp::getDevices() const {
  * @brief qiscp::getInputs
  * @return
  */
-QVariantList qiscp::getStaticInputs() const {
+QVariantList qiscp::getStaticInputs() const
+{
     QVariantList inputs;
     QMapIterator<int, QString> i(m_inputs);
     while (i.hasNext()) {
@@ -1279,7 +1320,8 @@ QVariantList qiscp::getStaticInputs() const {
  * Get list of Zones the connected device supports.
  *
  */
-QVariantList qiscp::getZones() const {
+QVariantList qiscp::getZones() const
+{
     return m_zonesdata;
 }
 
@@ -1290,7 +1332,8 @@ QVariantList qiscp::getZones() const {
  * Get list of Inputs the connected device supports.
  *
  */
-QVariantList qiscp::getInputs() const {
+QVariantList qiscp::getInputs() const
+{
     return m_inputsdata;
 }
 
@@ -1298,8 +1341,18 @@ QVariantList qiscp::getInputs() const {
  * @brief qiscp::getNetworkSources
  * @return
  */
-QVariantList qiscp::getNetworkSources() const {
+QVariantList qiscp::getNetworkSources() const
+{
     return m_networkservices;
+}
+
+/**
+ * @brief qiscp::getDevice
+ * @return
+ */
+QVariantMap qiscp::getDevice() const
+{
+    return m_device;
 }
 
 /**
@@ -1309,7 +1362,8 @@ QVariantList qiscp::getNetworkSources() const {
  * Get list of Audio controls the connected device supports.
  *
  */
-QVariantList qiscp::getControls() const {
+QVariantList qiscp::getControls() const
+{
     return m_controls;
 }
 
@@ -1321,7 +1375,8 @@ QVariantList qiscp::getControls() const {
  * Called when connected is made, to get the current state of the receiver.
  *
  */
-void qiscp::requestInitialState() {
+void qiscp::requestInitialState()
+{
     qDebug("*** Requesting initial state");
     queueCommand("PWR", "QSTN");
     queueCommand("MVL", "QSTN");
@@ -1355,7 +1410,8 @@ void qiscp::requestInitialState() {
     queueCommand("ADV", "QSTN");
 }
 
-void qiscp::requestZone2State() {
+void qiscp::requestZone2State()
+{
     qDebug("*** Requesting Zone 2 state");
     queueCommand("ZVL", "QSTN");
     queueCommand("ZMT", "QSTN");
@@ -1364,7 +1420,8 @@ void qiscp::requestZone2State() {
     queueCommand("SLZ", "QSTN");
 }
 
-void qiscp::requestZone3State() {
+void qiscp::requestZone3State()
+{
     qDebug("*** Requesting Zone 3 state");
     queueCommand("VL3", "QSTN");
     queueCommand("MT3", "QSTN");
@@ -1373,7 +1430,8 @@ void qiscp::requestZone3State() {
     queueCommand("SL3", "QSTN");
 }
 
-void qiscp::requestZone4State() {
+void qiscp::requestZone4State()
+{
     qDebug("*** Requesting Zone 4 state");
     queueCommand("VL4", "QSTN");
     queueCommand("MT4", "QSTN");
@@ -1382,7 +1440,8 @@ void qiscp::requestZone4State() {
     queueCommand("SL4", "QSTN");
 }
 
-void qiscp::requestNetworkPlayState() {
+void qiscp::requestNetworkPlayState()
+{
     qDebug("*** Requesting Network playback state");
     queueCommand("NST", "QSTN"); // Play Status
     queueCommand("NAT", "QSTN"); // Artist
@@ -1393,7 +1452,8 @@ void qiscp::requestNetworkPlayState() {
     queueCommand("NDS", "QSTN"); // Device status
 }
 
-void qiscp::requestInformationState() {
+void qiscp::requestInformationState()
+{
     queueCommand("IFA", "QSTN");
     queueCommand("IFV", "QSTN");
 }
@@ -1426,7 +1486,8 @@ bool qiscp::debugLog(QString logfile, bool log)
  * @brief qiscp::debugLogWrite
  * @param data
  */
-void qiscp::debugLogWrite(DebugLogDirection direction, const ISCPMsg *data) {
+void qiscp::debugLogWrite(DebugLogDirection direction, const ISCPMsg *data)
+{
     if (m_debuglog.isOpen()) {
         QTextStream out(&m_debuglog);
         out << (direction==fromNetwork ? "I>> " : "O<<@") << QTime::currentTime().toString() << "][" << data->getCommand() << "]:[" << data->getParamter() << "]\n";
@@ -1435,39 +1496,65 @@ void qiscp::debugLogWrite(DebugLogDirection direction, const ISCPMsg *data) {
 
 /*************************************************************/
 
-void qiscp::setPower(bool p) {
+void qiscp::setPower(bool p)
+{
     writeCommand("PWR", p);
 }
 
-void qiscp::setZone2Power(bool p) {
+void qiscp::setZone2Power(bool p)
+{
     writeCommand("ZPW", p);
 }
 
-void qiscp::setZone3Power(bool p) {
+void qiscp::setZone3Power(bool p)
+{
     writeCommand("PW3", p);
 }
 
-void qiscp::setZone4Power(bool p) {
+void qiscp::setZone4Power(bool p)
+{
     writeCommand("PW4", p);
 }
 
-void qiscp::setMasterMuted(bool m) {
+void qiscp::setTrigger(qiscp::Trigger12V t, bool p)
+{
+    switch (t) {
+    case TriggerA:
+        writeCommand("TGA", p);
+        break;
+    case TriggerB:
+        writeCommand("TGB", p);
+        break;
+    case TriggerC:
+        writeCommand("TGC", p);
+        break;
+    default:
+        break;
+    }
+}
+
+void qiscp::setMasterMuted(bool m)
+{
     writeCommand("AMT", m);
 }
 
-void qiscp::setZone2Muted(bool m) {
+void qiscp::setZone2Muted(bool m)
+{
     writeCommand("ZMT", m);
 }
 
-void qiscp::setZone3Muted(bool m) {
+void qiscp::setZone3Muted(bool m)
+{
     writeCommand("MT3", m);
 }
 
-void qiscp::setZone4Muted(bool m) {
+void qiscp::setZone4Muted(bool m)
+{
     writeCommand("MT4", m);
 }
 
-void qiscp::setZoneInput(Zones zone, int t) {
+void qiscp::setZoneInput(Zones zone, int t)
+{
     if (!m_inputs.contains(t))
         return;
 
@@ -1508,23 +1595,28 @@ void qiscp::setZoneMuted(Zone zone, bool m)
     }
 }
 
-void qiscp::setMasterInput(int t) {
+void qiscp::setMasterInput(int t)
+{
     setZoneInput(Zone1, t);
 }
 
-void qiscp::setZone2Input(int t) {
+void qiscp::setZone2Input(int t)
+{
     setZoneInput(Zone2, t);
 }
 
-void qiscp::setZone3Input(int t) {
+void qiscp::setZone3Input(int t)
+{
     setZoneInput(Zone3, t);
 }
 
-void qiscp::setZone4Input(int t) {
+void qiscp::setZone4Input(int t)
+{
     setZoneInput(Zone4, t);
 }
 
-void qiscp::setSleepTimer(int t) {
+void qiscp::setSleepTimer(int t)
+{
     if (t<=0) {
         writeCommand("SLP", "OFF");
     } else {
@@ -1534,14 +1626,16 @@ void qiscp::setSleepTimer(int t) {
     }
 }
 
-void qiscp::setMasterVolume(quint8 vol) {
+void qiscp::setMasterVolume(quint8 vol)
+{
     // Make sure we don't try to set a too large volume directly
     if (vol>m_maxvolume)
         vol=m_maxvolume;
     writeCommand("MVL", getHex(vol));
 }
 
-void qiscp::setZoneVolume(Zones zone, quint8 vol) {
+void qiscp::setZoneVolume(Zones zone, quint8 vol)
+{
     // Make sure we don't try to set a too large volume directly
     if (vol>m_maxvolume)
         vol=m_maxvolume;
@@ -1561,7 +1655,8 @@ void qiscp::setZoneVolume(Zones zone, quint8 vol) {
     }
 }
 
-void qiscp::setMaxDirectVolume(quint8 maxvol) {
+void qiscp::setMaxDirectVolume(quint8 maxvol)
+{
     if (maxvol<1)
         maxvol=1;
     else if (maxvol>0x50) // XXX: sigh, model specific but whatever
@@ -1579,7 +1674,8 @@ void qiscp::setMaxDirectVolume(quint8 maxvol) {
  * Master volume up
  *
  */
-void qiscp::volumeUp(Zones zone) {
+void qiscp::volumeUp(Zones zone)
+{
     switch (zone) {
     case Zone1:
         writeCommand("MVL", "UP");
@@ -1601,7 +1697,8 @@ void qiscp::volumeUp(Zones zone) {
  *
  * Master volume down
  */
-void qiscp::volumeDown(Zones zone) {
+void qiscp::volumeDown(Zones zone)
+{
     switch (zone) {
     case Zone1:
         if (m_masterVolume==0)
@@ -1620,11 +1717,13 @@ void qiscp::volumeDown(Zones zone) {
     }
 }
 
-QVariantList qiscp::getPresets() const {
+QVariantList qiscp::getPresets() const
+{
     return m_tunerpresets;
 }
 
-void qiscp::tunerDisplayRDSToggle() {
+void qiscp::tunerDisplayRDSToggle()
+{
     writeCommand("RDS", "UP");
 }
 
@@ -1633,7 +1732,8 @@ void qiscp::presetRefresh()
     writeCommand("NRI", "QSTN");
 }
 
-void qiscp::tune(int t, Zones zone) {
+void qiscp::tune(int t, Zones zone)
+{
     if (m_masterInput==qiscpInputs::FM) {
         // XXX: Check limits!
         if (t>10800)
@@ -1673,7 +1773,8 @@ void qiscp::tune(int t, Zones zone) {
  * Set AM/FM tuner to given preset memory location on given zone.
  *
  */
-void qiscp::tunePreset(int t, Zones zone) {
+void qiscp::tunePreset(int t, Zones zone)
+{
     QString thex=getHex(t);
     switch (zone) {
     case Zone1:
@@ -1698,7 +1799,8 @@ void qiscp::tunePreset(int t, Zones zone) {
  * Store currently tuned channel at memory location ml
  *
  */
-bool qiscp::tuneStorePreset(int ml) {
+bool qiscp::tuneStorePreset(int ml)
+{
     if (ml<1)
         return false;
     if (ml>40) // XXX: Somehow handle devices supporting only 30 locs
@@ -1714,7 +1816,8 @@ bool qiscp::tuneStorePreset(int ml) {
  * Autotune AM/FM tuner upwards on given zone
  *
  */
-void qiscp::tuneUp(Zones zone) {
+void qiscp::tuneUp(Zones zone)
+{
     switch (zone) {
     case Zone1:
         writeCommand("TUN", "UP");
@@ -1738,7 +1841,8 @@ void qiscp::tuneUp(Zones zone) {
  * Autotune AM/FM tuner downwards on given zone
  *
  */
-void qiscp::tuneDown(Zones zone) {
+void qiscp::tuneDown(Zones zone)
+{
     switch (zone) {
     case Zone1:
         writeCommand("TUN", "DOWN");
@@ -1755,7 +1859,8 @@ void qiscp::tuneDown(Zones zone) {
     }
 }
 
-void qiscp::presetUp(Zones zone) {
+void qiscp::presetUp(Zones zone)
+{
     switch (zone) {
     case Zone1:
         writeCommand("PRS", "UP");
@@ -1772,7 +1877,8 @@ void qiscp::presetUp(Zones zone) {
     }
 }
 
-void qiscp::presetDown(Zones zone) {
+void qiscp::presetDown(Zones zone)
+{
     switch (zone) {
     case Zone1:
         writeCommand("PRS", "DOWN");
@@ -1789,7 +1895,8 @@ void qiscp::presetDown(Zones zone) {
     }
 }
 
-void qiscp::bassLevelUp(Zones zone) {
+void qiscp::bassLevelUp(Zones zone)
+{
     switch (zone) {
     case Zone1:
         writeCommand("TFR", "BUP");
@@ -1806,7 +1913,8 @@ void qiscp::bassLevelUp(Zones zone) {
     }
 }
 
-void qiscp::bassLevelDown(Zones zone) {
+void qiscp::bassLevelDown(Zones zone)
+{
     switch (zone) {
     case Zone1:
         writeCommand("TFR", "BDOWN");
@@ -1823,7 +1931,8 @@ void qiscp::bassLevelDown(Zones zone) {
     }
 }
 
-void qiscp::trebleLevelUp(Zones zone) {
+void qiscp::trebleLevelUp(Zones zone)
+{
     switch (zone) {
     case Zone1:
         writeCommand("TFR", "TUP");
@@ -1840,7 +1949,8 @@ void qiscp::trebleLevelUp(Zones zone) {
     }
 }
 
-void qiscp::trebleLevelDown(Zones zone) {
+void qiscp::trebleLevelDown(Zones zone)
+{
     switch (zone) {
     case Zone1:
         writeCommand("TFR", "TDOWN");
@@ -1863,7 +1973,8 @@ void qiscp::trebleLevelDown(Zones zone) {
  * Adjust master Subwoofer volume up
  *
  */
-void qiscp::subwooferLevelUp() {
+void qiscp::subwooferLevelUp()
+{
     writeCommand("SWL", "UP");
 }
 
@@ -1874,7 +1985,8 @@ void qiscp::subwooferLevelUp() {
  * Adjust master Subwoofer volume down
  *
  */
-void qiscp::subwooferLevelDown() {
+void qiscp::subwooferLevelDown()
+{
     writeCommand("SWL", "DOWN");
 }
 
@@ -1884,7 +1996,8 @@ void qiscp::subwooferLevelDown() {
  * Adjust master Center speaker volume up
  *
  */
-void qiscp::centerLevelUp() {
+void qiscp::centerLevelUp()
+{
     writeCommand("CTL", "UP");
 }
 
@@ -1894,7 +2007,8 @@ void qiscp::centerLevelUp() {
  * Adjust master Center speak volume down
  *
  */
-void qiscp::centerLevelDown() {
+void qiscp::centerLevelDown()
+{
     writeCommand("CTL", "DOWN");
 }
 
@@ -1905,11 +2019,13 @@ void qiscp::centerLevelDown() {
  * Enable/Disable CEC device control trough HDMI
  *
  */
-void qiscp::setCEC(bool m) {
+void qiscp::setCEC(bool m)
+{
     writeCommand("CEC", m);
 }
 
-void qiscp::setECO(EcoMode m) {
+void qiscp::setECO(EcoMode m)
+{
     writeCommand("ECO", m);
 }
 
@@ -1920,11 +2036,13 @@ void qiscp::setECO(EcoMode m) {
  * Toggle Audio trough HDMI On/Off
  *
  */
-void qiscp::setHDMIAudio(bool m) {
+void qiscp::setHDMIAudio(bool m)
+{
     writeCommand("HAO", m);
 }
 
-void qiscp::setHDMISubAudio(bool m) {
+void qiscp::setHDMISubAudio(bool m)
+{
     writeCommand("HAS", m);
 }
 
@@ -2035,9 +2153,23 @@ void qiscp::toggleListeningModeGame()
  * Set bass level direclty. Range is from -10 to 10.
  *
  */
-void qiscp::setBassLevel(qint8 level, Zones zone) {
+void qiscp::setBassLevel(qint8 level, Zones zone)
+{
     int l=qBound(-0xA, (int)level, 0xA);
-    writeCommand("TFR", getHex(l));
+    switch (zone) {
+    case Zone1:
+        writeCommand("TFR", "B"+getHexWithPrefix(l));
+        break;
+    case Zone2:
+        writeCommand("ZTN", "B"+getHexWithPrefix(l));
+        break;
+    case Zone3:
+        writeCommand("TN3", "B"+getHexWithPrefix(l));
+        break;
+    default:
+        break;
+    }
+
 }
 
 /**
@@ -2048,17 +2180,41 @@ void qiscp::setBassLevel(qint8 level, Zones zone) {
  * Set treble level directly. Range is from -10 to 10.
  *
  */
-void qiscp::setTrebleLevel(qint8 level, Zones zone) {
+void qiscp::setTrebleLevel(qint8 level, Zones zone)
+{
     int l=qBound(-0xA, (int)level, 0xA);
-    writeCommand("TFR", getHex(l));
+    switch (zone) {
+    case Zone1:
+        writeCommand("TFR", "T"+getHexWithPrefix(l));
+        break;
+    case Zone2:
+        writeCommand("ZTN", "T"+getHexWithPrefix(l));
+        break;
+    case Zone3:
+        writeCommand("TN3", "T"+getHexWithPrefix(l));
+        break;
+    default:
+        break;
+    }
+
 }
 
-void qiscp::setCenterLevel(qint8 level) {
+/**
+ * @brief qiscp::setCenterLevel
+ * @param level
+ */
+void qiscp::setCenterLevel(qint8 level)
+{
     int l=qBound(-0xC, (int)level, 0xC);
     writeCommand("CTL", getHex(l));
 }
 
-void qiscp::setSubwooferLevel(qint8 level) {
+/**
+ * @brief qiscp::setSubwooferLevel
+ * @param level
+ */
+void qiscp::setSubwooferLevel(qint8 level)
+{
     int l=qBound(-0xF, (int)level, 0xC);
     writeCommand("SWL", getHex(l));
 }
@@ -2069,7 +2225,8 @@ void qiscp::setSubwooferLevel(qint8 level) {
  * Switch to Bluetooth input and enable device pairing.
  *
  */
-void qiscp::bluetoothPairing() {
+void qiscp::bluetoothPairing()
+{
     writeCommand("NBT", "PAIRING");
 }
 
@@ -2079,7 +2236,8 @@ void qiscp::bluetoothPairing() {
  * Clear bluetooth device pairing settings.
  *
  */
-void qiscp::bluetoothClearPairing() {
+void qiscp::bluetoothClearPairing()
+{
     writeCommand("NBT", "CLEAR");
 }
 
@@ -2092,7 +2250,8 @@ void qiscp::bluetoothClearPairing() {
  * These are the common shared commands for both DVD/BD and TV control trough RHID/HDMI/CEC
  *
  */
-bool qiscp::baseCommand(QString c, Commands cmd) {
+bool qiscp::baseCommand(QString c, Commands cmd)
+{
     switch (cmd) {
     case Power:
         writeCommand(c, "POWER");
@@ -2133,7 +2292,8 @@ bool qiscp::baseCommand(QString c, Commands cmd) {
  * Send a key press command using given ISCP command.
  *
  */
-bool qiscp::keyCommand(QString c, Commands cmd) {
+bool qiscp::keyCommand(QString c, Commands cmd)
+{
 switch (cmd) {
 case Up:
     writeCommand(c, "UP");
@@ -2201,7 +2361,8 @@ return true;
  *
  * Network service specific commands
  */
-bool qiscp::networkCommand(Commands cmd) {
+bool qiscp::networkCommand(Commands cmd)
+{
     const QString c="NTC";
     switch (cmd) {
     case Menu:
@@ -2248,7 +2409,8 @@ bool qiscp::networkCommand(Commands cmd) {
  * TV Control specific commands
  *
  */
-bool qiscp::tvCommand(Commands cmd) {
+bool qiscp::tvCommand(Commands cmd)
+{
     const QString c="CTV";
 
     switch (cmd) {
@@ -2295,7 +2457,8 @@ bool qiscp::tvCommand(Commands cmd) {
     return true;
 }
 
-bool qiscp::dvdCommand(Commands cmd) {
+bool qiscp::dvdCommand(Commands cmd)
+{
     const QString c="CDV";
 
     switch (cmd) {
@@ -2349,7 +2512,8 @@ bool qiscp::dvdCommand(Commands cmd) {
  * Alias for dvdCommand();
  *
  */
-bool qiscp::bdCommand(Commands cmd) {
+bool qiscp::bdCommand(Commands cmd)
+{
     return dvdCommand(cmd);
 }
 
@@ -2360,7 +2524,8 @@ bool qiscp::bdCommand(Commands cmd) {
  * Wrapper around the different commands, it maps them according to the currently selected input
  *
  */
-bool qiscp::command(Commands cmd, Zones zone) {
+bool qiscp::command(Commands cmd, Zones zone)
+{
     switch (m_masterInput) {
     case qiscpInputs::InternetRadio:
     case qiscpInputs::Network:
