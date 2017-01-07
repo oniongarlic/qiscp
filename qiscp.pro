@@ -7,5 +7,5 @@
 TEMPLATE = subdirs
 
 SUBDIRS += libqiscp 
-SUBDIRS += clitest
+# SUBDIRS += clitest
 SUBDIRS += qmltest
