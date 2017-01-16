@@ -282,6 +282,7 @@ public:
         Home,
         Quick,
         IPV,
+        Mode,
         Input,
         OpenClose,
         Power,

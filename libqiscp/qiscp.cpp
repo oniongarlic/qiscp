@@ -2620,6 +2620,38 @@ bool qiscp::portCommand(Commands cmd)
         return writeCommand(c, "PAUSE");
     case Stop:
         return writeCommand(c, "STOP");
+    case Repeat:
+        return writeCommand(c, "REPEAT");
+    case Random:
+        return writeCommand(c, "SHUFFLE");
+    case Mode:
+        return writeCommand(c, "MODE");
+    case Display:
+        return writeCommand(c, "DISP");
+    case Enter:
+        return writeCommand(c, "ENTER");
+    case Return:
+        return writeCommand(c, "RETURN");
+    case Key0:
+        return writeCommand(c, "0");
+    case Key1:
+        return writeCommand(c, "1");
+    case Key2:
+        return writeCommand(c, "2");
+    case Key3:
+        return writeCommand(c, "3");
+    case Key4:
+        return writeCommand(c, "4");
+    case Key5:
+        return writeCommand(c, "5");
+    case Key6:
+        return writeCommand(c, "6");
+    case Key7:
+        return writeCommand(c, "7");
+    case Key8:
+        return writeCommand(c, "8");
+    case Key9:
+        return writeCommand(c, "9");
     default:
         return false;
     }
