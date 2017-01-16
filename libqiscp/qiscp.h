@@ -35,6 +35,7 @@ class qiscp : public QObject
     Q_ENUMS(AudysseyDynamicEQ)
     Q_ENUMS(USBStatus)
     Q_ENUMS(NetworkConnectionStatus)
+    Q_ENUMS(CommandTargets)
 
     Q_PROPERTY (bool connected READ connected NOTIFY connectedChanged)
     Q_PROPERTY (int discoveryTimeout READ discoveryTimeout WRITE setDiscoveryTimeout NOTIFY discoveryTimeoutChanged)
@@ -131,6 +132,24 @@ public:
         Zone4=0x08
     };
     Q_DECLARE_FLAGS(Zone, Zones)
+
+    // Command targets, some of these are not used or even available in networked models
+    enum CommandTargets {
+        CmdDevice,
+        CmdTV,
+        CmdNetwork,
+        CmdDVD,
+        CmdBD,
+        CmdDock,
+        CmdUPort,
+        CmdCD,
+        CmdTape1,
+        CmdTape2,
+        CmdEQ,
+        CmdDAT,
+        CmdMD,
+        CmdCDR
+    };
 
     enum LateNightModes {
         Off=0,
@@ -231,6 +250,7 @@ public:
         Up,
         Down,
         Enter,
+        Exit,
         Return,
         Previous,
         Repeat,
@@ -257,6 +277,11 @@ public:
         Angle,
         Top,
         Setup,
+        Audio,
+        Video,
+        Home,
+        Quick,
+        IPV,
         Input,
         OpenClose,
         Power,
@@ -411,11 +436,17 @@ public:
     // Debugging and logging
     Q_INVOKABLE bool debugLog(QString logfile, bool log);
 
+    Q_INVOKABLE bool deviceCommand(Commands cmd);
     Q_INVOKABLE bool networkCommand(Commands cmd);
     Q_INVOKABLE bool tvCommand(Commands cmd);
     Q_INVOKABLE bool dvdCommand(Commands cmd);
     Q_INVOKABLE bool bdCommand(Commands cmd);
+    Q_INVOKABLE bool dockCommand(Commands cmd);
+    Q_INVOKABLE bool portCommand(Commands cmd);
     Q_INVOKABLE bool command(Commands cmd, Zones zone=Zone1);
+
+    Q_INVOKABLE bool command(Commands cmd, CommandTargets target);
+
     Q_INVOKABLE bool saveArtwork(QString file);
 
     Q_INVOKABLE void seekTo(int position);
