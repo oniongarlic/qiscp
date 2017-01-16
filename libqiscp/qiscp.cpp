@@ -2585,6 +2585,10 @@ bool qiscp::dockCommand(Commands cmd)
         return writeCommand(c, "FF");
     case FastReverse:
         return writeCommand(c, "REW");
+    case Repeat:
+        return writeCommand(c, "REPEAT");
+    case Random:
+        return writeCommand(c, "RANDOM");
     case Menu:
         return writeCommand(c, "MENU");
     case Enter:
