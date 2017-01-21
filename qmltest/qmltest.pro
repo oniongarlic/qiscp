@@ -12,6 +12,7 @@ QT       += network
 SOURCES += main.cpp
 
 unix:!macx: LIBS += -L$$OUT_PWD/../libqiscp/ -lqiscp
+win32: LIBS += -L$$OUT_PWD/../libqiscp/release/ -lqiscp
 
 INCLUDEPATH += $$PWD/../libqiscp
 DEPENDPATH += $$PWD/../libqiscp

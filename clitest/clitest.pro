@@ -18,6 +18,7 @@ SOURCES += main.cpp
 HEADERS += 
 
 unix:!macx: LIBS += -L$$OUT_PWD/../libqiscp/ -lqiscp
+win32: LIBS += -L$$OUT_PWD/../libqiscp/ -lqiscp
 
 INCLUDEPATH += $$PWD/../libqiscp
 DEPENDPATH += $$PWD/../libqiscp

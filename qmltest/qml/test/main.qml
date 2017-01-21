@@ -6,14 +6,32 @@ Rectangle {
     width: 1024
     height: 600
 
+    ListModel {
+        id: presetsModel
+    }
+
+    ListModel {
+        id: hostsModel
+    }
+
+    ListModel {
+        id: inputsModel
+    }
+
+    ListModel {
+        id: networksModel
+    }
+
     Row {
         width: parent.width
         anchors.top: parent.top
         anchors.bottom: controls.top
+        spacing: 4
 
         Column {
             width: parent.width/3
             height: parent.height
+            spacing: 4
             DeviceList {
                 id: hosts
                 height: parent.height/2;
@@ -124,56 +142,14 @@ Rectangle {
         }
     }
 
-    ListModel {
-        id: presetsModel
-    }
 
-    ListModel {
-        id: hostsModel
-    }
-
-    ListModel {
-        id: inputsModel
-    }
-
-    ListModel {
-        id: networksModel
-    }
 
     Column {
         id: controls
         width: parent.width
         anchors.bottom: parent.bottom
 
-        Row {
 
-            width: parent.width
-
-            TextEdit {
-                id: cmdText
-                focus: true
-                textFormat: TextEdit.PlainText
-                width: parent.width/6
-            }
-
-            TextEdit {
-                id: paramText
-                focus: true;
-                textFormat: TextEdit.PlainText
-                width: parent.width/6
-            }
-
-            Button {
-                id: sendBtn
-                enabled: cmdText.text!=='' && paramText!==''
-                title: "Send CMD"
-                onClicked: {
-                    console.debug("Sending CMD: "+cmdText.text)
-                    iscp.writeCommand(cmdText.text, paramText.text);
-                }
-                width: parent.width/3
-            }
-        }
 
         Row {
             id: infoRow
@@ -226,6 +202,7 @@ Rectangle {
         Row {
             id: cmdRow
             width: parent.width
+            spacing: 4
             Text {
                 text: "Main"
             }
@@ -381,10 +358,7 @@ Rectangle {
         }
 
         /* Commands */
-        Row {
-            Text {
-                text: "Commands"
-            }
+        Row {            
             Button {
                 title: "Power"
                 enabled: iscp.connected
@@ -439,18 +413,7 @@ Rectangle {
                 title: "S30"
                 enabled: iscp.connected
                 onClicked: { iscp.seekTo(30); }
-            }
-            Button {
-                title: "S160"
-                enabled: iscp.connected
-                onClicked: { iscp.seekTo(160); }
-            }
-            Button {
-                title: "S830"
-                enabled: iscp.connected
-                onClicked: { iscp.seekTo(830); }
-            }
-
+            }            
             Button {
                 title: "RANDOM: "+iscp.shuffleMode
                 enabled: iscp.connected
@@ -494,6 +457,12 @@ Rectangle {
         TVControls {
             iscp: iscp
         }
+
+        CustomCommand {
+            onCmd: {
+                iscp.writeCommand(cmd, param);
+            }
+        }
     }
 
     Row {
@@ -504,6 +473,8 @@ Rectangle {
             id: videInfo
         }
     }
+
+
 
     QISCP {
         id: iscp

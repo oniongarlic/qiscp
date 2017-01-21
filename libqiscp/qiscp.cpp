@@ -1458,6 +1458,13 @@ void qiscp::requestInformationState()
     queueCommand("IFV", "QSTN");
 }
 
+void qiscp::requestTriggerState()
+{
+    queueCommand("TGA", "QSTN");
+    queueCommand("TGB", "QSTN");
+    queueCommand("TGC", "QSTN");
+}
+
 /*************************************************************/
 
 /**
@@ -2355,6 +2362,42 @@ default:
 return true;
 }
 
+bool qiscp::deviceCommand(Commands cmd)
+{
+    const QString c="OSD";
+
+    switch (cmd) {
+    case Menu:
+        return writeCommand(c, "MENU");
+    case Up:
+        return writeCommand(c, "UP");
+    case Down:
+        return writeCommand(c, "DOWN");
+    case Left:
+        return writeCommand(c, "LEFT");
+    case Right:
+        return writeCommand(c, "RIGHT");
+    case Enter:
+        return writeCommand(c, "ENTER");
+    case Exit:
+        return writeCommand(c, "EXIT");
+    case Home:
+        return writeCommand(c, "HOME");
+    case Audio:
+        return writeCommand(c, "AUDIO");
+    case Video:
+        return writeCommand(c, "VIDEO");
+    case Quick:
+        return writeCommand(c, "QUICK");
+    case IPV:
+        return writeCommand(c, "IPV");
+    default:
+        return false;
+    }
+
+    return false;
+}
+
 /**
  * @brief qiscp::networkCommand
  * @param cmd
@@ -2517,6 +2560,109 @@ bool qiscp::bdCommand(Commands cmd)
     return dvdCommand(cmd);
 }
 
+bool qiscp::dockCommand(Commands cmd)
+{
+    const QString c="CDS";
+
+    switch (cmd) {
+    case PowerOn:
+        return writeCommand(c, "PWRON");
+    case PowerOff:
+        return writeCommand(c, "PWROFF");
+    case Mute:
+        return writeCommand(c, "MUTE");
+    case Play:
+        return writeCommand(c, "PLY/RES");
+    case Pause:
+        return writeCommand(c, "PAUSE");
+    case Stop:
+        return writeCommand(c, "STOP");
+    case TrackUp:
+        return writeCommand(c, "SKIP.F");
+    case TrackDown:
+        return writeCommand(c, "SKIP.R");
+    case FastForward:
+        return writeCommand(c, "FF");
+    case FastReverse:
+        return writeCommand(c, "REW");
+    case Repeat:
+        return writeCommand(c, "REPEAT");
+    case Random:
+        return writeCommand(c, "RANDOM");
+    case Menu:
+        return writeCommand(c, "MENU");
+    case Enter:
+        return writeCommand(c, "ENTER");
+    case Up:
+        return writeCommand(c, "UP");
+    case Down:
+        return writeCommand(c, "DOWN");
+    default:
+        return false;
+    }
+    return false;
+}
+
+bool qiscp::portCommand(Commands cmd)
+{
+    const QString c="CPT";
+
+    switch (cmd) {
+    case Setup:
+        return writeCommand(c, "SETUP");
+    case Up:
+        return writeCommand(c, "UP");
+    case Down:
+        return writeCommand(c, "DOWN");
+    case Left:
+        return writeCommand(c, "LEFT");
+    case Right:
+        return writeCommand(c, "RIGHT");
+    case Play:
+        return writeCommand(c, "PLAY");
+    case Pause:
+        return writeCommand(c, "PAUSE");
+    case Stop:
+        return writeCommand(c, "STOP");
+    case Repeat:
+        return writeCommand(c, "REPEAT");
+    case Random:
+        return writeCommand(c, "SHUFFLE");
+    case Mode:
+        return writeCommand(c, "MODE");
+    case Display:
+        return writeCommand(c, "DISP");
+    case Enter:
+        return writeCommand(c, "ENTER");
+    case Return:
+        return writeCommand(c, "RETURN");
+    case Key0:
+        return writeCommand(c, "0");
+    case Key1:
+        return writeCommand(c, "1");
+    case Key2:
+        return writeCommand(c, "2");
+    case Key3:
+        return writeCommand(c, "3");
+    case Key4:
+        return writeCommand(c, "4");
+    case Key5:
+        return writeCommand(c, "5");
+    case Key6:
+        return writeCommand(c, "6");
+    case Key7:
+        return writeCommand(c, "7");
+    case Key8:
+        return writeCommand(c, "8");
+    case Key9:
+        return writeCommand(c, "9");
+    default:
+        return false;
+    }
+
+    return false;
+}
+
 /**
  * @brief qiscp::command
  * @param cmd
@@ -2526,7 +2672,26 @@ bool qiscp::bdCommand(Commands cmd)
  */
 bool qiscp::command(Commands cmd, Zones zone)
 {
-    switch (m_masterInput) {
+    qint8 i=m_masterInput;
+
+    switch (zone) {
+    case Zone1:
+        i=m_masterInput;
+        break;
+    case Zone2:
+        i=m_z2Input;
+        break;
+    case Zone3:
+        i=m_z3Input;
+        break;
+    case Zone4:
+        i=m_z4Input;
+        break;
+    default:
+        return false;
+    }
+
+    switch (i) {
     case qiscpInputs::InternetRadio:
     case qiscpInputs::Network:
     case qiscpInputs::MusicServer:
@@ -2552,6 +2717,35 @@ bool qiscp::command(Commands cmd, Zones zone)
     default:
         return false;
     }
+}
+
+/**
+ * @brief qiscp::command
+ * @param cmd
+ * @param target
+ * @return
+ *
+ * Send command to given target
+ *
+ */
+bool qiscp::command(qiscp::Commands cmd, qiscp::CommandTargets target)
+{
+    switch (target) {
+    case CmdDevice:
+        return deviceCommand(cmd);
+    case CmdNetwork:
+        return networkCommand(cmd);
+    case CmdBD:
+    case CmdDVD:
+        return dvdCommand(cmd);
+    case CmdTV:
+        return tvCommand(cmd);
+    case CmdDock:
+
+    default:
+        return false;
+    }
+    return false;
 }
 
 void qiscp::setNetworkService(qiscp::NetworkService arg)
