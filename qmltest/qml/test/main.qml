@@ -570,6 +570,14 @@ Rectangle {
             console.debug(arg[5])
         }
 
+        onDeviceInfo: {
+            if (!valid)
+                return;
+            var device=getDevice();
+            console.debug(device["model"])
+            console.debug(device["year"])
+        }
+
         onZonesList: {
             var zones=iscp.getZones();
 
