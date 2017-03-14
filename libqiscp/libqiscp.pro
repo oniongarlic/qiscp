@@ -20,7 +20,8 @@ SOURCES += qiscp.cpp \
     iscpmsg.cpp \
     deviceinforparser.cpp \
     artworkimageprovider.cpp \
-    artworkparser.cpp
+    artworkparser.cpp \
+    tunerstationmodel.cpp
 
 HEADERS += \
     qiscp.h \
@@ -28,4 +29,5 @@ HEADERS += \
     deviceinforparser.h \
     artworkimageprovider.h \
     artworkparser.h \
-    qiscpinputs.h
+    qiscpinputs.h \
+    tunerstationmodel.h
